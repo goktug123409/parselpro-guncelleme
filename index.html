@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071437-->
+<html lang="tr"><!--pp-build:202611071448-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -132,6 +132,12 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <div class="row"><button id="undo">Son noktayı sil</button><button id="clr">Alanı temizle</button></div>
 
     <h2>Çizim ve Renk Ayarları</h2>
+    <div style="margin:6px 0 10px;padding:8px;border:1px solid var(--bd);border-radius:10px">
+    <div style="font-weight:700;margin-bottom:4px">🎨 Hazır stil paketleri</div>
+    <div class="row"><label>Stil<select id="stylesel"></select></label><button type="button" id="styleapply">Uygula</button></div>
+    <div class="row"><label>Mevcut ayarları kaydet<input id="stylename" type="text" placeholder="stil adı (örn. Benim lüks)"></label><button type="button" id="stylesave">Kaydet</button><button type="button" id="styledel">Sil</button></div>
+    <div class="s" id="styleinfo">Renk, yazı tipi, çizgi şekli, sahne rengi, geçiş ve geçiş sesini tek tıkla değiştirir. Videodaki yazılar ve efektler değişmez.</div>
+    </div>
     <label class="chk"><input id="sab" type="checkbox" checked> Saber çizgisi &amp; dolgu</label>
     <label class="chk"><input id="hidemain" type="checkbox" checked> Ana yazı (255 m² / Saros’a 300 m) hiç çıkmasın</label>
     <label class="chk"><input id="nostem" type="checkbox"> Yazı çizgiden ayrı dursun (bağlantı çizgisi olmasın)</label>
@@ -165,7 +171,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     </div>
 
     <h2>Efekt nesneleri</h2>
-    <div class="row fxbtns"><button id="fx-bld">+ 3D bina</button><button id="fx-road">+ Yol çizgisi</button><button id="fx-arc">+ Kavisli yazı</button><button id="fx-txt">+ Serbest yazı</button><button id="fx-grid">+ Parsel ızgarası</button><button id="fx-pin">+ Konum pini</button><button id="fx-area">+ Renkli alan</button><button id="fx-infolist">+ Bilgi listesi</button><button id="fx-loc">+ Konum yazısı</button><button id="fx-ptxt">+ Perspektif yazı</button><button id="fx-spot">+ Vurgu alanı (karart)</button><button id="fx-lines">+ Renkli satırlar</button><button id="fx-billb">+ Eğik başlık + kart</button><button id="fx-arrow">+ Ok ➜</button></div>
+    <div class="row fxbtns"><button id="fx-bld">+ 3D bina</button><button id="fx-road">+ Yol çizgisi</button><button id="fx-arc">+ Kavisli yazı</button><button id="fx-txt">+ Serbest yazı</button><button id="fx-grid">+ Parsel ızgarası</button><button id="fx-parsel">+ Parsel durumu (Müsait/Satıldı)</button><button id="fx-pin">+ Konum pini</button><button id="fx-area">+ Renkli alan</button><button id="fx-infolist">+ Bilgi listesi</button><button id="fx-loc">+ Konum yazısı</button><button id="fx-ptxt">+ Perspektif yazı</button><button id="fx-spot">+ Vurgu alanı (karart)</button><button id="fx-lines">+ Renkli satırlar</button><button id="fx-billb">+ Eğik başlık + kart</button><button id="fx-arrow">+ Ok ➜</button></div>
     <p style="margin:4px 0 8px;font-size:12px;opacity:.75;color:var(--mut)">Önce arsayı çizip “Takip Et” yapın, sonra efekt ekleyin. Videoda beyaz noktaları sürükleyerek şekil verin, yazının/çizginin üzerinden tutup taşıyın.</p>
     <label class="chk"><input type="checkbox" id="fxsnap" checked> Yol çizgisi noktaları birbirine ve arsa köşelerine kitlensin (yaklaştırınca yapışır)</label>
     <label class="chk"><input type="checkbox" id="gson"> Hepsi birlikte çıksın ve aynı anda kaybolsun (efektler, etiketler, arsa çizgisi ve yazı). Dışarıda bırakmak istediğiniz nesnenin “Ortak zamana bağlı” kutusunu kapatın</label>
@@ -265,6 +271,13 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <div id="cml" style="display:flex;flex-direction:column;gap:8px"><label>Sanal drone hareketi (fotoğraf için)<select id="cm"><option value="none" selected>Yok</option><option value="zoom">Yavaş yaklaşma</option><option value="pan">Yana kayma</option><option value="orbit">Hafif yörünge</option><option value="rise">Yükselme</option></select></label><button id="cmb">Hareketi oynat</button></div>
     <button id="play">Önizlemeyi baştan oynat</button>
 
+    <div style="margin:8px 0;padding:8px;border:1px solid var(--bd);border-radius:10px">
+    <div style="font-weight:700;margin-bottom:4px">📱 Çıktı oranı (dikey / kare)</div>
+    <label>Oran<select id="oar"><option value="orig">Orijinal (kırpma yok)</option><option value="9:16">Dikey 9:16 — Reels, TikTok, WhatsApp durumu (1080×1920)</option><option value="4:5">Dikey 4:5 — Instagram gönderi (1080×1350)</option><option value="1:1">Kare 1:1 (1080×1080)</option><option value="16:9">Yatay 16:9 (1920×1080)</option></select></label>
+    <label>Kadraj konumu (<span id="ocxv">50</span>%) — sol/üst ↔ sağ/alt<input id="ocx" type="range" min="0" max="100" value="50" oninput="$('ocxv').textContent=this.value"></label>
+    <label class="chk"><input type="checkbox" id="ogd" checked> Önizlemede kadraj çerçevesini göster (sadece ekranda, videoya girmez)</label>
+    <div class="s" id="oarinfo"></div>
+    </div>
     <button id="rec" class="bigr">TAKİP ET VE RENDER AL</button>
     <button id="recpng" class="bigr" style="margin-top:8px;background:#1f6feb;border-color:#1f6feb">FOTOĞRAF RENDER AL (PNG)</button>
     <div class="s c" id="recnote" style="margin:4px 0 8px"></div>
@@ -929,7 +942,7 @@ function drawLineX(){
   ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.beginPath();ctx.arc(ax,ay,r,0,7);ctx.fillStyle='#e5353b';ctx.fill();ctx.lineWidth=2*s;ctx.strokeStyle='#fff';ctx.stroke();
   ctx.beginPath();const d=r*.45;ctx.moveTo(ax-d,ay-d);ctx.lineTo(ax+d,ay+d);ctx.moveTo(ax+d,ay-d);ctx.lineTo(ax-d,ay+d);ctx.lineWidth=2.4*s;ctx.lineCap='round';ctx.stroke();ctx.restore();
 }
-function draw(now){ctx.save();try{seqTick(now);if(seq&&seq.items[seq.i].k!=='main')drawScene(now);else{drawInner(now);if(trk)drawTrk();drawLabels(now);try{window.drawSnapRing&&window.drawSnapRing()}catch(e){}drawLineX();ctx.setTransform(1,0,0,1,0,0);drawLogo()}if(window.drawSubs)window.drawSubs(now);drawFlashes(now);if(window.drawSizeHud)window.drawSizeHud(now)}finally{ctx.restore()}}
+function draw(now){ctx.save();try{seqTick(now);if(seq&&seq.items[seq.i].k!=='main')drawScene(now);else{drawInner(now);if(trk)drawTrk();drawLabels(now);try{window.drawSnapRing&&window.drawSnapRing()}catch(e){}drawLineX();ctx.setTransform(1,0,0,1,0,0);drawLogo()}if(window.drawSubs)window.drawSubs(now);drawFlashes(now);if(window.drawSizeHud)window.drawSizeHud(now);if(window.drawCropGuide)window.drawCropGuide()}finally{ctx.restore()}}
 function drawInner(now){
   const s=W/1280,col=$('col').value,th=+$('th').value*s,dur=+$('dur').value*1000;
   const live=isVid&&kfs.length>0&&!bg.paused;
@@ -1257,7 +1270,7 @@ let fxTrash=[];
 function fxDel(o){const i=fxs.indexOf(o);if(i<0)return;logAct('Efekt silindi: '+FXN[o.type]);fxs.splice(i,1);fxTrash.push({o,i});if(fxTrash.length>50)fxTrash.shift();if(fxSel===o)fxSel=null;renderFx()}
 function fxRestore(){const t=fxTrash.pop();if(!t)return;logAct('Silinen efekt geri yüklendi: '+FXN[t.o.type]);fxs.splice(Math.min(t.i,fxs.length),0,t.o);t.o._k='';fxSel=t.o;renderFx();try{$('st').textContent='Silinen efekt geri yüklendi.'}catch(e){}}
 let fxSz=null,fxSel=null,fxs=[],fxDraw=null,fxLast=0,fxDrag=null,txO=[0,0],txH=null,txDrag=null;
-const FXN={bld:'3D bina',road:'Yol çizgisi',arc:'Kavisli yazı',txt:'Serbest yazı',grid:'Parsel ızgarası',pin:'Konum pini',area:'Renkli alan',list:'Bilgi listesi',loc:'Konum yazısı',billb:'Eğik başlık + kart',spot:'Vurgu alanı (karart)',lines:'Renkli satırlar',ptxt:'Perspektif yazı',arrow:'Ok'};
+const FXN={bld:'3D bina',road:'Yol çizgisi',arc:'Kavisli yazı',txt:'Serbest yazı',grid:'Parsel ızgarası',pin:'Konum pini',area:'Renkli alan',parsel:'Parsel durumu',list:'Bilgi listesi',loc:'Konum yazısı',billb:'Eğik başlık + kart',spot:'Vurgu alanı (karart)',lines:'Renkli satırlar',ptxt:'Perspektif yazı',arrow:'Ok'};
 function trMap(t){
   if(!fxTr.length&&kfs.some(q=>q.T||q.fxT))fxTr=kfs.filter(q=>q.T||q.fxT).map(q=>({t:q.t,T:q.T||q.fxT,k:q.T?q.k:q.fxK}));
   let r=null,ri=-1;for(let i=0;i<fxTr.length;i++){if(fxTr[i].t<=t+1e-4){r=fxTr[i];ri=i}else break}
@@ -1344,7 +1357,7 @@ function ptxtGround(c,vert){
   function sn0(Z){const pit=35*Math.PI/180;return Math.sin(pit)+Z*Math.cos(pit)}
 }
 function fxFinish(){
-  if(!fxDraw)return;const d=fxDraw,need={bld:3,road:2,txt:2,arc:3,grid:4,pin:1,area:3,list:1,loc:1,billb:2,spot:3,lines:1,ptxt:4,arrow:2}[d.type];
+  if(!fxDraw)return;const d=fxDraw,need={bld:3,road:2,txt:2,arc:3,grid:4,pin:1,area:3,parsel:3,list:1,loc:1,billb:2,spot:3,lines:1,ptxt:4,arrow:2}[d.type];
   if(d.pts.length<need){toast('En az '+need+' nokta gerekli.');return}
   if(d.type==='ptxt'&&d.pts.length===4)d.pts=ptxtNorm(d.pts);
   const o={type:d.type,pts:d.pts,t0:performance.now()};
@@ -1356,6 +1369,7 @@ function fxFinish(){
   if(d.type==='billb')Object.assign(o,{col:'#ffffff',col2:'#111111',txt:'183 m²',txt2:'234 Ada - 4 Parsel',fs:100,font:''});
   if(d.type==='grid')Object.assign(o,{col:'#e0202a',col2:'#ffffff',txt:'381,207,264,199,235,225,224,286,207,199,235,225,224,286,269,264',cols:2,rows:8,gap:3,fs:100,font:''});
   if(d.type==='pin')Object.assign(o,{col:'#e0202a',col2:'#ffffff',txt:'16 Parsel',fs:100,font:''});
+  if(d.type==='parsel')Object.assign(o,{col:'#22d65a',col2:'#ffffff',st:'Müsait',price:'',txt:'Müsait',fs:100,font:''});
   if(d.type==='area')Object.assign(o,{col:'#22d65a',col2:'#ffffff',txt:'Yeşil Alan',fs:100,font:''});
   if(d.type==='ptxt')Object.assign(o,{col:'#ffffff',col2:'#bfe9ff',txt:'DİLOVASI\n700 m²',fs:100,font:'Montserrat'});
   if(d.type==='spot')Object.assign(o,{col:'#ffffff',col2:'#9fd8ff',dim:60});
@@ -1411,7 +1425,14 @@ function renderFx(){
     const l1=document.createElement('span');l1.style.fontSize='12px';l1.textContent=o.type==='billb'?'Kart':o.type==='ptxt'?'Yazı':o.type==='spot'?'Çizgi':o.type==='lines'?'Vurgu 1':(o.type==='list'||o.type==='loc')?'Yazı':o.type==='bld'?'Bina':o.type==='road'?'Neon':o.type==='txt'?'Yazı':o.type==='grid'?'Parsel':o.type==='pin'?'Pin':o.type==='area'?'Alan':o.type==='arrow'?'Ok':'Renk 1';
     const l2=document.createElement('span');l2.style.fontSize='12px';l2.textContent=o.type==='billb'?'Kart yazısı':o.type==='ptxt'?'Parlama':o.type==='spot'?'Parlama':o.type==='lines'?'Vurgu 2':o.type==='list'?'Vurgu':o.type==='loc'?'İkinci':o.type==='bld'?'Zemin':o.type==='road'?'Dolgu':o.type==='txt'?'Parlama':o.type==='grid'?'Yazı':'Renk 2';
     row.append(l1,mk('col',''),l2,mk('col2',''));
-    if(o.type==='ptxt'){const bt=document.createElement('button');bt.textContent='📍 Yere yatır';bt.style.cssText='flex:1 1 45%';bt.onclick=()=>{ptxtSnap(o,false)};const bv=document.createElement('button');bv.textContent='🧍 Zemine dik (ayakta)';bv.style.cssText='flex:1 1 45%';bv.onclick=()=>{ptxtSnap(o,true)};row.append(bt,bv)}
+    if(o.type==='parsel'){const ST={'Müsait':'#22d65a','Satıldı':'#ff3b3b','Rezerve':'#ffb020'};
+      const w=document.createElement('div');w.style.cssText='flex:1 1 100%;display:flex;gap:6px;flex-wrap:wrap;align-items:center';
+      const se=document.createElement('select');se.style.flex='1';se.innerHTML=Object.keys(ST).map(k=>`<option>${k}</option>`).join('');se.value=o.st||'Müsait';
+      const pr=document.createElement('input');pr.type='text';pr.placeholder='Fiyat (örn. 2.450.000 ₺)';pr.value=o.price||'';pr.style.flex='1';
+      const up=()=>{o.txt=o.st+(o.price?' · '+o.price:'')};
+      se.onchange=()=>{o.st=se.value;o.col=ST[o.st];up()};pr.oninput=()=>{o.price=pr.value;up()};
+      w.append(se,pr);row.appendChild(w)}
+        if(o.type==='ptxt'){const bt=document.createElement('button');bt.textContent='📍 Yere yatır';bt.style.cssText='flex:1 1 45%';bt.onclick=()=>{ptxtSnap(o,false)};const bv=document.createElement('button');bv.textContent='🧍 Zemine dik (ayakta)';bv.style.cssText='flex:1 1 45%';bv.onclick=()=>{ptxtSnap(o,true)};row.append(bt,bv)}
     if(o.type==='spot'){const w=document.createElement('label');w.style.cssText='flex:1 1 100%;font-size:12px;display:flex;flex-direction:row;align-items:center;gap:8px';const cb=document.createElement('input');cb.type='checkbox';cb.style.cssText='width:auto;flex:none';cb.checked=o.keep!==false;cb.onchange=()=>{o.keep=cb.checked;logAct('Vurgu karartması: '+(cb.checked?'bir kere kararır, sonra sabit kalır':'animasyonlu giriş/çıkış (tekrarlar)'))};w.append(cb,'Bir kere kararsın, sonra sabit kalsın (tekrar göz kırpmasın)');row.appendChild(w)}
     if(o.type==='ptxt'){[['an','Giriş animasyonu',[['rise','Yükselerek belirsin (varsayılan)'],['wipe','Soldan sağa açılsın'],['type','Harf harf yazılsın'],['drop','Yukarıdan düşüp otursun'],['zoom','Uzaktan yaklaşıp otursun'],['flip','Yerden dikilsin (perspektif)'],['slide','Soldan kayarak gelsin'],['fade','Yumuşak belirsin'],['letters','Harf harf zıplayarak düşsün'],['wave','Harfler dalga gibi yükselsin'],['blur','Bulanıktan netleşsin'],['glitchin','Bozulup (glitch) belirsin'],['spiny','Dikey eksende dönerek gelsin']],'rise'],['pex','Kaybolma animasyonu',[['fade','Yumuşak solsun (varsayılan)'],['wipe','Soldan sağa silinsin'],['type','Harf harf silinsin'],['drop','Aşağı düşüp kaybolsun'],['up','Yukarı süzülüp kaybolsun'],['zoom','Uzaklaşıp küçülsün'],['flip','Yere yatıp kaybolsun'],['slide','Sağa kayarak çıksın'],['grow','Büyüyüp dağılsın'],['tv','Eski TV gibi kapansın'],['spin','Kapı gibi dönüp kaybolsun'],['wave','Dalgalanıp kaybolsun'],['glitch','Bozulup (glitch) kaybolsun'],['lout','Harf harf düşüp kaybolsun'],['spiny','Dikey eksende dönüp kaybolsun']],'fade'],['loop','Sürekli hareket',[['none','Yok'],['float','Hafifçe yüzsün'],['pulse','Nabız gibi atsın'],['shine','Işık süzülsün (parlama geçsin)'],['glow','Parlama nabzı'],['spiny','Dikey eksende dönüp dursun (arada durur)'],['spinx','Yatay eksende takla atsın (arada durur)'],['flicker','Neon gibi titresin']],'none']].forEach(([k,lab,opts,def])=>{const w=document.createElement('label');w.style.cssText='flex:1 1 100%;font-size:12px;display:flex;align-items:center;gap:8px';w.append(lab+' ');const se=document.createElement('select');se.style.flex='1';se.innerHTML=opts.map(([v,n])=>`<option value="${v}">${n}</option>`).join('');se.value=o[k]||def;se.onchange=()=>{o[k]=se.value;if(k==='pex'&&se.value!=='fade'&&!o.te)o.te=Math.max(3,(+$('dur').value||3)+2);try{restart()}catch(e){}if(k==='pex')renderFx()};w.appendChild(se);row.appendChild(w)});
       if(!o.col3)o.col3='#ffd23d';
@@ -1804,7 +1825,7 @@ function fxPreview(m,s){
   const d=fxDraw;if(!d)return;
   const P=d.pts.map(b=>fxProj(m,b[0],b[1])).filter(Boolean);
   ctx.save();ctx.strokeStyle='#ffd23d';ctx.fillStyle='#ffd23d';ctx.lineWidth=Math.max(2,3*s);ctx.setLineDash([10*s,8*s]);
-  if(P.length>1){fxPath(P,(d.type==='bld'||d.type==='area'||d.type==='grid')&&P.length>2);ctx.stroke()}
+  if(P.length>1){fxPath(P,(d.type==='bld'||d.type==='area'||d.type==='parsel'||d.type==='grid')&&P.length>2);ctx.stroke()}
   ctx.setLineDash([]);P.forEach(a=>{ctx.beginPath();ctx.arc(a[0],a[1],6*s,0,7);ctx.fill()});
   if(d.type==='ptxt'){if(P.length===4){ctx.globalAlpha=.25;fxPath(P,true);ctx.fill();ctx.globalAlpha=1}
     const nm=['1 sol-üst','2 sağ-üst','3 sağ-alt','4 sol-alt'];ctx.font='800 '+(14*s)+'px system-ui,sans-serif';ctx.textAlign='center';ctx.lineWidth=3*s;ctx.lineJoin='round';
@@ -1851,7 +1872,7 @@ function fxHitAt(X0,Y0){
     else if(o.type==='list'||o.type==='loc'||o.type==='lines'){const b=o._bb;hit=!!b&&x>=b[0]&&x<=b[0]+b[2]&&y>=b[1]&&y<=b[1]+b[3]}
     else if(o.type==='arrow')hit=P.length>1&&fxSegD(x,y,P[0],P[1])<36*s*o._sc*(o.fs/100);
     else if(o.type==='billb')hit=P.length>1&&fxSegD(x,y,P[0],P[1])<60*s*o._sc*(o.fs/100);
-    else if(o.type==='grid'||o.type==='area'||o.type==='spot'||o.type==='ptxt')hit=fxInPoly(P,x,y);
+    else if(o.type==='grid'||o.type==='area'||o.type==='parsel'||o.type==='spot'||o.type==='ptxt')hit=fxInPoly(P,x,y);
     else if(o.type==='pin')hit=Math.hypot(x-P[0][0],y-(P[0][1]-60*s*o._sc))<50*s*o._sc;
     else if(o.type==='bld'){const hh=o.h*s*o._sc;hit=fxInPoly(P,x,y)||fxInPoly(P.map(a=>[a[0],a[1]-hh]),x,y)||(P.some(a=>Math.abs(x-a[0])<24*s&&y<a[1]&&y>a[1]-hh))}
     else{const[A,B,C]=P.length===2?[P[0],[(P[0][0]+P[1][0])/2,(P[0][1]+P[1][1])/2],P[1]]:P,ct=[2*B[0]-(A[0]+C[0])/2,2*B[1]-(A[1]+C[1])/2];let prev=A;for(let i=1;i<=40;i++){const t=i/40,q=[(1-t)*(1-t)*A[0]+2*(1-t)*t*ct[0]+t*t*C[0],(1-t)*(1-t)*A[1]+2*(1-t)*t*ct[1]+t*t*C[1]];if(fxSegD(x,y,prev,q)<Math.max(30*s,o.fs*s*o._sc*.9))hit=true;prev=q}}
@@ -1896,13 +1917,13 @@ function drawFx(now,s,p){
     else if(o.type==='grid')fxGrid(o,P,fp,s,sc);
     else if(o.type==='pin')fxPin(o,P,fp,now,s,sc);
     else if(o.type==='arrow')fxArrow(o,P,fp,now,s,sc);
-    else if(o.type==='area')fxArea(o,P,fp,s,sc);
+    else if(o.type==='area'||o.type==='parsel')fxArea(o,P,fp,s,sc);
     else fxArc(o,P,fp,now,s,sc);
     ctx.restore();
   });
   fxPreview(m,s);fxHandles(s);
 }
-$('fx-ptxt').onclick=()=>fxStart('ptxt');$('fx-spot').onclick=()=>fxStart('spot');$('fx-lines').onclick=()=>fxStart('lines');$('fx-bld').onclick=()=>fxStart('bld');$('fx-road').onclick=()=>fxStart('road');$('fx-arc').onclick=()=>fxStart('arc');$('fx-txt').onclick=()=>fxStart('txt');$('fx-grid').onclick=()=>fxStart('grid');$('fx-pin').onclick=()=>fxStart('pin');$('fx-area').onclick=()=>fxStart('area');$('fx-infolist').onclick=()=>fxStart('list');$('fx-loc').onclick=()=>fxStart('loc');$('fx-billb').onclick=()=>fxStart('billb');$('fx-arrow').onclick=()=>fxStart('arrow');
+$('fx-ptxt').onclick=()=>fxStart('ptxt');$('fx-spot').onclick=()=>fxStart('spot');$('fx-lines').onclick=()=>fxStart('lines');$('fx-bld').onclick=()=>fxStart('bld');$('fx-road').onclick=()=>fxStart('road');$('fx-arc').onclick=()=>fxStart('arc');$('fx-txt').onclick=()=>fxStart('txt');$('fx-grid').onclick=()=>fxStart('grid');$('fx-parsel').onclick=()=>fxStart('parsel');$('fx-pin').onclick=()=>fxStart('pin');$('fx-area').onclick=()=>fxStart('area');$('fx-infolist').onclick=()=>fxStart('list');$('fx-loc').onclick=()=>fxStart('loc');$('fx-billb').onclick=()=>fxStart('billb');$('fx-arrow').onclick=()=>fxStart('arrow');
 $('fxdone').onclick=fxFinish;$('fxcancel').onclick=fxCancel;$('fxdone2').onclick=fxFinish;$('fxcancel2').onclick=fxCancel;
 document.addEventListener('keydown',e=>{if(!fxDraw&&e.ctrlKey&&e.shiftKey&&(e.key==='Z'||e.key==='z')){fxRestore();e.preventDefault();return}if(!fxDraw&&fxSel&&(e.key==='Delete'||e.key==='Backspace')&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){fxDel(fxSel);e.preventDefault();return}if(!fxDraw)return;if(e.key==='Escape')fxCancel();else if(e.key==='Enter')fxFinish()});
 
@@ -2353,7 +2374,7 @@ $('rec').onclick=()=>{
   const types=hasA?['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm']:['video/mp4;codecs=avc1.640028','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'];
   const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
   const sq=buildSeq(),dur=sq?sq.total*1000:((isVid&&bg.duration)?bg.duration*1000:loopMs());
-  const vstream=cv.captureStream(30),aud=hasA?window.narrAudio(vstream):null;
+  const vstream=(window.outStream&&window.outStream())||cv.captureStream(30),aud=hasA?window.narrAudio(vstream):null;
   const mr=new MediaRecorder(vstream,mime?{mimeType:mime,videoBitsPerSecond:12e6}:{});
   const ch=[];mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
   mr.onstop=()=>{
@@ -2617,7 +2638,7 @@ lgInfo();
       if(isVid){bg.pause();await new Promise(r=>{if(!bg.seeking)return r();bg.addEventListener('seeked',r,{once:true})})}
       else{camStart=null;t0=performance.now()-stillTime()*1000}
       await raf();await raf();await raf();
-      const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+      const blob=await new Promise(r=>((window.outStillCanvas&&window.outStillCanvas())||cv).toBlob(r,'image/png'));
       if(!blob)throw new Error('Görüntü oluşturulamadı');
       logAct('Fotoğraf render alındı (PNG, '+W+'×'+H+')');
       saveFile(blob,'parselpro-'+(isVid?'kare':'foto')+'.png','png');
@@ -2635,7 +2656,7 @@ lgInfo();
   const css=document.createElement('style');css.textContent='#ctxm{position:fixed;z-index:1000;min-width:250px;max-width:300px;padding:6px;border-radius:14px;background:var(--panel,#fff);color:var(--tx,#0f1724);border:1px solid var(--bd,#d5dbe6);box-shadow:0 20px 50px -12px rgba(0,0,0,.55);font:13.5px system-ui,sans-serif;display:none}#ctxm button{display:flex;width:100%;align-items:center;gap:10px;text-align:left;border:0;background:transparent;color:inherit;border-radius:9px;padding:8px 10px;cursor:pointer;font:inherit}#ctxm button:hover:not(:disabled){background:rgba(120,140,170,.2)}#ctxm button:disabled{opacity:.4;cursor:default}#ctxm .t{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut,#5d6879);padding:6px 10px 4px}#ctxm hr{border:0;border-top:1px solid var(--bd,#d5dbe6);margin:5px 2px}#ctxm .g{display:grid;grid-template-columns:1fr 1fr;gap:2px}#ctxm .g button{padding:6px 8px;font-size:12.5px}#ctxm .dg{color:#e5353b}#ctxm{max-height:min(82vh,680px);overflow:auto}#ctxm .cx{padding:2px 6px 6px;display:flex;flex-direction:column;gap:6px}#ctxm .cr{display:flex;flex-direction:column;gap:3px;font-size:12px}#ctxm .cr.ck{flex-direction:row;align-items:center;gap:8px}#ctxm .cr span{color:var(--mut,#5d6879)}#ctxm .cr select,#ctxm .cr input[type=text],#ctxm .cr input[type=number],#ctxm .cr textarea{width:100%;font:inherit;padding:5px 6px;border-radius:7px;border:1px solid var(--bd,#d5dbe6);background:transparent;color:inherit}#ctxm .cr input[type=range]{width:100%}#ctxm .cr input[type=color]{width:44px;height:26px;padding:0;border:0;background:none}#ctxm .cr.ck input{width:auto}#ctxm .rr{display:flex;gap:6px;align-items:center}#ctxm .rr input[type=range]{flex:1;min-width:0}#ctxm .rr .nb{width:62px!important;flex:none}#ctxm .cr:has(input[type=color]){flex-direction:row;align-items:center;justify-content:space-between}';document.head.appendChild(css);
   const m=document.createElement('div');m.id='ctxm';document.body.appendChild(m);
   const close=()=>{m.style.display='none'};
-  const FXL=[['road','🛣 Yol çizgisi'],['bld','🏢 3D bina'],['pin','📍 Konum pini'],['arc','〰 Kavisli yazı'],['txt','🔤 Serbest yazı'],['grid','▦ Parsel ızgarası'],['area','🟦 Renkli alan'],['infolist','📋 Bilgi listesi'],['loc','📌 Konum yazısı'],['ptxt','📐 Perspektif yazı'],['spot','🔦 Vurgu alanı'],['lines','🌈 Renkli satırlar'],['billb','🪧 Başlık + kart'],['arrow','➜ Ok']];
+  const FXL=[['road','🛣 Yol çizgisi'],['bld','🏢 3D bina'],['pin','📍 Konum pini'],['arc','〰 Kavisli yazı'],['txt','🔤 Serbest yazı'],['grid','▦ Parsel ızgarası'],['area','🟦 Renkli alan'],['parsel','🏷 Parsel durumu'],['infolist','📋 Bilgi listesi'],['loc','📌 Konum yazısı'],['ptxt','📐 Perspektif yazı'],['spot','🔦 Vurgu alanı'],['lines','🌈 Renkli satırlar'],['billb','🪧 Başlık + kart'],['arrow','➜ Ok']];
   const clone=o=>JSON.parse(JSON.stringify(o,(k,v)=>(k[0]==='_'||(v&&v.nodeType))?undefined:v));
   function build(items,x,y){
     m.innerHTML='';
@@ -2982,7 +3003,7 @@ body.cvs .cv-top button{white-space:nowrap}
   const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
   const hexOk=v=>typeof v==='string'&&/^#[0-9a-fA-F]{6}$/.test(v);
   const NAME=(o)=>{try{return FXN[o.type]||o.type}catch(e){return o.type}};
-  const TXT=['ptxt','txt','billb','list','loc','lines','arc','area','grid','pin'];
+  const TXT=['ptxt','txt','billb','list','loc','lines','arc','area','parsel','grid','pin'];
   let sig='';
   function flash(o){
     const i=fxs.indexOf(o);if(i<0)return;const box=$('fx-list');if(!box)return;
@@ -3361,6 +3382,104 @@ body.cvs .cv-top button{white-space:nowrap}
   }
   setInterval(build,400);build();
   $m('msrinfo').textContent=info();
+})();
+</script>
+<script id="style-js">
+(function(){
+  const $m=id=>document.getElementById(id);
+  const KEYS=['col','fc','fo','gw','th','ln','lmode','lh3','ff','c1','c2','an','lp','ls','sfont','sbg1','sbg2','sacc','sbgm','sgrad','strn','strs','trv','sab'];
+  const PACKS={
+    lux:{n:'Lüks altın',v:{col:'#ffc83d',fc:'#ffc83d',fo:12,gw:80,th:5,ln:'pulse',lmode:'3d',lh3:12,ff:'Playfair Display',c1:'#ffd76a',c2:'#ffffff',an:'fade',lp:'float',sfont:'Cinzel',sbg1:'#0b0b0f',sbg2:'#17120a',sacc:'#ffc83d',sbgm:'alt',sgrad:true,strn:'fade',strs:'whoosh',trv:12}},
+    neon:{n:'Neon mavi',v:{col:'#2bc4ff',fc:'#2bc4ff',fo:20,gw:130,th:6,ln:'flow',lmode:'2d',ff:'Montserrat',c1:'#2bc4ff',c2:'#ffffff',an:'pop',lp:'sway',sfont:'Bebas Neue',sbg1:'#05060f',sbg2:'#0a1230',sacc:'#2bc4ff',sbgm:'alt',sgrad:true,strn:'flash',strs:'mix',trv:8}},
+    clean:{n:'Sade beyaz',v:{col:'#ffffff',fc:'#ffffff',fo:10,gw:35,th:4,ln:'draw',lmode:'2d',ff:'Poppins',c1:'#ffffff',c2:'#dfe6ee',an:'fade',lp:'none',sfont:'Poppins',sbg1:'#ffffff',sbg2:'#eef1f5',sacc:'#1b6dff',sbgm:'one',sgrad:false,strn:'fade',strs:'whoosh',trv:10}},
+    green:{n:'Doğa yeşili',v:{col:'#3dff7a',fc:'#3dff7a',fo:18,gw:90,th:6,ln:'draw',lmode:'3d',lh3:10,ff:'Raleway',c1:'#b8ffcf',c2:'#ffffff',an:'slide',lp:'float',sfont:'Raleway',sbg1:'#0d2616',sbg2:'#16402a',sacc:'#3dff7a',sbgm:'alt',sgrad:true,strn:'slide',strs:'whoosh',trv:10}},
+    red:{n:'Dikkat çekici kırmızı',v:{col:'#ff3b3b',fc:'#ff3b3b',fo:18,gw:110,th:7,ln:'pulse',lmode:'2d',ff:'Anton',c1:'#ffffff',c2:'#ffd1d1',an:'drop',lp:'pulse',sfont:'Anton',sbg1:'#140606',sbg2:'#2a0a0a',sacc:'#ff3b3b',sbgm:'alt',sgrad:true,strn:'flash',strs:'boom',trv:8}}
+  };
+  const U='pp_userstyles';
+  const loadU=()=>{try{return JSON.parse(localStorage.getItem(U)||'{}')}catch(e){return{}}};
+  const saveU=o=>{try{localStorage.setItem(U,JSON.stringify(o))}catch(e){}};
+  function setv(id,val){
+    const el=$m(id);if(!el)return;
+    if(el.type==='checkbox')el.checked=!!val;else el.value=val;
+    el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+  function apply(v){Object.keys(v).forEach(k=>setv(k,v[k]));try{if(typeof logAct==='function')logAct('Stil uygulandı')}catch(e){}}
+  function snap(){const o={};KEYS.forEach(k=>{const el=$m(k);if(!el)return;o[k]=el.type==='checkbox'?el.checked:el.value});return o}
+  function fill(){
+    const s=$m('stylesel');if(!s)return;const cur=s.value;
+    const u=loadU();
+    s.innerHTML='<option value="">— Stil seçin —</option><optgroup label="Hazır paketler">'+Object.keys(PACKS).map(k=>'<option value="p:'+k+'">'+PACKS[k].n+'</option>').join('')+'</optgroup>'+(Object.keys(u).length?'<optgroup label="Benim stillerim">'+Object.keys(u).map(k=>'<option value="u:'+k.replace(/"/g,'&quot;')+'">'+k.replace(/</g,'&lt;')+'</option>').join('')+'</optgroup>':'');
+    s.value=cur;
+  }
+  $m('styleapply').onclick=()=>{
+    const v=$m('stylesel').value;if(!v){$m('styleinfo').textContent='Önce bir stil seçin.';return}
+    const [t,k]=[v.slice(0,1),v.slice(2)];
+    const o=t==='p'?PACKS[k].v:loadU()[k];if(!o)return;
+    apply(o);$m('styleinfo').textContent='Uygulandı: '+(t==='p'?PACKS[k].n:k)
+  };
+  $m('stylesave').onclick=()=>{
+    const n=($m('stylename').value||'').trim();if(!n){$m('styleinfo').textContent='Kaydetmek için bir stil adı yazın.';return}
+    const u=loadU();u[n]=snap();saveU(u);fill();$m('stylesel').value='u:'+n;$m('styleinfo').textContent='Kaydedildi: '+n+' (bu tarayıcıda saklanır)';$m('stylename').value=''
+  };
+  $m('styledel').onclick=()=>{
+    const v=$m('stylesel').value;if(v.slice(0,2)!=='u:'){$m('styleinfo').textContent='Silmek için "Benim stillerim"den birini seçin.';return}
+    const u=loadU();delete u[v.slice(2)];saveU(u);fill();$m('styleinfo').textContent='Silindi.'
+  };
+  fill();
+})();
+</script>
+<script id="ar-js">
+(function(){
+  const $m=id=>document.getElementById(id);
+  const RA={'9:16':[1080,1920],'1:1':[1080,1080],'4:5':[1080,1350],'16:9':[1920,1080]};
+  function geo(){
+    const k=$m('oar').value;if(k==='orig'||!RA[k])return null;
+    const [tw,th]=RA[k],r=tw/th,pos=($m('ocx').value||50)/100;
+    let cw,ch;if(W/H>r){ch=H;cw=H*r}else{cw=W;ch=W/r}
+    return{tw,th,cw,ch,sx:(W-cw)*pos,sy:(H-ch)*pos,k};
+  }
+  function crop(g){
+    // sahne ekranlarında ortadan kırp
+    let sx=g.sx,sy=g.sy;
+    try{if(seq&&seq.items[seq.i]&&seq.items[seq.i].k!=='main'){sx=(W-g.cw)/2;sy=(H-g.ch)/2}}catch(e){}
+    return[sx,sy];
+  }
+  window.outStream=function(){
+    const g=geo();if(!g)return null;
+    const oc=document.createElement('canvas');oc.width=g.tw;oc.height=g.th;const o=oc.getContext('2d');
+    let started=false;
+    const loop=()=>{
+      if(recording)started=true;
+      if(started&&!recording)return;
+      const g2=geo();
+      if(g2&&g2.tw===g.tw&&g2.th===g.th){const[sx,sy]=crop(g2);o.drawImage(cv,sx,sy,g2.cw,g2.ch,0,0,g.tw,g.th)}
+      requestAnimationFrame(loop);
+    };
+    loop();
+    return oc.captureStream(30);
+  };
+  window.outStillCanvas=function(){
+    const g=geo();if(!g)return cv;
+    const oc=document.createElement('canvas');oc.width=g.tw;oc.height=g.th;const o=oc.getContext('2d');
+    o.drawImage(cv,g.sx,g.sy,g.cw,g.ch,0,0,g.tw,g.th);return oc;
+  };
+  window.drawCropGuide=function(){
+    try{
+      if(recording||!$m('ogd')||!$m('ogd').checked)return;
+      const g=geo();if(!g)return;
+      ctx.save();ctx.setTransform(1,0,0,1,0,0);
+      const x=g.sx,y=g.sy,w=g.cw,h=g.ch;
+      ctx.fillStyle='rgba(0,0,0,.55)';
+      ctx.fillRect(0,0,W,y);ctx.fillRect(0,y+h,W,H-y-h);ctx.fillRect(0,y,x,h);ctx.fillRect(x+w,y,W-x-w,h);
+      const s=W/1280;ctx.strokeStyle='#ffd23d';ctx.lineWidth=3*s;ctx.setLineDash([14*s,10*s]);ctx.strokeRect(x,y,w,h);ctx.setLineDash([]);
+      ctx.font='800 '+(18*s)+'px system-ui,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';ctx.fillStyle='#ffd23d';ctx.fillText(g.k+' çıktı kadrajı',x+10*s,y+8*s);
+      ctx.restore();
+    }catch(e){}
+  };
+  function info(){
+    const g=geo();$m('oarinfo').textContent=g?('Çıktı: '+g.tw+'×'+g.th+' ('+g.k+'). Sarı çerçevenin içi videoya girer, dışı kesilir. Kadraj konumunu kaydırarak arsayı çerçeveye alın.'):'Çıktı videonun kendi boyutunda (kırpma yok).';
+  }
+  ['oar','ocx'].forEach(id=>$m(id).addEventListener('input',info));info();
 })();
 </script>
 </body>

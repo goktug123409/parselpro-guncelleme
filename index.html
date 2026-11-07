@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071130-->
+<html lang="tr"><!--pp-build:202611071202-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2185,6 +2185,7 @@ function enterItem(it){
 function startSeq(sc){seq={items:sc.items,i:0,t0:performance.now()};enterItem(sc.items[0])}
 function seqTick(now){
   if(!seq)return;
+  if(window.__seqHold!=null){seq.t0=now-window.__seqHold*1000;return}
   const it=seq.items[seq.i];
   if(now-seq.t0>=it.dur*1000){
     seq.i++;seq.t0=now;
@@ -2210,7 +2211,7 @@ function flashAt(p){
   ctx.restore();
 }
 function drawFlashes(now){
-  if(stillMode)return;
+  if(stillMode||window.__seqHold!=null)return;
   const fl=$('strn').value==='flash';
   if(seq){const it=seq.items[seq.i],ts=(now-seq.t0)/1000;
     if(fl){if(seq.i>0)flashAt(ts);if(seq.i<seq.items.length-1)flashAt(ts-it.dur)}
@@ -2228,7 +2229,7 @@ function drawScene(now){
   ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;
   if($('sgrad').checked){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,bgc);g.addColorStop(1,shadeC(bgc,lumOf(bgc)>.55?.82:1.9));ctx.fillStyle=g}else ctx.fillStyle=bgc;
   ctx.fillRect(0,0,W,H);
-  const tm=$('strn').value,tin=clamp(ts/.35),tout=clamp((it.dur-ts)/.4),tr=(tm==='cut'||tm==='flash')?1:Math.min(tin,tout);
+  const tm=$('strn').value,tin=clamp(ts/.35),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/.4),tr=(tm==='cut'||tm==='flash')?1:Math.min(tin,tout);
   ctx.save();ctx.globalAlpha=tr;
   if(tm==='slide'){ctx.translate(0,(1-tin)*H*.07-(1-tout)*H*.07)}
   ctx.textAlign='center';ctx.textBaseline='middle';
@@ -3017,6 +3018,69 @@ body.cvs .cv-top button{white-space:nowrap}
     }catch(e){}
   },150);
   build();
+})();
+</script>
+<style id="scedit-css">
+#sced{position:fixed;z-index:9999;width:292px;max-height:82vh;overflow:auto;background:#151b26;color:#e8eefc;border:1px solid #2c3a52;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.55);padding:12px 14px;font:13px/1.35 system-ui,sans-serif;display:none}
+#sced h4{margin:0 0 8px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+#sced label{display:block;margin:7px 0;font-weight:600;font-size:12px;color:#aebbd6}
+#sced input[type=text],#sced select{background:#0d121b;color:#fff;border:1px solid #2c3a52;border-radius:8px;padding:6px 8px;font:inherit;font-size:13px}
+#sced input[type=range]{width:100%;display:block;margin-top:4px}#sced input[type=text],#sced select{display:block;width:100%;box-sizing:border-box;margin-top:3px}
+#sced .r2{display:flex;gap:8px}#sced .r2 label{flex:1}
+#sced input[type=color]{width:100%;height:30px;border:1px solid #2c3a52;border-radius:8px;background:#0d121b;padding:2px}
+#sced .bt{display:flex;gap:8px;margin-top:10px}
+#sced button{flex:1;border:0;border-radius:9px;padding:8px;font:700 13px system-ui;cursor:pointer;background:#2a3650;color:#fff}
+#sced button.pr{background:linear-gradient(135deg,#7d2ae8,#2bc4ff)}
+#sced .x{flex:none;width:26px;padding:2px;background:transparent;font-size:16px}
+</style>
+<div id="sced" role="dialog" aria-label="Sahne ayarları"></div>
+<script id="scedit-js">
+(function(){
+  const box=document.getElementById('sced');let cur=null;
+  const lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean);
+  const fire=el=>{el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))};
+  function setLine(areaId,idx,val){const a=$(areaId),arr=a.value.split('\n');let c=-1;for(let j=0;j<arr.length;j++){if(arr[j].trim()){c++;if(c===idx){arr[j]=val;break}}}a.value=arr.join('\n');fire(a)}
+  const sel=(id,label)=>{const s=$(id),o=[...s.options].map(x=>'<option value="'+x.value+'"'+(x.value===s.value?' selected':'')+'>'+x.textContent+'</option>').join('');return '<label>'+label+'<select data-b="'+id+'">'+o+'</select></label>'};
+  const col=(id,label)=>'<label>'+label+'<input type="color" data-b="'+id+'" value="'+$(id).value+'"></label>';
+  function close(resume){
+    box.style.display='none';
+    if(window.__seqHold!=null){const h=window.__seqHold;window.__seqHold=null;if(seq&&resume!==false)seq.t0=performance.now()-h*1000}
+    cur=null;
+  }
+  function open(x,y){
+    const it=seq.items[seq.i];cur=it;
+    window.__seqHold=.7;
+    let h='<h4>Sahne ayarları <button class="x" data-act="x" aria-label="Kapat">✕</button></h4>';
+    if(it.k==='end'){
+      h+='<label>Firma / isim<input type="text" data-b="endn" value="'+$('endn').value.replace(/"/g,'&quot;')+'"></label><label>Slogan<input type="text" data-b="ends" value="'+$('ends').value.replace(/"/g,'&quot;')+'"></label><label>Telefon<input type="text" data-b="ph" value="'+$('ph').value.replace(/"/g,'&quot;')+'"></label>';
+    }else{
+      h+='<label>Yazı <small style="font-weight:400">(BAŞLIK | alt yazı)</small><input type="text" data-t="1" value="'+it.txt.replace(/"/g,'&quot;')+'"></label>'+sel('sanim','Yazı animasyonu');
+    }
+    h+=sel('sfont','Yazı tipi')+'<div class="r2">'+col('sbg1','Arka plan 1')+col('sbg2','Arka plan 2')+'</div><div class="r2">'+col('sacc','Vurgu rengi')+'<label>Yazı boyutu <span data-v="ssz">'+$('ssz').value+'</span>%<input type="range" min="50" max="140" data-b="ssz" value="'+$('ssz').value+'"></label></div>'+sel('strn','Geçiş')+'<label>Sahne süresi <span data-v="ssd">'+($('ssd').value/10).toFixed(1)+'</span> sn<input type="range" min="4" max="20" data-b="ssd" value="'+$('ssd').value+'"></label><div class="bt"><button class="pr" data-act="ok">Tamam, devam et</button><button data-act="stop">Sahneyi kapat</button></div>';
+    box.innerHTML=h;box.style.display='block';
+    const bw=box.offsetWidth,bh=box.offsetHeight;
+    box.style.left=Math.max(8,Math.min(innerWidth-bw-8,x+14))+'px';box.style.top=Math.max(8,Math.min(innerHeight-bh-8,y-20))+'px';
+    const first=box.querySelector('input[type=text]');if(first){first.focus();first.select()}
+  }
+  box.addEventListener('input',e=>{
+    const t=e.target;if(!cur)return;
+    if(t.dataset.t){const v=t.value;if(!v.trim())return;const n=lines($('sin').value).length;if(cur.i<n)setLine('sin',cur.i,v);else setLine('sout',cur.i-n,v);cur.txt=v;return}
+    const b=t.dataset.b;if(!b)return;const el=$(b);el.value=t.value;fire(el);
+    const sp=box.querySelector('[data-v="'+b+'"]');if(sp)sp.textContent=b==='ssd'?(t.value/10).toFixed(1):t.value;
+    if(b==='ssd')seq.items.forEach(x=>{if(x.k==='text')x.dur=t.value/10});
+  });
+  box.addEventListener('change',e=>{const t=e.target;if(t.tagName==='SELECT'&&t.dataset.b){const el=$(t.dataset.b);el.value=t.value;fire(el)}});
+  box.addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.act;if(!a)return;if(a==='stop'){close(false);seq=null;try{if(isVid)bg.pause();clipUI()}catch(_){}}else close(true)});
+  box.addEventListener('keydown',e=>{if(e.key==='Escape'){close(true);e.stopPropagation()}if(e.key==='Enter'&&e.target.dataset.t){close(true)}});
+  cv.addEventListener('dblclick',e=>{
+    if(recording||typeof seq==='undefined'||!seq)return;const it=seq.items[seq.i];if(!it||it.k==='main')return;
+    e.stopImmediatePropagation();e.preventDefault();open(e.clientX,e.clientY);
+  },true);
+  let hinted=null;
+  setInterval(()=>{
+    if(!seq){if(box.style.display==='block')close(false);hinted=null;return}
+    if(seq.items[seq.i].k!=='main'&&hinted!==seq&&!recording){hinted=seq;try{toast('Sahne ayarları için ekrana çift tıklayın')}catch(_){}}
+  },300);
 })();
 </script>
 </body>

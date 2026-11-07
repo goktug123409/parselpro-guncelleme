@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072143-->
+<html lang="tr"><!--pp-build:202611072148-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3864,7 +3864,7 @@ window.ppHelp=function(){
     h+='<div class="rw rl" id="ptl-ruler"><div class="nm nd" style="cursor:default;color:#8793aa">Zaman</div><div class="tk" style="width:'+W+'px">'+tk+'</div></div>';
     h+='<div class="rw"><div class="nm nd" style="cursor:default">🎞 Ana video / foto</div><div class="tk" style="width:'+W+'px"><div class="bar lock" style="left:0;width:'+(Tt*pps)+'px;--bc:#5a6a86;cursor:default;opacity:.75"><span class="bl">'+(isVid?'Video':'Fotoğraf')+' • '+Tt.toFixed(1)+' sn</span></div></div></div>';
     // sahne şeridi (kendi ölçeği: giriş + ana + kapanış)
-    if(sc&&sc.items.length>1){
+    if(false&&sc&&sc.items.length>1){
       const ppsS=(avail/sc.total)*zoom;let x=0,sb='';
       sc.items.forEach((it,i)=>{const w=Math.max(8,it.dur*ppsS),lab=it.k==='main'?('Ana'+(it.clip!==undefined?' '+(it.clip+1):'')):it.k==='end'?'Kapanış kartı':String(it.txt||'').slice(0,18);
         const col=it.k==='main'?'#5a6a86':it.k==='end'?'#b79bff':'#ff9f6e',cur=(typeof seq!=='undefined'&&seq&&seq.items&&seq.items[seq.i]===it),ed=it.k!=='main';

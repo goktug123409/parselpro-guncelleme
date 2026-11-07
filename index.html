@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071532-->
+<html lang="tr"><!--pp-build:202611071549-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -171,7 +171,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     </div>
 
     <h2>Efekt nesneleri</h2>
-    <div class="row fxbtns"><button id="fx-bld">+ 3D bina</button><button id="fx-road">+ Yol çizgisi</button><button id="fx-arc">+ Kavisli yazı</button><button id="fx-txt">+ Serbest yazı</button><button id="fx-grid">+ Parsel ızgarası</button><button id="fx-parsel">+ Parsel durumu (Müsait/Satıldı)</button><button id="fx-pin">+ Konum pini</button><button id="fx-area">+ Renkli alan</button><button id="fx-infolist">+ Bilgi listesi</button><button id="fx-loc">+ Konum yazısı</button><button id="fx-ptxt">+ Perspektif yazı</button><button id="fx-spot">+ Vurgu alanı (karart)</button><button id="fx-lines">+ Renkli satırlar</button><button id="fx-billb">+ Eğik başlık + kart</button><button id="fx-arrow">+ Ok ➜</button></div>
+    <div class="row fxbtns"><button id="fx-bld">+ 3D bina</button><button id="fx-road">+ Yol çizgisi</button><button id="fx-arc">+ Kavisli yazı</button><button id="fx-txt">+ Serbest yazı</button><button id="fx-grid">+ Parsel ızgarası</button><button id="fx-dist">+ Mesafe çizgisi</button><button id="fx-parsel">+ Parsel durumu (Müsait/Satıldı)</button><button id="fx-pin">+ Konum pini</button><button id="fx-area">+ Renkli alan</button><button id="fx-infolist">+ Bilgi listesi</button><button id="fx-loc">+ Konum yazısı</button><button id="fx-ptxt">+ Perspektif yazı</button><button id="fx-spot">+ Vurgu alanı (karart)</button><button id="fx-lines">+ Renkli satırlar</button><button id="fx-billb">+ Eğik başlık + kart</button><button id="fx-arrow">+ Ok ➜</button></div>
     <p style="margin:4px 0 8px;font-size:12px;opacity:.75;color:var(--mut)">Önce arsayı çizip “Takip Et” yapın, sonra efekt ekleyin. Videoda beyaz noktaları sürükleyerek şekil verin, yazının/çizginin üzerinden tutup taşıyın.</p>
     <label class="chk"><input type="checkbox" id="fxsnap" checked> Yol çizgisi noktaları birbirine ve arsa köşelerine kitlensin (yaklaştırınca yapışır)</label>
     <label class="chk"><input type="checkbox" id="gson"> Hepsi birlikte çıksın ve aynı anda kaybolsun (efektler, etiketler, arsa çizgisi ve yazı). Dışarıda bırakmak istediğiniz nesnenin “Ortak zamana bağlı” kutusunu kapatın</label>
@@ -228,6 +228,15 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Sürekli yazı efekti<select id="lp"><option value="sway">Sallanma</option><option value="pulse">Nabız</option><option value="float">Yüzme</option><option value="none">Yok</option></select></label>
 
     <h2>Sesli Anlatım</h2>
+    <div style="margin:8px 0;padding:8px;border:1px solid var(--bd);border-radius:10px">
+    <div style="font-weight:700;margin-bottom:4px">✍ Anlatım metnini otomatik yaz</div>
+    <div class="row"><label>Konum<input id="ntx-konum" type="text" placeholder="Gelibolu İlgardere"></label><label>Tür<select id="ntx-tip"><option>arsa</option><option>tarla</option><option>imarlı arsa</option><option>villa arsası</option><option>bağ-bahçe</option></select></label></div>
+    <div class="row"><label>Ada<input id="ntx-ada" type="text" placeholder="336"></label><label>Parsel<input id="ntx-parsel" type="text" placeholder="9"></label><label>Alan (m²)<input id="ntx-m2" type="number" min="0" placeholder="273"></label></div>
+    <label>Özellikler (virgülle)<input id="ntx-oz" type="text" placeholder="denize yakın, yola cepheli, imarlı"></label>
+    <div class="row"><label>Fiyat<input id="ntx-fiyat" type="text" placeholder="2.450.000 TL"></label><label>Telefon<input id="ntx-tel" type="text" placeholder="05xx xxx xx xx"></label></div>
+    <label>Anlatım tarzı<select id="ntx-ton"><option value="std">Standart</option><option value="kisa">Kısa</option><option value="satis">Satış vurgulu</option></select></label>
+    <button id="ntx-go" type="button">✨ Metni yaz</button><div class="s" id="ntx-info"></div>
+    </div>
     <label>Anlatım metni<textarea id="narr" rows="4" placeholder="Örn: Gelibolu İlgardere'de, denize yakın, yola cepheli 273 metrekare arsa."></textarea></label>
     <div class="row"><label>Ses<select id="nvoice"><option value="">Otomatik (Türkçe)</option></select></label><label><span>Hız <span id="nratev">1.0</span>x</span><input id="nrate" type="range" min="70" max="140" value="100"></label></div>
     <div class="row"><button type="button" id="nplay">▶ Sesi dinle</button><button type="button" id="nstop">■ Durdur</button></div>
@@ -1270,7 +1279,7 @@ let fxTrash=[];
 function fxDel(o){const i=fxs.indexOf(o);if(i<0)return;logAct('Efekt silindi: '+FXN[o.type]);fxs.splice(i,1);fxTrash.push({o,i});if(fxTrash.length>50)fxTrash.shift();if(fxSel===o)fxSel=null;renderFx()}
 function fxRestore(){const t=fxTrash.pop();if(!t)return;logAct('Silinen efekt geri yüklendi: '+FXN[t.o.type]);fxs.splice(Math.min(t.i,fxs.length),0,t.o);t.o._k='';fxSel=t.o;renderFx();try{$('st').textContent='Silinen efekt geri yüklendi.'}catch(e){}}
 let fxSz=null,fxSel=null,fxs=[],fxDraw=null,fxLast=0,fxDrag=null,txO=[0,0],txH=null,txDrag=null;
-const FXN={bld:'3D bina',road:'Yol çizgisi',arc:'Kavisli yazı',txt:'Serbest yazı',grid:'Parsel ızgarası',pin:'Konum pini',area:'Renkli alan',parsel:'Parsel durumu',list:'Bilgi listesi',loc:'Konum yazısı',billb:'Eğik başlık + kart',spot:'Vurgu alanı (karart)',lines:'Renkli satırlar',ptxt:'Perspektif yazı',arrow:'Ok'};
+const FXN={bld:'3D bina',road:'Yol çizgisi',arc:'Kavisli yazı',txt:'Serbest yazı',grid:'Parsel ızgarası',pin:'Konum pini',area:'Renkli alan',parsel:'Parsel durumu',dist:'Mesafe çizgisi',list:'Bilgi listesi',loc:'Konum yazısı',billb:'Eğik başlık + kart',spot:'Vurgu alanı (karart)',lines:'Renkli satırlar',ptxt:'Perspektif yazı',arrow:'Ok'};
 function trMap(t){
   if(!fxTr.length&&kfs.some(q=>q.T||q.fxT))fxTr=kfs.filter(q=>q.T||q.fxT).map(q=>({t:q.t,T:q.T||q.fxT,k:q.T?q.k:q.fxK}));
   let r=null,ri=-1;for(let i=0;i<fxTr.length;i++){if(fxTr[i].t<=t+1e-4){r=fxTr[i];ri=i}else break}
@@ -1307,7 +1316,7 @@ function fxStart(type){
   if(!isVid&&!bg){toast('Önce video veya fotoğraf yükleyin.');return}
   fxDraw={type,pts:[]};placing=false;$('fxbar').hidden=false;cv.style.cursor='crosshair';
   try{cv.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}
-  toast({bld:'Bina tabanının köşelerine tıklayın • çift tıklayın veya Bitir • iptal: Esc',road:'Yolun üzerine sırayla tıklayın • çift tıklayın veya Bitir • iptal: Esc',arc:'Yayın 3 noktasına tıklayın: sol uç, tepe, sağ uç',txt:'Yazının sol ve sağ ucuna tıklayın (2 nokta)',grid:'Parselin 4 köşesine sırayla tıklayın: sol-üst, sağ-üst, sağ-alt, sol-alt',pin:'Pinin duracağı noktaya tıklayın',area:'Alanın köşelerine tıklayın • çift tıklayın veya Bitir • iptal: Esc',list:'Listenin sol-üst köşesine tıklayın',loc:'Yazının duracağı noktaya tıklayın',billb:'Başlığın sol ve sağ ucuna tıklayın (eğim bu iki noktadan gelir)',spot:'Vurgulanacak alanın köşelerine tıklayın • çift tıklayın veya Bitir',lines:'Yazıların duracağı noktaya tıklayın (ortası)',arrow:'Okun KUYRUĞUNA, sonra işaret edeceği UCA tıklayın',ptxt:'Zemine ÇİFT TIKLAYIN: yazı yere otomatik yatar (önce ana parseli çizersen zemini ondan bulur). Elle: 4 köşeye tıklayın (sol-üst, sağ-üst, sağ-alt, sol-alt)'}[type],1e9);
+  toast({bld:'Bina tabanının köşelerine tıklayın • çift tıklayın veya Bitir • iptal: Esc',road:'Yolun üzerine sırayla tıklayın • çift tıklayın veya Bitir • iptal: Esc',arc:'Yayın 3 noktasına tıklayın: sol uç, tepe, sağ uç',txt:'Yazının sol ve sağ ucuna tıklayın (2 nokta)',grid:'Parselin 4 köşesine sırayla tıklayın: sol-üst, sağ-üst, sağ-alt, sol-alt',pin:'Pinin duracağı noktaya tıklayın',area:'Alanın köşelerine tıklayın • çift tıklayın veya Bitir • iptal: Esc',list:'Listenin sol-üst köşesine tıklayın',loc:'Yazının duracağı noktaya tıklayın',billb:'Başlığın sol ve sağ ucuna tıklayın (eğim bu iki noktadan gelir)',spot:'Vurgulanacak alanın köşelerine tıklayın • çift tıklayın veya Bitir',lines:'Yazıların duracağı noktaya tıklayın (ortası)',dist:'Mesafenin BAŞLANGIÇ noktasına, sonra BİTİŞ noktasına tıklayın',arrow:'Okun KUYRUĞUNA, sonra işaret edeceği UCA tıklayın',ptxt:'Zemine ÇİFT TIKLAYIN: yazı yere otomatik yatar (önce ana parseli çizersen zemini ondan bulur). Elle: 4 köşeye tıklayın (sol-üst, sağ-üst, sağ-alt, sol-alt)'}[type],1e9);
 }
 function ptxtNorm(p){
   const c=[0,1].map(i=>p.reduce((a,q)=>a+q[i],0)/4);
@@ -1357,7 +1366,7 @@ function ptxtGround(c,vert){
   function sn0(Z){const pit=35*Math.PI/180;return Math.sin(pit)+Z*Math.cos(pit)}
 }
 function fxFinish(){
-  if(!fxDraw)return;const d=fxDraw,need={bld:3,road:2,txt:2,arc:3,grid:4,pin:1,area:3,parsel:3,list:1,loc:1,billb:2,spot:3,lines:1,ptxt:4,arrow:2}[d.type];
+  if(!fxDraw)return;const d=fxDraw,need={bld:3,road:2,txt:2,arc:3,grid:4,pin:1,area:3,parsel:3,dist:2,list:1,loc:1,billb:2,spot:3,lines:1,ptxt:4,arrow:2}[d.type];
   if(d.pts.length<need){toast('En az '+need+' nokta gerekli.');return}
   if(d.type==='ptxt'&&d.pts.length===4)d.pts=ptxtNorm(d.pts);
   const o={type:d.type,pts:d.pts,t0:performance.now()};
@@ -1374,6 +1383,7 @@ function fxFinish(){
   if(d.type==='ptxt')Object.assign(o,{col:'#ffffff',col2:'#bfe9ff',txt:'DİLOVASI\n700 m²',fs:100,font:'Montserrat'});
   if(d.type==='spot')Object.assign(o,{col:'#ffffff',col2:'#9fd8ff',dim:60});
   if(d.type==='lines')Object.assign(o,{col:'#ffd21a',col2:'#2bf0e0',txt:'KÖPRÜ - BOĞAZ MANZARALI\n**ÇİFT CEPHE\n3+1 DUBLEKS VİLLA',fs:100,font:'Poppins',tilt:-4});
+  if(d.type==='dist')Object.assign(o,{col:'#38d9ff',col2:'#ffffff',txt:'',fs:100,font:'',mode:'auto',man:0});
   if(d.type==='arrow')Object.assign(o,{col:'#ffd21a',col2:'#ffffff',txt:'',fs:100,font:''});
   if(d.type==='txt')Object.assign(o,{col:'#ffffff',col2:'#2bc4ff',txt:'Yeni yazı',fs:90,ow:6,line:false});
   fxs.push(o);fxSel=o;logAct('Efekt eklendi: '+FXN[o.type]);fxDraw=null;$('fxbar').hidden=true;toastUntil=0;$('st').textContent='';renderFx();
@@ -1393,7 +1403,7 @@ function fxClick(x,y,now){
   if(d.type==='ptxt'&&d.pts.length===4)fxFinish();
   if(d.type==='pin'||d.type==='list'||d.type==='loc'||d.type==='lines')fxFinish();
   if(d.type==='billb'&&d.pts.length===2)fxFinish();
-  if(d.type==='arrow'&&d.pts.length===2)fxFinish();
+  if((d.type==='arrow'||d.type==='dist')&&d.pts.length===2)fxFinish();
 }
 function renderFx(){
   const box=$('fx-list');box.textContent='';
@@ -1425,6 +1435,12 @@ function renderFx(){
     const l1=document.createElement('span');l1.style.fontSize='12px';l1.textContent=o.type==='billb'?'Kart':o.type==='ptxt'?'Yazı':o.type==='spot'?'Çizgi':o.type==='lines'?'Vurgu 1':(o.type==='list'||o.type==='loc')?'Yazı':o.type==='bld'?'Bina':o.type==='road'?'Neon':o.type==='txt'?'Yazı':o.type==='grid'?'Parsel':o.type==='pin'?'Pin':o.type==='area'?'Alan':o.type==='arrow'?'Ok':'Renk 1';
     const l2=document.createElement('span');l2.style.fontSize='12px';l2.textContent=o.type==='billb'?'Kart yazısı':o.type==='ptxt'?'Parlama':o.type==='spot'?'Parlama':o.type==='lines'?'Vurgu 2':o.type==='list'?'Vurgu':o.type==='loc'?'İkinci':o.type==='bld'?'Zemin':o.type==='road'?'Dolgu':o.type==='txt'?'Parlama':o.type==='grid'?'Yazı':'Renk 2';
     row.append(l1,mk('col',''),l2,mk('col2',''));
+    if(o.type==='dist'){const w=document.createElement('div');w.style.cssText='flex:1 1 100%;display:flex;gap:6px;flex-wrap:wrap;align-items:center';
+      const se=document.createElement('select');se.style.flex='1';se.innerHTML='<option value="auto">Mesafe: otomatik (arsa ölçüsünden)</option><option value="man">Mesafe: elle gireceğim</option>';se.value=o.mode||'auto';
+      const nm=document.createElement('input');nm.type='number';nm.min=0;nm.step='any';nm.placeholder='Metre (elle / yedek)';nm.value=o.man||'';nm.style.flex='1';
+      se.onchange=()=>{o.mode=se.value};nm.oninput=()=>{o.man=+nm.value||0};
+      const hp=document.createElement('div');hp.className='s';hp.style.flex='1 1 100%';hp.textContent='Otomatik için "Ölçüm" bölümünde arsa alanı (m²) veya bir kenar uzunluğu girili olmalı. Uzak noktalarda (km) elle girmek daha doğru olur. Yazı kutusu: "Denize" gibi ön ek.';
+      w.append(se,nm,hp);row.appendChild(w)}
     if(o.type==='parsel'){const ST={'Müsait':'#22d65a','Satıldı':'#ff3b3b','Rezerve':'#ffb020'};
       const w=document.createElement('div');w.style.cssText='flex:1 1 100%;display:flex;gap:6px;flex-wrap:wrap;align-items:center';
       const se=document.createElement('select');se.style.flex='1';se.innerHTML=Object.keys(ST).map(k=>`<option>${k}</option>`).join('');se.value=o.st||'Müsait';
@@ -1778,6 +1794,19 @@ function fxArrow(o,P,fp,now,s,sc){
   if(o.txt&&fp>.6){const fv=o.font||$('ff').value;fxPill(o.txt,sx-dx*30*z,sy-dy*30*z-12*z,22*z,px=>fontV(fv,px),'#fff',o.col,1)}
   ctx.restore();
 }
+function fxDist(o,P,fp,now,s,sc){
+  if(P.length<2)return;
+  const z=s*sc*((o.fs||100)/100),[A,B]=P,k=easeOut(clamp(fp*1.3)),E=[A[0]+(B[0]-A[0])*k,A[1]+(B[1]-A[1])*k];
+  let m=null;if(o.mode!=='man'&&window.msrDist)m=window.msrDist(A,B);if(!(m>0)&&o.man>0)m=+o.man;
+  const val=m>0?(m>=1000?(m/1000).toFixed(1).replace('.',',')+' km':Math.round(m)+' m'):'? m';
+  ctx.save();ctx.globalAlpha*=clamp(fp*3);ctx.lineCap='round';
+  ctx.setLineDash([14*z,9*z]);ctx.shadowColor=o.col;ctx.shadowBlur=22*z;ctx.strokeStyle=o.col;ctx.lineWidth=Math.max(3,5*z);
+  ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.lineTo(E[0],E[1]);ctx.stroke();ctx.setLineDash([]);ctx.shadowBlur=0;
+  ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(1,1.6*z);ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.lineTo(E[0],E[1]);ctx.stroke();
+  [A,k>.98?B:null].forEach(q=>{if(!q)return;ctx.fillStyle='#fff';ctx.shadowColor=o.col;ctx.shadowBlur=14*z;ctx.beginPath();ctx.arc(q[0],q[1],8*z,0,7);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle=o.col;ctx.beginPath();ctx.arc(q[0],q[1],4.5*z,0,7);ctx.fill()});
+  if(fp>.5){const fv=o.font||$('ff').value;fxPill((o.txt?o.txt+'  ':'')+val,(A[0]+B[0])/2,(A[1]+B[1])/2-26*z,22*z,px=>fontV(fv,px),'#fff','#111',1)}
+  ctx.restore();
+}
 function fxArea(o,P,fp,s,sc){
   if(P.length<3)return;
   const a=clamp(fp*1.4);ctx.save();ctx.globalAlpha=a;ctx.lineJoin='round';
@@ -1870,6 +1899,7 @@ function fxHitAt(X0,Y0){
     const o=ord[k],P=o._P;if(!P)continue;let hit=false;const[x,y]=fxInv(o,X0,Y0);
     if(o.type==='road'){for(let i=1;i<P.length;i++)if(fxSegD(x,y,P[i-1],P[i])<Math.max(20*s,o.w*s*o._sc/2))hit=true}
     else if(o.type==='list'||o.type==='loc'||o.type==='lines'){const b=o._bb;hit=!!b&&x>=b[0]&&x<=b[0]+b[2]&&y>=b[1]&&y<=b[1]+b[3]}
+    else if(o.type==='dist')hit=P.length>1&&fxSegD(x,y,P[0],P[1])<30*s*o._sc*(o.fs/100);
     else if(o.type==='arrow')hit=P.length>1&&fxSegD(x,y,P[0],P[1])<36*s*o._sc*(o.fs/100);
     else if(o.type==='billb')hit=P.length>1&&fxSegD(x,y,P[0],P[1])<60*s*o._sc*(o.fs/100);
     else if(o.type==='grid'||o.type==='area'||o.type==='parsel'||o.type==='spot'||o.type==='ptxt')hit=fxInPoly(P,x,y);
@@ -1917,13 +1947,14 @@ function drawFx(now,s,p){
     else if(o.type==='grid')fxGrid(o,P,fp,s,sc);
     else if(o.type==='pin')fxPin(o,P,fp,now,s,sc);
     else if(o.type==='arrow')fxArrow(o,P,fp,now,s,sc);
+    else if(o.type==='dist')fxDist(o,P,fp,now,s,sc);
     else if(o.type==='area'||o.type==='parsel')fxArea(o,P,fp,s,sc);
     else fxArc(o,P,fp,now,s,sc);
     ctx.restore();
   });
   fxPreview(m,s);fxHandles(s);
 }
-$('fx-ptxt').onclick=()=>fxStart('ptxt');$('fx-spot').onclick=()=>fxStart('spot');$('fx-lines').onclick=()=>fxStart('lines');$('fx-bld').onclick=()=>fxStart('bld');$('fx-road').onclick=()=>fxStart('road');$('fx-arc').onclick=()=>fxStart('arc');$('fx-txt').onclick=()=>fxStart('txt');$('fx-grid').onclick=()=>fxStart('grid');$('fx-parsel').onclick=()=>fxStart('parsel');$('fx-pin').onclick=()=>fxStart('pin');$('fx-area').onclick=()=>fxStart('area');$('fx-infolist').onclick=()=>fxStart('list');$('fx-loc').onclick=()=>fxStart('loc');$('fx-billb').onclick=()=>fxStart('billb');$('fx-arrow').onclick=()=>fxStart('arrow');
+$('fx-ptxt').onclick=()=>fxStart('ptxt');$('fx-spot').onclick=()=>fxStart('spot');$('fx-lines').onclick=()=>fxStart('lines');$('fx-bld').onclick=()=>fxStart('bld');$('fx-road').onclick=()=>fxStart('road');$('fx-arc').onclick=()=>fxStart('arc');$('fx-txt').onclick=()=>fxStart('txt');$('fx-grid').onclick=()=>fxStart('grid');$('fx-parsel').onclick=()=>fxStart('parsel');$('fx-dist').onclick=()=>fxStart('dist');$('fx-pin').onclick=()=>fxStart('pin');$('fx-area').onclick=()=>fxStart('area');$('fx-infolist').onclick=()=>fxStart('list');$('fx-loc').onclick=()=>fxStart('loc');$('fx-billb').onclick=()=>fxStart('billb');$('fx-arrow').onclick=()=>fxStart('arrow');
 $('fxdone').onclick=fxFinish;$('fxcancel').onclick=fxCancel;$('fxdone2').onclick=fxFinish;$('fxcancel2').onclick=fxCancel;
 document.addEventListener('keydown',e=>{if(!fxDraw&&e.ctrlKey&&e.shiftKey&&(e.key==='Z'||e.key==='z')){fxRestore();e.preventDefault();return}if(!fxDraw&&fxSel&&(e.key==='Delete'||e.key==='Backspace')&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){fxDel(fxSel);e.preventDefault();return}if(!fxDraw)return;if(e.key==='Escape')fxCancel();else if(e.key==='Enter')fxFinish()});
 
@@ -2656,7 +2687,7 @@ lgInfo();
   const css=document.createElement('style');css.textContent='#ctxm{position:fixed;z-index:1000;min-width:250px;max-width:300px;padding:6px;border-radius:14px;background:var(--panel,#fff);color:var(--tx,#0f1724);border:1px solid var(--bd,#d5dbe6);box-shadow:0 20px 50px -12px rgba(0,0,0,.55);font:13.5px system-ui,sans-serif;display:none}#ctxm button{display:flex;width:100%;align-items:center;gap:10px;text-align:left;border:0;background:transparent;color:inherit;border-radius:9px;padding:8px 10px;cursor:pointer;font:inherit}#ctxm button:hover:not(:disabled){background:rgba(120,140,170,.2)}#ctxm button:disabled{opacity:.4;cursor:default}#ctxm .t{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut,#5d6879);padding:6px 10px 4px}#ctxm hr{border:0;border-top:1px solid var(--bd,#d5dbe6);margin:5px 2px}#ctxm .g{display:grid;grid-template-columns:1fr 1fr;gap:2px}#ctxm .g button{padding:6px 8px;font-size:12.5px}#ctxm .dg{color:#e5353b}#ctxm{max-height:min(82vh,680px);overflow:auto}#ctxm .cx{padding:2px 6px 6px;display:flex;flex-direction:column;gap:6px}#ctxm .cr{display:flex;flex-direction:column;gap:3px;font-size:12px}#ctxm .cr.ck{flex-direction:row;align-items:center;gap:8px}#ctxm .cr span{color:var(--mut,#5d6879)}#ctxm .cr select,#ctxm .cr input[type=text],#ctxm .cr input[type=number],#ctxm .cr textarea{width:100%;font:inherit;padding:5px 6px;border-radius:7px;border:1px solid var(--bd,#d5dbe6);background:transparent;color:inherit}#ctxm .cr input[type=range]{width:100%}#ctxm .cr input[type=color]{width:44px;height:26px;padding:0;border:0;background:none}#ctxm .cr.ck input{width:auto}#ctxm .rr{display:flex;gap:6px;align-items:center}#ctxm .rr input[type=range]{flex:1;min-width:0}#ctxm .rr .nb{width:62px!important;flex:none}#ctxm .cr:has(input[type=color]){flex-direction:row;align-items:center;justify-content:space-between}';document.head.appendChild(css);
   const m=document.createElement('div');m.id='ctxm';document.body.appendChild(m);
   const close=()=>{m.style.display='none'};
-  const FXL=[['road','🛣 Yol çizgisi'],['bld','🏢 3D bina'],['pin','📍 Konum pini'],['arc','〰 Kavisli yazı'],['txt','🔤 Serbest yazı'],['grid','▦ Parsel ızgarası'],['area','🟦 Renkli alan'],['parsel','🏷 Parsel durumu'],['infolist','📋 Bilgi listesi'],['loc','📌 Konum yazısı'],['ptxt','📐 Perspektif yazı'],['spot','🔦 Vurgu alanı'],['lines','🌈 Renkli satırlar'],['billb','🪧 Başlık + kart'],['arrow','➜ Ok']];
+  const FXL=[['road','🛣 Yol çizgisi'],['bld','🏢 3D bina'],['pin','📍 Konum pini'],['arc','〰 Kavisli yazı'],['txt','🔤 Serbest yazı'],['grid','▦ Parsel ızgarası'],['area','🟦 Renkli alan'],['parsel','🏷 Parsel durumu'],['dist','📏 Mesafe çizgisi'],['infolist','📋 Bilgi listesi'],['loc','📌 Konum yazısı'],['ptxt','📐 Perspektif yazı'],['spot','🔦 Vurgu alanı'],['lines','🌈 Renkli satırlar'],['billb','🪧 Başlık + kart'],['arrow','➜ Ok']];
   const clone=o=>JSON.parse(JSON.stringify(o,(k,v)=>(k[0]==='_'||(v&&v.nodeType))?undefined:v));
   function build(items,x,y){
     m.innerHTML='';
@@ -3003,7 +3034,7 @@ body.cvs .cv-top button{white-space:nowrap}
   const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
   const hexOk=v=>typeof v==='string'&&/^#[0-9a-fA-F]{6}$/.test(v);
   const NAME=(o)=>{try{return FXN[o.type]||o.type}catch(e){return o.type}};
-  const TXT=['ptxt','txt','billb','list','loc','lines','arc','area','parsel','grid','pin'];
+  const TXT=['ptxt','txt','billb','list','loc','lines','arc','area','parsel','dist','grid','pin'];
   let sig='';
   function flash(o){
     const i=fxs.indexOf(o);if(i<0)return;const box=$('fx-list');if(!box)return;
@@ -3310,6 +3341,7 @@ body.cvs .cv-top button{white-space:nowrap}
 (function(){
   const $m=id=>document.getElementById(id);
   let cache=null,ckey='',edge=0,picking=false,man=[],built=-1;
+  window.msrEdge=()=>edge;
   const fmt=(v,d)=>v.toFixed(d).replace('.',',');
   function calc(P){
     const n=P.length,pz=window.parcelPose&&n>=4?window.parcelPose(P):null;
@@ -3480,6 +3512,52 @@ body.cvs .cv-top button{white-space:nowrap}
     const g=geo();$m('oarinfo').textContent=g?('Çıktı: '+g.tw+'×'+g.th+' ('+g.k+'). Sarı çerçevenin içi videoya girer, dışı kesilir. Kadraj konumunu kaydırarak arsayı çerçeveye alın.'):'Çıktı videonun kendi boyutunda (kırpma yok).';
   }
   ['oar','ocx'].forEach(id=>$m(id).addEventListener('input',info));info();
+})();
+</script>
+<script id="dist-js">
+(function(){
+  window.msrDist=function(A,B){
+    try{
+      if(!closed||!pts||pts.length<3||!window.parcelPose)return null;
+      const P=pts,n=P.length,pz=n>=4?window.parcelPose(P):null;
+      const tr=q=>{if(pz){const c=pz.iv(q[0],q[1]);if(c)return c}return[q[0],q[1]]};
+      const C=P.map(tr),L=C.map((c,i)=>{const d=C[(i+1)%n];return Math.hypot(d[0]-c[0],d[1]-c[1])});
+      let k=null;const g=id=>document.getElementById(id),ref=+(g('msrlen')&&g('msrlen').value),am=+(g('msrarea')&&g('msrarea').value);
+      let ed=0;try{ed=window.msrEdge?window.msrEdge():0}catch(e){}
+      if(ref>0&&L[Math.min(ed,n-1)]>0)k=ref/L[Math.min(ed,n-1)];
+      else if(am>0){let ar=0;C.forEach((c,i)=>{const d=C[(i+1)%n];ar+=c[0]*d[1]-d[0]*c[1]});ar=Math.abs(ar)/2;if(ar>0)k=Math.sqrt(am/ar)}
+      if(!k)return null;
+      const a=tr(A),b=tr(B);return Math.hypot(a[0]-b[0],a[1]-b[1])*k;
+    }catch(e){return null}
+  };
+})();
+</script>
+<script id="ntx-js">
+(function(){
+  const g=id=>document.getElementById(id);
+  const KEYS=['ntx-konum','ntx-ada','ntx-parsel','ntx-m2','ntx-tip','ntx-oz','ntx-fiyat','ntx-tel','ntx-ton'];
+  try{const sv=JSON.parse(localStorage.getItem('pp_ntx')||'{}');KEYS.forEach(k=>{if(g(k)&&sv[k]!==undefined)g(k).value=sv[k]})}catch(e){}
+  const cap=s=>s?s.charAt(0).toLocaleUpperCase('tr-TR')+s.slice(1):s;
+  const join=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' ve '+a[a.length-1];
+  function gen(){
+    const v=k=>(g(k).value||'').trim();
+    try{const o={};KEYS.forEach(k=>o[k]=g(k).value);localStorage.setItem('pp_ntx',JSON.stringify(o))}catch(e){}
+    let m2=v('ntx-m2');if(!m2&&g('msrarea')&&+g('msrarea').value>0)m2=g('msrarea').value;
+    const tip=v('ntx-tip')||'arsa',kon=v('ntx-konum'),ton=v('ntx-ton')||'std';
+    const ref=[v('ntx-ada')?v('ntx-ada')+' ada':'',v('ntx-parsel')?v('ntx-parsel')+' parsel':''].filter(Boolean).join(' ');
+    const oz=v('ntx-oz').split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);
+    const fy=v('ntx-fiyat'),tel=v('ntx-tel');
+    const S=[];
+    let s1=(kon?kon+' konumunda':'')+(kon&&(ref||m2)?', ':'')+(ref?ref+', ':'')+(m2?m2+' metrekare ':'')+(m2||ref||kon?'satılık '+tip:cap('satılık '+tip));
+    S.push(cap(s1.replace(/,\s*$/,''))+'.');
+    if(ton!=='kisa'&&oz.length)S.push(cap(join(oz))+'.');
+    if(ton==='satis')S.push('Yatırımlık ve kaçırılmayacak bir fırsat.');
+    if(fy)S.push((ton==='kisa'?'Fiyat: ':'Fiyatı ')+fy+(ton==='kisa'?'.':'.'));
+    if(tel)S.push(ton==='kisa'?'Bilgi için '+tel+'.':'Detaylı bilgi için '+tel+' numaralı telefonu arayın.');
+    g('narr').value=S.join(' ');g('narr').dispatchEvent(new Event('input',{bubbles:true}));
+    g('ntx-info').textContent='Metin yazıldı. Aşağıdaki kutuda istediğiniz gibi düzeltebilirsiniz.';
+  }
+  g('ntx-go').onclick=gen;
 })();
 </script>
 </body>

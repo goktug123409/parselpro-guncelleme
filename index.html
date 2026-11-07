@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072152-->
+<html lang="tr"><!--pp-build:202611072154-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -206,7 +206,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Geçiş süresi <span id="trvv">0.8</span> sn<input id="trv" type="range" min="2" max="25" value="8" oninput="$('trvv').textContent=(this.value/10).toFixed(1)"></label>
     <label style="display:none">Geçiş sesi<select id="strs"><option value="mix">Karışık (her seferinde farklı)</option><option value="auto">Geçişe uygun (otomatik)</option><option value="whoosh">Whoosh (hava sesi)</option><option value="boom">Whoosh + vuruş</option><option value="flash">Parlama sesi</option><option value="tick">Kısa tık</option><option value="none">Ses yok</option></select></label>
     <div class="row" style="display:none"><label>Geçiş sesi seviyesi <span id="strvv">70</span>%<input id="strv" type="range" min="0" max="100" value="70" oninput="$('strvv').textContent=this.value"></label><div style="display:flex;flex-direction:column;gap:6px"><button type="button" id="strtest">▶ Dinle</button><button type="button" id="strmute" aria-pressed="false">🔊 Ses açık</button></div></div>
-    <div class="row"><button type="button" id="flnow">⚡ Parlama geçişi ekle (şimdiki an)</button><button type="button" id="flclr">Temizle</button></div><div class="s" id="flinfo" style="margin:0 0 8px;font-size:12px"></div>
+    <div class="row" style="display:none"><button type="button" id="flnow">⚡ Parlama geçişi ekle (şimdiki an)</button><button type="button" id="flclr">Temizle</button></div><div class="s" id="flinfo" style="display:none"></div>
     <label>Yazı tipi<select id="sfont"></select></label>
     <div class="row"><label>Arka plan 1<input id="sbg1" type="color" value="#ffffff"></label><label>Arka plan 2<input id="sbg2" type="color" value="#000000"></label></div>
     <label>Arka plan düzeni<select id="sbgm"><option value="alt">Sırayla zıt renkli (1, 2, 1, 2…)</option><option value="one">Hep arka plan 1</option></select></label>

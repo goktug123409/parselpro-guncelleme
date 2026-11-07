@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072129-->
+<html lang="tr"><!--pp-build:202611072133-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3996,14 +3996,23 @@ window.ppHelp=function(){
 </script>
 <script id="pause-js">
 document.addEventListener('keydown',function(e){
-  if(e.key!=='Pause'&&e.code!=='Pause')return;
+  const sp=(e.key===' '||e.code==='Space'),pa=(e.key==='Pause'||e.code==='Pause');
+  if(!sp&&!pa)return;
+  if(e.ctrlKey||e.altKey||e.metaKey)return;
+  const a=document.activeElement,t=e.target,tag=(t&&t.tagName||'').toUpperCase();
+  if(sp){
+    if(tag==='TEXTAREA'||tag==='SELECT'||(tag==='INPUT'&&!['range','checkbox','radio','button','color','file'].includes((t.type||'').toLowerCase()))||(t&&t.isContentEditable))return;
+    if(document.getElementById('pp-help')||document.getElementById('ptlm'))return;
+  }
   e.preventDefault();
   try{
+    if(a&&a!==document.body&&(a.tagName==='BUTTON'||a.tagName==='INPUT'||a.tagName==='SELECT'))a.blur();
     if(!(typeof bg!=='undefined'&&bg))return;
     const b=document.getElementById('ptl-pl2');
     if(b)b.click();else if(isVid){if(bg.paused)bg.play();else bg.pause()}
   }catch(x){}
-});
+},true);
+document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){const t=e.target,tag=(t&&t.tagName||'').toUpperCase();if(tag==='BUTTON')e.preventDefault()}},true);
 </script>
 </body>
 </html>

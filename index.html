@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072234-->
+<html lang="tr"><!--pp-build:202611072244-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2269,7 +2269,7 @@ function buildSeq(){
   if(!intro.length&&!outro.length&&!end&&clips.length<2)return null;
   const items=[];let k=0;
   intro.forEach(t=>items.push({k:'text',txt:t,dur:sd,i:k++}));
-  if(clips.length>1)clips.forEach((c,ci)=>items.push({k:'main',clip:ci,dur:c.vid?(c.dur||(c.el&&c.el.duration)||5):clipPDur(c)}));else items.push({k:'main',dur:(isVid&&bg&&bg.duration)?bg.duration:(+$('dur').value+2)});
+  if(clips.length>1)clips.forEach((c,ci)=>items.push({k:'main',clip:ci,dur:c.vid?(c.dur||(c.el&&c.el.duration)||5):clipPDur(c)}));else items.push({k:'main',dur:(isVid&&bg&&bg.duration)?((window.__trimEnd&&window.__trimEnd())?Math.min(bg.duration,window.__trimEnd()+(kfs.length?kfs[0].t:0)):bg.duration):(+$('dur').value+2)});
   outro.forEach(t=>items.push({k:'text',txt:t,dur:sd,i:k++}));
   if(end)items.push({k:'end',dur:+$('esd').value||3.5});
   return{items,total:items.reduce((a,x)=>a+x.dur,0)};
@@ -2419,7 +2419,7 @@ $('rec').onclick=()=>{
   const hasA=!!(window.narrAudio&&((window.narrHas&&window.narrHas())||(window.sfxOn&&window.sfxOn())||(window.musicOn&&window.musicOn())));
   const types=hasA?['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm']:['video/mp4;codecs=avc1.640028','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'];
   const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
-  const sq=buildSeq(),dur=sq?sq.total*1000:((isVid&&bg.duration)?bg.duration*1000:loopMs());
+  const sq=buildSeq(),dur=sq?sq.total*1000:((isVid&&bg.duration)?(window.__trimEnd&&window.__trimEnd()?Math.min(bg.duration,window.__trimEnd()+(kfs.length?kfs[0].t:0)):bg.duration)*1000:loopMs());
   const vstream=(window.outStream&&window.outStream())||cv.captureStream(30),aud=hasA?window.narrAudio(vstream):null;
   const mr=new MediaRecorder(vstream,mime?{mimeType:mime,videoBitsPerSecond:12e6}:{});
   const ch=[];mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
@@ -3585,7 +3585,13 @@ body.cvs .cv-top button{white-space:nowrap}
     'b:vil':{n:'Villa arsası (lüks)',sin:'VİLLA ARSASI\nDENİZE YAKIN | Hayalinizdeki yer',sout:'HAYALİNİZİ\nBUGÜN BAŞLATIN',pk:'p:lux'},
     'b:tar':{n:'Tarla / bağ-bahçe',sin:'TARLA\nDOĞAYLA İÇ İÇE | Huzurlu yatırım',sout:'DOĞANIN\nİÇİNDE YATIRIM',pk:'p:green'},
     'b:acl':{n:'Acil satılık',sin:'ACİL SATILIK\nFIRSAT FİYATI | Kaçırmayın',sout:'ŞİMDİ ARAYIN\nFIRSAT SINIRLI',pk:'p:red'},
-    'b:prj':{n:'Proje parselleri (müsait / satıldı)',sin:'PROJE PARSELLERİ\nMÜSAİT PARSELLER | Yerinizi ayırtın',sout:'PARSELİNİZİ\nŞİMDİ SEÇİN',pk:'p:neon'}
+    'b:prj':{n:'Proje parselleri (müsait / satıldı)',sin:'PROJE PARSELLERİ\nMÜSAİT PARSELLER | Yerinizi ayırtın',sout:'PARSELİNİZİ\nŞİMDİ SEÇİN',pk:'p:neon'},
+    'b:den':{n:'Denize sıfır / deniz manzaralı',sin:'DENİZE SIFIR\nMANZARALI ARSA | Eşsiz konum',sout:'MAVİYE\nKOMŞU OLUN',pk:'p:neon'},
+    'b:imr':{n:'İmarlı arsa (güven vurgulu)',sin:'İMARLI ARSA\nTAPULU | Krediye ve takasa uygun',sout:'GÜVENLİ YATIRIM\nŞİMDİ ARAYIN',pk:'p:lux'},
+    'b:ucz':{n:'Uygun fiyatlı fırsat',sin:'FIRSAT ARSA\nUYGUN FİYAT | Kaçırmayın',sout:'FIRSAT\nSINIRLI',pk:'p:red'},
+    'b:ses':{n:'Sade ve şık (kısa)',sin:'SATILIK ARSA',sout:'DETAYLAR İÇİN\nBİZE ULAŞIN',pk:'p:lux'},
+    'b:koy':{n:'Köy evi / bahçeli arsa',sin:'BAHÇELİ ARSA\nDOĞAYLA İÇ İÇE | Sakin yaşam',sout:'HUZURU\nBULUN',pk:'p:green'},
+    'b:sos':{n:'Sosyal medya (kısa ve çarpıcı)',sin:'GÖRDÜĞÜNÜZE\nİNANAMAYACAKSINIZ',sout:'DM İLE ULAŞIN\nYERİNİZİ AYIRTIN',pk:'p:neon'}
   };
   const K='pp_usertpls';
   const lu=()=>{try{return JSON.parse(localStorage.getItem(K)||'{}')}catch(e){return{}}};
@@ -4208,6 +4214,41 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
     return true;
   }
   const iv=setInterval(()=>{if(init())clearInterval(iv)},300);
+})();
+</script>
+<script id="grade-js">
+(function(){
+  const g=id=>document.getElementById(id);
+  function ui(){
+    const grp=document.querySelector('.cv-grp[data-g="media"]');if(!grp||g('gr-b'))return !!g('gr-b');
+    const d=document.createElement('div');d.id='gr-box';d.style.cssText='margin-top:14px;padding-top:12px;border-top:1px solid var(--bd,rgba(255,255,255,.1))';
+    const sl=(id,t,min,max)=>'<label style="display:block;margin:6px 0"><span style="display:flex;justify-content:space-between"><span>'+t+'</span><b id="'+id+'v">0</b></span><input id="'+id+'" type="range" min="'+min+'" max="'+max+'" value="0" style="width:100%"></label>';
+    d.innerHTML='<h2 style="margin:0 0 4px;font-size:15px;text-align:left">🎨 Renk düzeltme</h2><div class="s" style="margin-bottom:6px">Videonun veya fotoğrafın renklerini ayarlar. Önizlemede ve MP4 çıktısında görünür.</div>'+
+      sl('gr-b','Parlaklık',-50,50)+sl('gr-c','Kontrast',-50,50)+sl('gr-s','Canlılık (doygunluk)',-100,100)+sl('gr-w','Sıcaklık (soğuk ← → sıcak)',-50,50)+
+      '<div class="row" style="flex-wrap:wrap"><button type="button" id="gr-auto" title="Soluk drone görüntüsünü canlandırır">✨ Canlandır</button><button type="button" id="gr-reset">Sıfırla</button></div>'+
+      '<h2 style="margin:16px 0 4px;font-size:15px;text-align:left">✂ Videoyu erken bitir</h2><div class="s" style="margin-bottom:6px">Videonun sonunu kırpar. 0 = kırpma yok. Önizleme ve MP4 bu saniyede biter.</div>'+
+      '<div class="row"><label>Bitiş saniyesi<input id="trim-end" type="number" min="0" step="0.1" value="0"></label><button type="button" id="trim-now">⏱ Bitiş = şimdiki an</button></div>';
+    grp.appendChild(d);
+    ['b','c','s','w'].forEach(k=>g('gr-'+k).addEventListener('input',()=>{g('gr-'+k+'v').textContent=g('gr-'+k).value}));
+    g('gr-reset').onclick=()=>{['b','c','s','w'].forEach(k=>{g('gr-'+k).value=0;g('gr-'+k+'v').textContent=0})};
+    g('gr-auto').onclick=()=>{g('gr-b').value=8;g('gr-c').value=14;g('gr-s').value=22;g('gr-w').value=6;['b','c','s','w'].forEach(k=>g('gr-'+k+'v').textContent=g('gr-'+k).value)};
+    g('trim-now').onclick=()=>{try{const t=isVid?bg.currentTime-(kfs.length?kfs[0].t:0):0;g('trim-end').value=Math.max(0,Math.round(t*10)/10)}catch(e){}};
+    return true;
+  }
+  const iv=setInterval(()=>{if(ui())clearInterval(iv)},300);
+  const val=k=>{const e=g('gr-'+k);return e?+e.value||0:0};
+  window.__trimEnd=()=>{const e=g('trim-end');const v=e?+e.value||0:0;return v>0.3?v:0};
+  const _db=drawBg;
+  drawBg=function(now){
+    const b=val('b'),c=val('c'),s=val('s'),w=val('w');
+    if(!b&&!c&&!s&&!w)return _db(now);
+    ctx.save();
+    ctx.filter='brightness('+(1+b/100)+') contrast('+(1+c/100)+') saturate('+(1+s/100)+')';
+    try{_db(now)}finally{ctx.restore()}
+    if(w){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='soft-light';ctx.fillStyle=w>0?'rgba(255,150,30,'+(w/50*.55)+')':'rgba(40,130,255,'+(-w/50*.55)+')';ctx.fillRect(0,0,W,H);ctx.restore()}
+  };
+  // önizlemede erken bitiş
+  setInterval(()=>{try{const te=window.__trimEnd();if(!te||!isVid||!bg||recording||bg.paused||seq)return;const t0k=kfs.length?kfs[0].t:0;if(bg.currentTime-t0k>=te){if(bg.loop||(g('loopon')&&g('loopon').checked))bg.currentTime=t0k;else bg.pause()}}catch(e){}},120);
 })();
 </script>
 </body>

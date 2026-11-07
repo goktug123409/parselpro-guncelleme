@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072119-->
+<html lang="tr"><!--pp-build:202611072121-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3918,6 +3918,66 @@ window.ppHelp=function(){
     }catch(e){}
   }
   window.addEventListener('resize',fit);setInterval(fit,250);fit();
+})();
+</script>
+<script id="ptlm-js">
+(function(){
+  const css=document.createElement('style');
+  css.textContent='#ptlm{position:fixed;z-index:6000;min-width:250px;padding:6px;border-radius:14px;background:rgba(16,22,33,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 50px -14px rgba(0,0,0,.85);font:13px system-ui,"Segoe UI",sans-serif;color:#e6ecf6}'+
+  '#ptlm .t{font-size:11px;font-weight:800;letter-spacing:.08em;color:#7fd4ff;padding:8px 10px 6px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}'+
+  '#ptlm button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;color:inherit;padding:9px 10px;border-radius:9px;cursor:pointer;font:inherit;transition:background .12s}'+
+  '#ptlm button:hover:not(:disabled){background:rgba(53,200,255,.16)}#ptlm button:disabled{opacity:.38;cursor:default}'+
+  '#ptlm button.dg{color:#ff7a8a}#ptlm button.dg:hover{background:rgba(255,77,109,.16)}'+
+  '#ptlm hr{border:0;border-top:1px solid rgba(255,255,255,.09);margin:5px 4px}';
+  document.head.appendChild(css);
+  const clone=o=>JSON.parse(JSON.stringify(o,(k,v)=>(k[0]==='_'||(v&&v.nodeType))?undefined:v));
+  const curT=()=>{try{return isVid?bg.currentTime:tLoop(performance.now())/1000}catch(e){return 0}};
+  const offs=()=>(isVid&&kfs&&kfs.length)?kfs[0].t:0;
+  function close(){const m=document.getElementById('ptlm');if(m)m.remove()}
+  function show(title,items,x,y){
+    close();const m=document.createElement('div');m.id='ptlm';
+    const t=document.createElement('div');t.className='t';t.textContent=title;m.appendChild(t);
+    items.forEach(it=>{if(it==='-'){m.appendChild(document.createElement('hr'));return}
+      const b=document.createElement('button');b.type='button';b.textContent=it.l;if(it.cls)b.className=it.cls;if(it.dis)b.disabled=true;
+      b.onclick=()=>{close();try{it.f()}catch(e){}};m.appendChild(b)});
+    document.body.appendChild(m);
+    const w=m.offsetWidth,h=m.offsetHeight;m.style.left=Math.max(8,Math.min(x,innerWidth-w-8))+'px';m.style.top=Math.max(8,Math.min(y,innerHeight-h-8))+'px';
+  }
+  const rr=()=>{try{renderFx()}catch(e){}try{renderLabels()}catch(e){}};
+  document.addEventListener('contextmenu',e=>{
+    const box=document.getElementById('ptl');if(!box||!box.contains(e.target))return;
+    e.preventDefault();
+    const el=e.target.closest&&e.target.closest('[data-i]');
+    const sc=document.getElementById('ptl-sc');
+    if(!el){
+      const items=[];
+      items.push({l:'🔍 Yakınlaş',f:()=>document.getElementById('ptl-zi').click()},{l:'🔎 Uzaklaş',f:()=>document.getElementById('ptl-zo').click()},'-',{l:'▾ Çizelgeyi küçült / büyüt',f:()=>document.getElementById('ptl-cl').click()});
+      show('Zaman çizelgesi',items,e.clientX,e.clientY);return}
+    const i=+el.dataset.i,all=[].concat(fxs.map(o=>({o,k:'fx'})),labels.map(o=>({o,k:'lb'})));
+    const it=all[i];if(!it)return;const o=it.o,locked=!!(el.classList.contains('lock')||(el.closest('.rw')&&el.closest('.rw').querySelector('.bar.lock')));
+    if(it.k==='fx'){fxSel=o;labSel=null}else{labSel=o;fxSel=null}rr();
+    const off=offs(),now=Math.max(0,+(curT()-off).toFixed(2)),dflt=it.k==='lb'?(o.ts===undefined?.8+.45*labels.indexOf(o):o.ts):(o.ts||0);
+    const arr=it.k==='fx'?fxs:labels,idx=arr.indexOf(o),name=it.k==='fx'?(typeof FXN!=='undefined'&&FXN[o.type]||o.type):'Etiket: '+(o.txt||'').slice(0,20);
+    const setT=(ts,te)=>{if(ts!==undefined)o.ts=ts;if(te!==undefined)o.te=te;rr();try{logAct('Süre değişti: '+name)}catch(x){}};
+    const items=[
+      {l:'⏱ Başlangıcı şimdiki ana getir ('+now.toFixed(1)+' sn)',dis:locked,f:()=>{const te=o.te>0&&o.te<now+.2?0:o.te;setT(now,te)}},
+      {l:'⏱ Bitişi şimdiki ana getir ('+now.toFixed(1)+' sn)',dis:locked||now<=dflt+.1,f:()=>setT(undefined,now)},
+      {l:'⇤ Başa al (0 sn)',dis:locked,f:()=>setT(0)},
+      {l:'♾ Sona kadar kalsın',dis:locked||!(o.te>0),f:()=>setT(undefined,0)},
+      {l:'↔ Tüm süre boyunca göster',dis:locked,f:()=>setT(0,0)},
+      '-',
+      {l:'⧉ Çoğalt',f:()=>{const c=clone(o);if(it.k==='fx'){if(c.pts)c.pts=c.pts.map(a=>[a[0]+W*.03,a[1]+W*.03]);c._k='';fxs.push(c);fxSel=c}else{const s=W/1280;c.dx=(o.dx||0)+30*s;c.dy=(o.dy||0)+30*s;labels.push(c);labSel=c}rr();try{logAct('Çoğaltıldı: '+name)}catch(x){}}},
+      {l:'⬆ Üste al',dis:idx>=arr.length-1,f:()=>{arr.splice(idx,1);arr.splice(idx+1,0,o);rr()}},
+      {l:'⬇ Alta al',dis:idx<=0,f:()=>{arr.splice(idx,1);arr.splice(idx-1,0,o);rr()}},
+      '-',
+      {l:'🗑 Sil',cls:'dg',f:()=>{if(it.k==='fx'){fxDel(o)}else{const k=labels.indexOf(o);if(k>=0){labels.splice(k,1);if(labSel===o)labSel=null;try{logAct('Etiket silindi: '+(o.txt||''))}catch(x){}renderLabels()}}}}
+    ];
+    if(locked)items.unshift({l:'ℹ Grup zamanı açık: süre grup ayarından gelir',dis:true,f:()=>{}});
+    show(name,items,e.clientX,e.clientY);
+  },true);
+  document.addEventListener('pointerdown',e=>{const m=document.getElementById('ptlm');if(m&&!m.contains(e.target))close()},true);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  window.addEventListener('blur',close);
 })();
 </script>
 </body>

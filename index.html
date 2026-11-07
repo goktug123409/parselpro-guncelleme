@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072159-->
+<html lang="tr"><!--pp-build:202611072213-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -981,7 +981,7 @@ function drawInner(now){
   const p=(isVid&&bg.paused)?1:clamp(time/dur);
   curFull=pts;curValid=!trk;
   if(trk)pts=trk.poly;
-  else if(closed&&kfs.length){const kf=curKf(vt());if(kf&&kf.T){pts=dispPoly(kf.b,kf.T,kf.k);curFull=kf.p;curValid=kf.b.every(([x,y])=>kf.T[6]*x+kf.T[7]*y+kf.T[8]>.06)}else{pts=interp(vt());curFull=pts}}
+  else if(closed&&kfs.length){const kf=curKf(vt());if(kf&&kf.T){pts=dispPoly(kf.b,kf.T,kf.k);curValid=kf.b.every(([x,y])=>kf.T[6]*x+kf.T[7]*y+kf.T[8]>.06);curFull=(curValid&&pts.length===kf.p.length)?pts:kf.p}else{pts=interp(vt());curFull=pts}}
   else curFull=pts;
   let cu=0;
   if(!isVid&&camStart!==null){cu=clamp((now-camStart)/(dur+HOLD));if(cu>=1){camStart=null;cu=0}}

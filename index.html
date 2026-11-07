@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071119-->
+<html lang="tr"><!--pp-build:202611071130-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -498,8 +498,8 @@ cv.addEventListener('pointerdown',e=>{
   hint();if(!isVid)restart();
 });
 cv.addEventListener('pointermove',e=>{
-  if(labSz){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height),Q=labSz.L;Q.wx=Math.round(clamp(labSz.w0+2*(ix-labSz.x0)/(Q._nw||1)*100,50,300));Q.hy=Math.round(clamp(labSz.h0+(iy-labSz.y0)/(Q._nh||1)*100,50,300));return}
-  if(fxSz){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height),O=fxSz.o,ex=O._ext||[200,200];O.wx=Math.round(clamp(fxSz.w0+(ix-fxSz.x0)/ex[0]*100,30,400));O.hy=Math.round(clamp(fxSz.h0+(iy-fxSz.y0)/ex[1]*100,30,400));O._k='';return}
+  if(labSz){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height),Q=labSz.L;const nx=labSz.w0+2*(ix-labSz.x0)/(Q._nw||1)*100,ny=labSz.h0+(iy-labSz.y0)/(Q._nh||1)*100;if(e.shiftKey){Q.wx=Math.round(clamp(nx,50,300));Q.hy=Math.round(clamp(ny,50,300))}else{const k=clamp((nx/labSz.w0+ny/labSz.h0)/2,Math.max(50/labSz.w0,50/labSz.h0),Math.min(300/labSz.w0,300/labSz.h0));Q.wx=Math.round(labSz.w0*k);Q.hy=Math.round(labSz.h0*k)}return}
+  if(fxSz){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height),O=fxSz.o,ex=O._ext||[200,200];const nx=fxSz.w0+(ix-fxSz.x0)/ex[0]*100,ny=fxSz.h0+(iy-fxSz.y0)/ex[1]*100;if(e.shiftKey){O.wx=Math.round(clamp(nx,30,400));O.hy=Math.round(clamp(ny,30,400))}else{const k=clamp((nx/fxSz.w0+ny/fxSz.h0)/2,Math.max(30/fxSz.w0,30/fxSz.h0),Math.min(400/fxSz.w0,400/fxSz.h0));O.wx=Math.round(fxSz.w0*k);O.hy=Math.round(fxSz.h0*k)}O._k='';return}
   if(txDrag){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);txO=[txO[0]+ix-txDrag.lx,txO[1]+iy-txDrag.ly];txDrag.lx=ix;txDrag.ly=iy;return}
   if(fxDrag){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height),o=fxDrag.o,[jx,jy]=fxInv(o,ix,iy),[kx,ky]=fxInv(o,fxDrag.lx,fxDrag.ly),m=fxMap(),b=fxBase(m,jx,jy),b0=fxBase(m,kx,ky);
     if(fxDrag.i>=0)o.pts[fxDrag.i]=b;else{const dx=b[0]-b0[0],dy=b[1]-b0[1];o.pts=o.pts.map(a=>[a[0]+dx,a[1]+dy])}

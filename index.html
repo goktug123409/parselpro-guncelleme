@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072217-->
+<html lang="tr"><!--pp-build:202611072222-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2215,8 +2215,8 @@ function drawLabels(now){
     const G=$('gson')&&$('gson').checked&&L.grp!==false,ts=G?(+$('gts').value||0):(L.ts===undefined?.8+.45*i:L.ts),te=stillMode?0:(G?(+$('gte').value||0):(L.te||0)),isSel=L===labSel;
     const ad=.8*(L.adx||100)/100;let r=clamp((tl-ts)/ad),fo=1;
     if(te&&tl>te)fo=1-clamp((tl-te)/(G?Math.max(.6,ad*.75):ad));
-    if(isSel){r=Math.max(r,1);fo=1}
-    if(!recording&&!stillMode&&!te&&$('loopon')&&$('loopon').checked){const Lm=isVid?(bg.duration||0)-(kfs.length?kfs[0].t:0):loopMs()/1000;if(Lm>1.2&&tl>Lm-.5)fo=Math.min(fo,Math.max(0,(Lm-tl)/.5));if(isSel)fo=1}
+    if(isSel&&(ldrag||!(isVid?!bg.paused:window.__tHold==null))){r=Math.max(r,1);fo=1}
+    if(!recording&&!stillMode&&!te&&$('loopon')&&$('loopon').checked){const Lm=isVid?(bg.duration||0)-(kfs.length?kfs[0].t:0):loopMs()/1000;if(Lm>1.2&&tl>Lm-.5)fo=Math.min(fo,Math.max(0,(Lm-tl)/.5));if(isSel&&(ldrag||!(isVid?!bg.paused:window.__tHold==null)))fo=1}
     if(r<=0||fo<=0)return;
     const e=easeOut(r),sz=base*(L.sz||100)/100,an=L.an||'slide',shape=L.shape||'pill',lsty=L.ls||'box',bgc=L.bg||'#ffffff',fg=L.fg||'#232323',lc=L.lc||'#ffffff',cc=L.cc||'#ffffff',fv=L.font||'Poppins';
     ctx.save();ctx.globalAlpha=(an==='pop'?Math.min(1,r*2):e)*fo;ctx.textBaseline='middle';ctx.textAlign='center';

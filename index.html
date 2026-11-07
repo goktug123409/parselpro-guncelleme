@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072313-->
+<html lang="tr"><!--pp-build:202611072320-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4302,6 +4302,7 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
     ctx.fillStyle='#8197b4';ctx.font='600 '+(12*s)+'px system-ui,sans-serif';ctx.fillText('MP4 · MOV · JPG · PNG',W/2,y+h*.92);
     ctx.restore();ctx.restore();
   };
+  try{if(!bg&&W===1280&&H===720)setSize(1920,1080)}catch(e){}
   const _di=drawInner;
   drawInner=function(now){if(bg)return _di(now);const c=closed,p=pts;closed=false;pts=[];try{_di(now)}finally{closed=c;pts=p}};
 })();

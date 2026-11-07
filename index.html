@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071235-->
+<html lang="tr"><!--pp-build:202611071241-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -177,8 +177,8 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <p class="s" style="margin:0 0 8px">İpucu: satıra “BAŞLIK | alt yazı” yazarsanız alt yazı küçük ve renkli çıkar.</p>
     <label>Yazı animasyonu<select id="sanim"><option value="mix">Karışık (sırayla değişir)</option><option value="pop">Büyüyerek çıksın</option><option value="rise">Aşağıdan yükselsin</option><option value="wave">Harfler dalgalansın</option><option value="type">Daktilo gibi yazılsın</option><option value="right">Sağdan kayarak gelsin</option><option value="zoom">Yakından uzaklaşarak</option></select></label>
     <label>Sahneler arası geçiş<select id="strn"><option value="fade">Yumuşak solma</option><option value="slide">Kayarak solma</option><option value="cut">Sert kesme</option><option value="flash">Parlama + turkuaz (örnek video)</option></select></label>
-    <label>Geçiş sesi<select id="strs"><option value="auto">Geçişe uygun (otomatik)</option><option value="whoosh">Whoosh (hava sesi)</option><option value="boom">Whoosh + vuruş</option><option value="flash">Parlama sesi</option><option value="tick">Kısa tık</option><option value="none">Ses yok</option></select></label>
-    <div class="row"><label>Geçiş sesi seviyesi <span id="strvv">70</span>%<input id="strv" type="range" min="0" max="100" value="70" oninput="$('strvv').textContent=this.value"></label><button type="button" id="strtest">▶ Dinle</button></div>
+    <label>Geçiş sesi<select id="strs"><option value="mix">Karışık (her seferinde farklı)</option><option value="auto">Geçişe uygun (otomatik)</option><option value="whoosh">Whoosh (hava sesi)</option><option value="boom">Whoosh + vuruş</option><option value="flash">Parlama sesi</option><option value="tick">Kısa tık</option><option value="none">Ses yok</option></select></label>
+    <div class="row"><label>Geçiş sesi seviyesi <span id="strvv">70</span>%<input id="strv" type="range" min="0" max="100" value="70" oninput="$('strvv').textContent=this.value"></label><div style="display:flex;flex-direction:column;gap:6px"><button type="button" id="strtest">▶ Dinle</button><button type="button" id="strmute" aria-pressed="false">🔊 Ses açık</button></div></div>
     <div class="row"><button type="button" id="flnow">⚡ Parlama geçişi ekle (şimdiki an)</button><button type="button" id="flclr">Temizle</button></div><div class="s" id="flinfo" style="margin:0 0 8px;font-size:12px"></div>
     <label>Yazı tipi<select id="sfont"></select></label>
     <div class="row"><label>Arka plan 1<input id="sbg1" type="color" value="#ffffff"></label><label>Arka plan 2<input id="sbg2" type="color" value="#000000"></label></div>
@@ -3094,19 +3094,24 @@ body.cvs .cv-top button{white-space:nowrap}
   const noiseBuf=(c,dur)=>{const n=Math.floor(c.sampleRate*dur),b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;return b};
   function synth(c,out,kind,t0,vol){
     const g=c.createGain();g.gain.value=vol;g.connect(out);
-    const wh=(dur,f0,f1,peak,pk)=>{const s=c.createBufferSource();s.buffer=noiseBuf(c,dur+.1);const bp=c.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.1;bp.frequency.setValueAtTime(f0,t0);bp.frequency.exponentialRampToValueAtTime(f1,t0+dur);const e=c.createGain();e.gain.setValueAtTime(.0001,t0);e.gain.exponentialRampToValueAtTime(peak,t0+dur*(pk||.35));e.gain.exponentialRampToValueAtTime(.0001,t0+dur);s.connect(bp);bp.connect(e);e.connect(g);s.start(t0);s.stop(t0+dur+.1)};
-    const tone=(f0,f1,dur,peak,type)=>{const o=c.createOscillator();o.type=type||'sine';o.frequency.setValueAtTime(f0,t0);o.frequency.exponentialRampToValueAtTime(f1,t0+dur);const e=c.createGain();e.gain.setValueAtTime(peak,t0);e.gain.exponentialRampToValueAtTime(.0001,t0+dur);o.connect(e);e.connect(g);o.start(t0);o.stop(t0+dur+.05)};
-    if(kind==='whoosh')wh(.55,400,5200,3.4);
+    const J=(a,b)=>a+Math.random()*(b-a),flip=Math.random()<.35;
+    const wh=(dur,f0,f1,peak,pk)=>{dur*=J(.8,1.25);f0*=J(.75,1.3);f1*=J(.75,1.3);if(flip){const t=f0;f0=f1;f1=t;pk=.65}const s=c.createBufferSource();s.buffer=noiseBuf(c,dur+.1);const bp=c.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.1;bp.frequency.setValueAtTime(f0,t0);bp.frequency.exponentialRampToValueAtTime(f1,t0+dur);const e=c.createGain();e.gain.setValueAtTime(.0001,t0);e.gain.exponentialRampToValueAtTime(peak,t0+dur*(pk||.35));e.gain.exponentialRampToValueAtTime(.0001,t0+dur);s.connect(bp);bp.connect(e);e.connect(g);s.start(t0);s.stop(t0+dur+.1)};
+    const tone=(f0,f1,dur,peak,type)=>{const pj=J(.85,1.2);f0*=pj;f1*=pj;dur*=J(.85,1.2);const o=c.createOscillator();o.type=type||'sine';o.frequency.setValueAtTime(f0,t0);o.frequency.exponentialRampToValueAtTime(f1,t0+dur);const e=c.createGain();e.gain.setValueAtTime(peak,t0);e.gain.exponentialRampToValueAtTime(.0001,t0+dur);o.connect(e);e.connect(g);o.start(t0);o.stop(t0+dur+.05)};
+    if(kind==='mix'){const ks=['whoosh','boom','flash','whoosh','boom'];let k2;do{k2=ks[Math.floor(Math.random()*ks.length)]}while(k2===window.__lastSfx&&Math.random()<.9);window.__lastSfx=k2;return synth(c,out,k2,t0,vol)}
+    if(kind==='whoosh')wh(.55,400,5200,3);
     else if(kind==='boom'){wh(.45,300,3500,2.2);tone(150,38,.7,1)}
-    else if(kind==='flash'){wh(.4,900,9000,1.7,.55);tone(170,36,.9,1);tone(2400,600,.35,.18,'triangle')}
+    else if(kind==='flash'){wh(.4,900,9000,1.5,.55);tone(170,36,.9,1);tone(2400,600,.35,.18,'triangle')}
     else if(kind==='tick'){tone(1900,800,.08,.7,'square')}
   }
-  window.sfxOn=()=>{const s=document.getElementById('strs');return !!s&&s.value!=='none'};
+  window.sfxMuted=false;
+  window.sfxOn=()=>{const s=document.getElementById('strs');return !!s&&s.value!=='none'&&!window.sfxMuted};
   window.sceneSfx=function(over){
     try{
       const s=document.getElementById('strs');if(!s)return;
+      if(window.sfxMuted)return;
       let kind=over||s.value;if(kind==='none')return;
       if(kind==='auto'){const tr=document.getElementById('strn').value;kind=tr==='flash'?'flash':tr==='cut'?'tick':'whoosh'}
+      if(over==='flash'&&s.value==='mix')kind='mix'
       const vol=(+document.getElementById('strv').value||0)/100;if(!vol)return;
       const R=window.__recAud;
       if(R){synth(R.c,R.dest,kind,R.c.currentTime+.02,vol)}
@@ -3123,5 +3128,5 @@ body.cvs .cv-top button{white-space:nowrap}
   };
   window.sfxSynth=synth;
 })();
-</script><script>(function(){const b=document.getElementById("strtest");if(b)b.onclick=()=>window.sceneSfx()})();</script></body>
+</script><script>(function(){const b=document.getElementById("strtest");if(b)b.onclick=()=>{if(window.sfxMuted)m.onclick();window.sceneSfx()};const m=document.getElementById("strmute");if(m)m.onclick=()=>{window.sfxMuted=!window.sfxMuted;m.textContent=window.sfxMuted?"🔇 Ses kapalı":"🔊 Ses açık";m.setAttribute("aria-pressed",window.sfxMuted?"true":"false");m.style.opacity=window.sfxMuted?".65":"1"}})();</script></body>
 </html>

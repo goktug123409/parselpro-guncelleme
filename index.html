@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071115-->
+<html lang="tr"><!--pp-build:202611071119-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2114,7 +2114,7 @@ function drawLabels(now){
   const tl=isVid?(bg.paused?(kfs.length?bg.currentTime-kfs[0].t:99):bg.currentTime-(kfs.length?kfs[0].t:0)):tLoop(now)/1000;
   labels.forEach((L,i)=>{
     const Q=labQuad(curFull,L.qi);if(!Q||Q.some(q=>!q))return;
-    const P=sqP(Q),w=P.g*L.u+P.h*L.v+1;if(w<=.05)return;
+    const P=sqP(Q),w0=P.g*L.u+P.h*L.v+1,w=Math.abs(w0)<.04?(w0<0?-.04:.04):w0;
     const X=(P.a*L.u+P.b*L.v+P.x0)/w,Y=(P.d*L.u+P.e*L.v+P.y0)/w;
     const G=$('gson')&&$('gson').checked&&L.grp!==false,ts=G?(+$('gts').value||0):(L.ts===undefined?.8+.45*i:L.ts),te=stillMode?0:(G?(+$('gte').value||0):(L.te||0)),isSel=L===labSel;
     const ad=.8*(L.adx||100)/100;let r=clamp((tl-ts)/ad),fo=1;

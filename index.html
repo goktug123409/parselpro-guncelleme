@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072015-->
+<html lang="tr"><!--pp-build:202611072027-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -194,8 +194,8 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <h2>Giriş / Kapanış Sahneleri</h2>
     <div style="margin:8px 0;padding:8px;border:1px solid var(--bd);border-radius:10px">
     <div style="font-weight:700;margin-bottom:4px">🧩 Hazır şablonlar</div>
-    <div class="row"><label>Şablon<select id="tplsel"></select></label><button type="button" id="tplapply">Uygula</button><button type="button" id="tpldel">Sil</button></div>
-    <div class="row"><label>Mevcut yazı/firma/renkleri kaydet<input id="tplname" type="text" placeholder="şablon adı (örn. Benim şablonum)"></label><button type="button" id="tplsave">Kaydet</button></div>
+    <label style="display:block;margin-bottom:6px">Şablon<select id="tplsel" style="width:100%"></select></label><div style="display:flex;gap:8px;margin-bottom:8px"><button type="button" id="tplapply" style="flex:1">Uygula</button><button type="button" id="tpldel" style="flex:1">Sil</button></div>
+    <label style="display:block;margin-bottom:6px">Mevcut yazı/firma/renkleri kaydet<input id="tplname" type="text" placeholder="şablon adı" style="width:100%"></label><button type="button" id="tplsave" style="width:100%;margin-bottom:6px">Şablon olarak kaydet</button>
     <div class="s" id="tplinfo">Hazır şablon yalnızca giriş/kapanış yazılarını ve stili değiştirir; firma adı, telefon ve logonuz kalır.</div>
     </div>
     <label>Giriş yazıları (her satır bir sahne)<textarea id="sin" rows="3" placeholder="ARSA&#10;YATIRIM | Fırsat arsası"></textarea></label>
@@ -3662,5 +3662,47 @@ body.cvs .cv-top button{white-space:nowrap}
   };
 })();
 </script>
+<style id="menu-mod">
+body.cvs{--acx:#35c8ff;--acy:#7a6cff}
+body.cvs .app{grid-template-columns:86px 360px minmax(0,1fr)}
+body.cvs .cv-rail{background:linear-gradient(180deg,#0e131c,#0a0e15);border-right:1px solid rgba(255,255,255,.06);padding:10px 0;gap:4px;scrollbar-width:none}
+body.cvs .cv-rail::-webkit-scrollbar{display:none}
+body.cvs .cv-rail button{position:relative;width:70px;padding:9px 2px 8px;border-radius:14px;color:#8f9ab0;font:600 10.5px/1.1 system-ui,"Segoe UI",sans-serif;letter-spacing:.2px;transition:background .18s,color .18s,transform .18s}
+body.cvs .cv-rail button svg{width:22px;height:22px;transition:transform .18s}
+body.cvs .cv-rail button:hover{background:rgba(255,255,255,.06);color:#e6ecf6}
+body.cvs .cv-rail button:hover svg{transform:translateY(-1px) scale(1.06)}
+body.cvs .cv-rail button.on{background:linear-gradient(135deg,rgba(53,200,255,.22),rgba(122,108,255,.28));color:#fff;box-shadow:inset 0 0 0 1px rgba(122,160,255,.35),0 6px 18px -8px rgba(80,120,255,.7)}
+body.cvs .cv-rail button.on::before{content:"";position:absolute;left:-8px;top:22%;bottom:22%;width:4px;border-radius:0 4px 4px 0;background:linear-gradient(180deg,var(--acx),var(--acy))}
+body.cvs .cv-rail button.on svg{color:var(--acx)}
+body.cvs .panel{background:linear-gradient(180deg,#101621,#0d121a);border-right:1px solid rgba(255,255,255,.06);padding:16px 16px 22px;gap:12px;scrollbar-width:thin;scrollbar-color:#2a3550 transparent}
+body.cvs .panel::-webkit-scrollbar{width:8px}
+body.cvs .panel::-webkit-scrollbar-thumb{background:#2a3550;border-radius:8px}
+body.cvs .cv-gh{font-size:17px;font-weight:800;letter-spacing:.2px;padding:2px 0 10px;border-bottom:0;position:relative;background:linear-gradient(90deg,#fff,#a9c4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.cvs .cv-gh::after{content:"";display:block;margin-top:8px;height:3px;width:42px;border-radius:3px;background:linear-gradient(90deg,var(--acx),var(--acy))}
+body.cvs .panel label{font-size:12.5px;color:#9aa6bd;gap:6px}
+body.cvs .panel input[type=text],body.cvs .panel input[type=number],body.cvs .panel input:not([type]),body.cvs .panel select,body.cvs .panel textarea{background:#0a0f17;border:1px solid #232d42;border-radius:10px;color:#e6ecf6;padding:9px 11px;transition:border-color .15s,box-shadow .15s}
+body.cvs .panel input[type=text]:focus,body.cvs .panel input[type=number]:focus,body.cvs .panel select:focus,body.cvs .panel textarea:focus{outline:0;border-color:var(--acx);box-shadow:0 0 0 3px rgba(53,200,255,.18)}
+body.cvs .panel input[type=range]{accent-color:var(--acx)}
+body.cvs .panel input[type=checkbox]{accent-color:var(--acx)}
+body.cvs .panel button,body.cvs .panel .btn{background:linear-gradient(180deg,#1a2335,#151d2d);border:1px solid #27324a;border-radius:11px;color:#e6ecf6;padding:9px 12px;font-weight:600;transition:transform .12s,border-color .15s,background .15s,box-shadow .15s}
+body.cvs .panel button:hover,body.cvs .panel .btn:hover{border-color:#3a4d78;background:linear-gradient(180deg,#202c44,#19233a);transform:translateY(-1px);box-shadow:0 6px 16px -10px rgba(0,0,0,.9)}
+body.cvs .panel button:active{transform:translateY(0)}
+body.cvs .panel button.bigr,body.cvs .panel #rec{background:linear-gradient(135deg,#1fb6ff,#6f5cff);border:0;color:#fff;box-shadow:0 10px 24px -12px rgba(80,110,255,.9)}
+body.cvs .panel div[style*="border-radius:10px"]{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.09)!important;border-radius:14px!important;padding:12px!important}
+body.cvs .panel .s{color:#7f8aa1;font-size:12px;line-height:1.45}
+body.cvs .panel .row{gap:10px}
+body.cvs .cv-foot{border-top:1px solid rgba(255,255,255,.08)}
+</style>
+<style id="menu-mod2">
+body.cvs .cv-grp>h2{display:none}
+body.cvs .panel .row{align-items:flex-end;flex-wrap:wrap}
+body.cvs .panel .row>label{flex:1 1 140px;min-width:0}
+body.cvs .panel .row>button{flex:0 0 auto;white-space:nowrap}
+body.cvs .panel .fxbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+body.cvs .panel .fxbtns>button{width:100%;white-space:normal;text-align:center;font-size:12.5px}
+body.cvs .panel .row:has(#tplsel)>label,body.cvs .panel .row:has(#tplname)>label{flex:1 1 100%}
+body.cvs .panel .row:has(#tplsel)>button,body.cvs .panel .row:has(#tplname)>button{flex:1 1 40%}
+body.cvs .panel .fxbtns{align-items:stretch}
+</style>
 </body>
 </html>

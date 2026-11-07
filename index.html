@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072155-->
+<html lang="tr"><!--pp-build:202611072159-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3791,7 +3791,7 @@ window.ppHelp=function(){
 #ptl .snapg{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#7cff9b;z-index:5;pointer-events:none;box-shadow:0 0 8px #7cff9b}
 #ptl .ph-line{position:absolute;top:0;bottom:0;left:0;width:2px;margin-left:-1px;background:#ff4d6d;z-index:3;pointer-events:none;will-change:transform}
 #ptl .ph-line::before{content:"";position:absolute;top:0;left:-5px;border:6px solid transparent;border-top:9px solid #ff4d6d;border-bottom:0}
-#ptl .empty{padding:14px 18px;color:#7d889e}
+#ptl .empty{position:sticky;left:176px;margin-left:176px;width:min(520px,calc(100vw - 700px));min-width:260px;box-sizing:border-box;padding:14px 18px;color:#7d889e;white-space:normal}
 #ptl .sb{position:absolute;top:4px;height:${ROWH-8}px;border-radius:8px;color:#071018;font-weight:700;font-size:10.5px;line-height:${ROWH-8}px;padding:0 10px;overflow:hidden;white-space:nowrap;box-sizing:border-box;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
 #ptl .sb.act{box-shadow:0 0 0 2px #fff}
 #ptl .sb .eh{position:absolute;top:0;bottom:0;right:0;width:9px;cursor:ew-resize;background:rgba(0,0,0,.3)}
@@ -4090,7 +4090,7 @@ window.ppHelp=function(){
         if(x!==lastPx){lastPx=x;phead.style.transform='translateX('+x+'px)'}
         const k=Math.floor(t*4);if(k!==lastT){lastT=k;tinfo.textContent=fmt(t)+' / '+fmt(Tt)}
         const pl=document.getElementById('ptl-pl2');if(pl){const run=isVid?!bg.paused:window.__tHold==null;const lb=run?'⏸':'▶';if(pl.textContent!==lb)pl.textContent=lb}
-        if(isVid&&bg&&!bg.paused){const L=scroll.scrollLeft,Wd=scroll.clientWidth;if(x<L+NAMEW||x>L+Wd-20)scroll.scrollLeft=Math.max(0,x-NAMEW-40)}
+        if((isVid?(bg&&!bg.paused):window.__tHold==null)){const L=scroll.scrollLeft,Wd=scroll.clientWidth;if(x<L+NAMEW||x>L+Wd-20)scroll.scrollLeft=Math.max(0,x-NAMEW-40)}
       }
     }catch(e){}
     requestAnimationFrame(frame);

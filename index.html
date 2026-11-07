@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071549-->
+<html lang="tr"><!--pp-build:202611072007-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -192,6 +192,12 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <p class="s" id="lginfo">Önerilen: şeffaf arka planlı PNG, en az 600 px genişlikte (örn. 600×300).</p>
 
     <h2>Giriş / Kapanış Sahneleri</h2>
+    <div style="margin:8px 0;padding:8px;border:1px solid var(--bd);border-radius:10px">
+    <div style="font-weight:700;margin-bottom:4px">🧩 Hazır şablonlar</div>
+    <div class="row"><label>Şablon<select id="tplsel"></select></label><button type="button" id="tplapply">Uygula</button><button type="button" id="tpldel">Sil</button></div>
+    <div class="row"><label>Mevcut yazı/firma/renkleri kaydet<input id="tplname" type="text" placeholder="şablon adı (örn. Benim şablonum)"></label><button type="button" id="tplsave">Kaydet</button></div>
+    <div class="s" id="tplinfo">Hazır şablon yalnızca giriş/kapanış yazılarını ve stili değiştirir; firma adı, telefon ve logonuz kalır.</div>
+    </div>
     <label>Giriş yazıları (her satır bir sahne)<textarea id="sin" rows="3" placeholder="ARSA&#10;YATIRIM | Fırsat arsası"></textarea></label>
     <label>Kapanış yazıları<textarea id="sout" rows="3" placeholder="DOĞRU KAZANÇ"></textarea></label>
     <p class="s" style="margin:0 0 8px">İpucu: satıra “BAŞLIK | alt yazı” yazarsanız alt yazı küçük ve renkli çıkar.</p>
@@ -236,6 +242,12 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <div class="row"><label>Fiyat<input id="ntx-fiyat" type="text" placeholder="2.450.000 TL"></label><label>Telefon<input id="ntx-tel" type="text" placeholder="05xx xxx xx xx"></label></div>
     <label>Anlatım tarzı<select id="ntx-ton"><option value="std">Standart</option><option value="kisa">Kısa</option><option value="satis">Satış vurgulu</option></select></label>
     <button id="ntx-go" type="button">✨ Metni yaz</button><div class="s" id="ntx-info"></div>
+    </div>
+    <div style="margin:8px 0;padding:8px;border:1px solid var(--bd);border-radius:10px">
+    <div style="font-weight:700;margin-bottom:4px">🖼 İlan kartı (tek görsel)</div>
+    <div class="s">Yukarıdaki bilgilerle (konum, ada/parsel, m², özellikler, fiyat, telefon) ve ekrandaki kareyle hazırlanır. Sahibinden / WhatsApp için.</div>
+    <div class="row"><label>Boyut<select id="ilsz"><option value="4:5">4:5 Dikey (1080×1350)</option><option value="1:1">Kare (1080×1080)</option><option value="9:16">9:16 Hikaye (1080×1920)</option></select></label><button type="button" id="ilgo">🖼 İlan kartını indir (PNG)</button></div>
+    <div class="s" id="ilinfo"></div>
     </div>
     <label>Anlatım metni<textarea id="narr" rows="4" placeholder="Örn: Gelibolu İlgardere'de, denize yakın, yola cepheli 273 metrekare arsa."></textarea></label>
     <div class="row"><label>Ses<select id="nvoice"><option value="">Otomatik (Türkçe)</option></select></label><label><span>Hız <span id="nratev">1.0</span>x</span><input id="nrate" type="range" min="70" max="140" value="100"></label></div>
@@ -3558,6 +3570,96 @@ body.cvs .cv-top button{white-space:nowrap}
     g('ntx-info').textContent='Metin yazıldı. Aşağıdaki kutuda istediğiniz gibi düzeltebilirsiniz.';
   }
   g('ntx-go').onclick=gen;
+})();
+</script>
+<script id="tpl-js">
+(function(){
+  const g=id=>document.getElementById(id);
+  const F=['sin','sout','endn','ends','ph','endc','sbg1','sbg2','sacc','sfont','strn'];
+  const BI={
+    'b:yat':{n:'Yatırımlık arsa',sin:'YATIRIMLIK ARSA\nİMARLI | Fırsatı kaçırmayın',sout:'DOĞRU KAZANÇ\nDOĞRU YATIRIM',pk:'p:neon'},
+    'b:vil':{n:'Villa arsası (lüks)',sin:'VİLLA ARSASI\nDENİZE YAKIN | Hayalinizdeki yer',sout:'HAYALİNİZİ\nBUGÜN BAŞLATIN',pk:'p:lux'},
+    'b:tar':{n:'Tarla / bağ-bahçe',sin:'TARLA\nDOĞAYLA İÇ İÇE | Huzurlu yatırım',sout:'DOĞANIN\nİÇİNDE YATIRIM',pk:'p:green'},
+    'b:acl':{n:'Acil satılık',sin:'ACİL SATILIK\nFIRSAT FİYATI | Kaçırmayın',sout:'ŞİMDİ ARAYIN\nFIRSAT SINIRLI',pk:'p:red'},
+    'b:prj':{n:'Proje parselleri (müsait / satıldı)',sin:'PROJE PARSELLERİ\nMÜSAİT PARSELLER | Yerinizi ayırtın',sout:'PARSELİNİZİ\nŞİMDİ SEÇİN',pk:'p:neon'}
+  };
+  const K='pp_usertpls';
+  const lu=()=>{try{return JSON.parse(localStorage.getItem(K)||'{}')}catch(e){return{}}};
+  const su=o=>{try{localStorage.setItem(K,JSON.stringify(o))}catch(e){}};
+  const setv=(id,v)=>{const el=g(id);if(!el)return;if(el.type==='checkbox')el.checked=!!v;else el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))};
+  function fill(){const s=g('tplsel');if(!s)return;const u=lu();
+    s.innerHTML='<option value="">— Şablon seçin —</option><optgroup label="Hazır şablonlar">'+Object.keys(BI).map(k=>'<option value="'+k+'">'+BI[k].n+'</option>').join('')+'</optgroup>'+(Object.keys(u).length?'<optgroup label="Benim şablonlarım">'+Object.keys(u).map(k=>'<option value="u:'+k.replace(/"/g,'&quot;')+'">'+k+'</option>').join('')+'</optgroup>':'')}
+  const info=t=>{g('tplinfo').textContent=t};
+  g('tplapply').onclick=()=>{
+    const v=g('tplsel').value;if(!v){info('Önce bir şablon seçin.');return}
+    if(v.slice(0,2)==='b:'){const t=BI[v];setv('sin',t.sin);setv('sout',t.sout);
+      const ss=g('stylesel');if(ss&&t.pk){ss.value=t.pk;g('styleapply').click()}
+      info('Uygulandı: '+t.n+'. Firma adı, telefon ve logonuza dokunulmadı.')}
+    else{const t=lu()[v.slice(2)];if(!t){info('Şablon bulunamadı.');return}F.forEach(k=>{if(t[k]!==undefined)setv(k,t[k])});info('Uygulandı: '+v.slice(2))}
+  };
+  g('tplsave').onclick=()=>{
+    const n=(g('tplname').value||'').trim();if(!n){info('Önce bir şablon adı yazın.');return}
+    const o={};F.forEach(k=>{const el=g(k);if(el)o[k]=el.type==='checkbox'?el.checked:el.value});
+    const u=lu();u[n]=o;su(u);fill();g('tplsel').value='u:'+n;g('tplname').value='';info('Kaydedildi: '+n+' (giriş/kapanış yazıları, firma, telefon, sahne renkleri). Bu bilgisayarda saklanır.')};
+  g('tpldel').onclick=()=>{const v=g('tplsel').value;if(v.slice(0,2)!=='u:'){info('Silmek için "Benim şablonlarım"dan birini seçin.');return}
+    const u=lu();delete u[v.slice(2)];su(u);fill();info('Silindi.')};
+  fill();
+
+  // ---- İlan kartı (PNG) ----
+  const SZ={'4:5':[1080,1350],'1:1':[1080,1080],'9:16':[1080,1920]};
+  function wrap(c,t,mw){const w=t.split(/\s+/),L=[];let l='';w.forEach(x=>{const n=l?l+' '+x:x;if(c.measureText(n).width>mw&&l){L.push(l);l=x}else l=n});if(l)L.push(l);return L}
+  function rrect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+  async function card(){
+    const v=k=>(g(k)?g(k).value:'').trim(),[CW,CH]=SZ[g('ilsz').value]||SZ['4:5'];
+    const src=document.createElement('canvas');src.width=CW;src.height=CH;const c=src.getContext('2d');
+    const acc=v('col')||'#2bc4ff',ff=(g('ff')&&g('ff').value)||'Montserrat';
+    const F1=px=>'800 '+px+'px "'+ff+'",system-ui,"Segoe UI",Arial,sans-serif',F2=px=>'600 '+px+'px "'+ff+'",system-ui,"Segoe UI",Arial,sans-serif';
+    try{await document.fonts.load(F1(40),'ŞĞİ');await document.fonts.load(F2(40),'ŞĞİ')}catch(e){}
+    c.fillStyle='#0a0f1a';c.fillRect(0,0,CW,CH);
+    const tip=(v('ntx-tip')||'arsa').toLocaleUpperCase('tr-TR');
+    const px=CW*.065;
+    const body=(c,y0)=>{
+    let y=y0;
+    c.textBaseline='top';c.textAlign='left';
+    c.fillStyle=acc;c.font=F1(Math.round(CW*.028));c.fillText('SATILIK '+tip,px,y);y+=CW*.05;
+    const kon=v('ntx-konum');
+    if(kon){c.fillStyle='#fff';let fs=CW*.062;c.font=F1(fs);while(c.measureText(kon).width>CW-px*2&&fs>CW*.034){fs-=2;c.font=F1(fs)}c.fillText(kon,px,y);y+=fs*1.25}
+    // chips
+    let m2=v('ntx-m2');if(!m2&&g('msrarea')&&+g('msrarea').value>0)m2=g('msrarea').value;
+    const ch2=[];const ref=[v('ntx-ada')?v('ntx-ada')+' Ada':'',v('ntx-parsel')?v('ntx-parsel')+' Parsel':''].filter(Boolean).join(' / ');
+    if(m2)ch2.push(m2+' m²');if(ref)ch2.push(ref);
+    v('ntx-oz').split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean).slice(0,4).forEach(x=>ch2.push(x.charAt(0).toLocaleUpperCase('tr-TR')+x.slice(1)));
+    y+=CW*.015;let cx=px;const chh=CW*.066;c.font=F2(CW*.03);
+    ch2.forEach((t,i)=>{const w=c.measureText(t).width+CW*.05;if(cx+w>CW-px){cx=px;y+=chh+CW*.016}
+      rrect(c,cx,y,w,chh,chh/2);c.fillStyle=i<2?acc:'rgba(255,255,255,.1)';c.fill();if(i>=2){c.strokeStyle='rgba(255,255,255,.25)';c.lineWidth=2;c.stroke()}
+      c.fillStyle=i<2?'#0a0f1a':'#fff';c.textBaseline='middle';c.fillText(t,cx+CW*.025,y+chh/2+1);c.textBaseline='top';cx+=w+CW*.016});
+    y+=chh+CW*.035;
+    const fy=v('ntx-fiyat');
+    if(fy){c.fillStyle='rgba(255,255,255,.6)';c.font=F2(CW*.026);c.fillText('FİYAT',px,y);y+=CW*.04;c.fillStyle='#fff';let fs=CW*.1;c.font=F1(fs);while(c.measureText(fy).width>CW-px*2&&fs>CW*.05){fs-=2;c.font=F1(fs)}c.fillText(fy,px,y);y+=fs*1.2}
+      return y};
+    const scr=document.createElement('canvas').getContext('2d');
+    const bh0=CW*.16,stripH=bh0+CW*.045+CW*.03;
+    const ph=Math.max(Math.round(CH*.3),Math.min(Math.round(CH*.6),Math.round(CH-stripH-(body(scr,0)+CW*.02))));
+    const sw=cv.width,sh=cv.height,ra=CW/ph;let cw=sw,ch=sw/ra;if(ch>sh){ch=sh;cw=sh*ra}
+    c.drawImage(cv,(sw-cw)/2,(sh-ch)/2,cw,ch,0,0,CW,ph);
+    const gr=c.createLinearGradient(0,ph-160,0,ph);gr.addColorStop(0,'rgba(10,15,26,0)');gr.addColorStop(1,'#0a0f1a');c.fillStyle=gr;c.fillRect(0,ph-160,CW,160);
+    c.fillStyle=acc;c.fillRect(0,ph-4,CW,4);
+    if(typeof logoImg!=='undefined'&&logoImg){const lw=CW*.22,lh=lw*logoImg.naturalHeight/logoImg.naturalWidth,mh=CW*.14,k=lh>mh?mh/lh:1;c.drawImage(logoImg,CW-CW*.04-lw*k,CW*.04,lw*k,lh*k)}
+    body(c,ph+Math.round(CW*.03));
+    // alt şerit
+    const tel=v('ph')||v('ntx-tel'),nm=v('endn'),bh=CW*.16,by=CH-bh-CW*.045;
+    if(tel||nm){rrect(c,px,by,CW-px*2,bh,bh/2.4);c.fillStyle=acc;c.fill();c.fillStyle='#0a0f1a';c.textBaseline='middle';
+      if(nm&&tel){c.font=F2(CW*.03);c.fillText(nm,px+CW*.04,by+bh*.3);c.font=F1(CW*.056);c.fillText(tel,px+CW*.04,by+bh*.67)}
+      else{c.font=F1(CW*.056);c.fillText(tel||nm,px+CW*.04,by+bh/2)}
+      c.textAlign='right';c.font=F1(CW*.03);c.fillText('📞 ARAYIN',CW-px-CW*.04,by+bh/2);c.textAlign='left'}
+    return new Promise(r=>src.toBlob(r,'image/png'));
+  }
+  g('ilgo').onclick=async()=>{
+    const i=g('ilinfo');
+    if(typeof isVid==='undefined'||(!isVid&&!bg)){i.textContent='Önce video veya fotoğraf yükleyin.';return}
+    i.textContent='Hazırlanıyor…';
+    try{const b=await card();await saveFile(b,'ilan-karti.png','png');i.textContent='İlan kartı hazır. Görsel olarak ekrandaki kareyi kullanır; istediğiniz kareyi önce zaman çizgisinden seçin.'}catch(e){i.textContent='Hata: '+e.message}
+  };
 })();
 </script>
 </body>

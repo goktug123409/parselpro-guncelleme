@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072148-->
+<html lang="tr"><!--pp-build:202611072152-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4169,5 +4169,17 @@ document.addEventListener('keydown',function(e){
 },true);
 document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){const t=e.target,tag=(t&&t.tagName||'').toUpperCase();if(tag==='BUTTON')e.preventDefault()}},true);
 </script>
+<style id="ovf-fix">
+#ptl .ph b,#ptl .tm{white-space:nowrap;flex:none}
+#ptl .ph .hnt{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;flex:1 1 0}
+#ptl .ph .sp{flex:0 0 0}
+.panel{overflow-x:hidden!important}
+.panel .row,.panel .fxbtns{flex-wrap:wrap!important}
+.panel .row>*{min-width:0}
+.panel button,.panel .btn{max-width:100%;white-space:normal;line-height:1.25;text-align:center}
+.panel label,.panel .hint,.panel small,.panel p{overflow-wrap:anywhere}
+.panel input[type=text],.panel input[type=number],.panel input:not([type]),.panel select,.panel textarea{max-width:100%;box-sizing:border-box}
+.panel .cv-grp>div[style*="flex"]{flex-wrap:wrap!important}
+</style>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071241-->
+<html lang="tr"><!--pp-build:202611071356-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -177,6 +177,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <p class="s" style="margin:0 0 8px">İpucu: satıra “BAŞLIK | alt yazı” yazarsanız alt yazı küçük ve renkli çıkar.</p>
     <label>Yazı animasyonu<select id="sanim"><option value="mix">Karışık (sırayla değişir)</option><option value="pop">Büyüyerek çıksın</option><option value="rise">Aşağıdan yükselsin</option><option value="wave">Harfler dalgalansın</option><option value="type">Daktilo gibi yazılsın</option><option value="right">Sağdan kayarak gelsin</option><option value="zoom">Yakından uzaklaşarak</option></select></label>
     <label>Sahneler arası geçiş<select id="strn"><option value="fade">Yumuşak solma</option><option value="slide">Kayarak solma</option><option value="cut">Sert kesme</option><option value="flash">Parlama + turkuaz (örnek video)</option></select></label>
+    <label>Geçiş süresi <span id="trvv">0.8</span> sn<input id="trv" type="range" min="2" max="25" value="8" oninput="$('trvv').textContent=(this.value/10).toFixed(1)"></label>
     <label>Geçiş sesi<select id="strs"><option value="mix">Karışık (her seferinde farklı)</option><option value="auto">Geçişe uygun (otomatik)</option><option value="whoosh">Whoosh (hava sesi)</option><option value="boom">Whoosh + vuruş</option><option value="flash">Parlama sesi</option><option value="tick">Kısa tık</option><option value="none">Ses yok</option></select></label>
     <div class="row"><label>Geçiş sesi seviyesi <span id="strvv">70</span>%<input id="strv" type="range" min="0" max="100" value="70" oninput="$('strvv').textContent=this.value"></label><div style="display:flex;flex-direction:column;gap:6px"><button type="button" id="strtest">▶ Dinle</button><button type="button" id="strmute" aria-pressed="false">🔊 Ses açık</button></div></div>
     <div class="row"><button type="button" id="flnow">⚡ Parlama geçişi ekle (şimdiki an)</button><button type="button" id="flclr">Temizle</button></div><div class="s" id="flinfo" style="margin:0 0 8px;font-size:12px"></div>
@@ -2201,6 +2202,7 @@ const shadeC=(h,f)=>{const n=parseInt(h.slice(1),16);return `rgb(${Math.round((n
 let flashTs=[];
 const mainT=now=>isVid&&bg?(bg.currentTime-(kfs.length?kfs[0].t:0)):tLoop(now)/1000;
 function flashAt(p){
+  p=p/(($('trv')?$('trv').value/10:.8)/.4);
   if(p<-.3||p>.8)return;
   ctx.save();ctx.setTransform(1,0,0,1,0,0);
   if(p<0){const a=Math.pow(clamp(1+p/.3),1.6);ctx.fillStyle='rgba(255,246,250,'+a+')';ctx.fillRect(0,0,W,H)}
@@ -2233,7 +2235,7 @@ function drawScene(now){
   ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;
   if($('sgrad').checked){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,bgc);g.addColorStop(1,shadeC(bgc,lumOf(bgc)>.55?.82:1.9));ctx.fillStyle=g}else ctx.fillStyle=bgc;
   ctx.fillRect(0,0,W,H);
-  const tm=$('strn').value,tin=clamp(ts/.35),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/.4),tr=(tm==='cut'||tm==='flash')?1:Math.min(tin,tout);
+  const tm=$('strn').value,trD=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.48)),tin=clamp(ts/trD),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/trD),tr=(tm==='cut'||tm==='flash')?1:Math.min(tin,tout);
   ctx.save();ctx.globalAlpha=tr;
   if(tm==='slide'){ctx.translate(0,(1-tin)*H*.07-(1-tout)*H*.07)}
   ctx.textAlign='center';ctx.textBaseline='middle';
@@ -3061,7 +3063,7 @@ body.cvs .cv-top button{white-space:nowrap}
     }else{
       h+='<label>Yazı <small style="font-weight:400">(BAŞLIK | alt yazı)</small><input type="text" data-t="1" value="'+it.txt.replace(/"/g,'&quot;')+'"></label>'+sel('sanim','Yazı animasyonu');
     }
-    h+=sel('sfont','Yazı tipi')+'<div class="r2">'+col('sbg1','Arka plan 1')+col('sbg2','Arka plan 2')+'</div><div class="r2">'+col('sacc','Vurgu rengi')+'<label>Yazı boyutu <span data-v="ssz">'+$('ssz').value+'</span>%<input type="range" min="50" max="140" data-b="ssz" value="'+$('ssz').value+'"></label></div>'+sel('strn','Geçiş')+'<label>Sahne süresi <span data-v="ssd">'+($('ssd').value/10).toFixed(1)+'</span> sn<input type="range" min="4" max="20" data-b="ssd" value="'+$('ssd').value+'"></label><div class="bt"><button class="pr" data-act="ok">Tamam, devam et</button><button data-act="stop">Sahneyi kapat</button></div>';
+    h+=sel('sfont','Yazı tipi')+'<div class="r2">'+col('sbg1','Arka plan 1')+col('sbg2','Arka plan 2')+'</div><div class="r2">'+col('sacc','Vurgu rengi')+'<label>Yazı boyutu <span data-v="ssz">'+$('ssz').value+'</span>%<input type="range" min="50" max="140" data-b="ssz" value="'+$('ssz').value+'"></label></div>'+sel('strn','Geçiş')+'<label>Geçiş süresi <span data-v="trv">'+($('trv').value/10).toFixed(1)+'</span> sn<input type="range" min="2" max="25" data-b="trv" value="'+$('trv').value+'"></label><label>Sahne süresi <span data-v="ssd">'+($('ssd').value/10).toFixed(1)+'</span> sn<input type="range" min="4" max="20" data-b="ssd" value="'+$('ssd').value+'"></label><div class="bt"><button class="pr" data-act="ok">Tamam, devam et</button><button data-act="stop">Sahneyi kapat</button></div>';
     box.innerHTML=h;box.style.display='block';
     const bw=box.offsetWidth,bh=box.offsetHeight;
     box.style.left=Math.max(8,Math.min(innerWidth-bw-8,x+14))+'px';box.style.top=Math.max(8,Math.min(innerHeight-bh-8,y-20))+'px';
@@ -3071,7 +3073,7 @@ body.cvs .cv-top button{white-space:nowrap}
     const t=e.target;if(!cur)return;
     if(t.dataset.t){const v=t.value;if(!v.trim())return;const n=lines($('sin').value).length;if(cur.i<n)setLine('sin',cur.i,v);else setLine('sout',cur.i-n,v);cur.txt=v;return}
     const b=t.dataset.b;if(!b)return;const el=$(b);el.value=t.value;fire(el);
-    const sp=box.querySelector('[data-v="'+b+'"]');if(sp)sp.textContent=b==='ssd'?(t.value/10).toFixed(1):t.value;
+    const sp=box.querySelector('[data-v="'+b+'"]');if(sp)sp.textContent=(b==='ssd'||b==='trv')?(t.value/10).toFixed(1):t.value;
     if(b==='ssd')seq.items.forEach(x=>{if(x.k==='text')x.dur=t.value/10});
   });
   box.addEventListener('change',e=>{const t=e.target;if(t.tagName==='SELECT'&&t.dataset.b){const el=$(t.dataset.b);el.value=t.value;fire(el)}});

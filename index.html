@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072107-->
+<html lang="tr"><!--pp-build:202611072111-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3877,6 +3877,26 @@ window.ppHelp=function(){
   }
   window.addEventListener('resize',()=>{sig=''});
   const iv=setInterval(()=>{if(mount()){clearInterval(iv);setInterval(tick,400);tick();requestAnimationFrame(frame)}},300);
+})();
+</script>
+<script id="pcol-js">
+(function(){
+  const css=document.createElement('style');
+  css.textContent='body.cvs.pcol .app{grid-template-columns:86px 0 minmax(0,1fr)}body.cvs.pcol .panel{width:0;min-width:0;padding:0;border:0;overflow:hidden;visibility:hidden}'+
+  '#pcolb{position:fixed;top:62px;z-index:60;width:26px;height:44px;border:1px solid rgba(255,255,255,.14);border-left:0;border-radius:0 12px 12px 0;background:#141c2b;color:#cfe3ff;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(0,0,0,.8);transition:background .15s}'+
+  '#pcolb:hover{background:#1f2c46}';
+  document.head.appendChild(css);
+  let b=document.createElement('button');b.id='pcolb';b.type='button';b.title='Ayar panelini gizle / göster';document.body.appendChild(b);
+  const rail=()=>document.querySelector('.cv-rail');
+  function place(){const r=rail(),p=document.querySelector('.panel');if(!r)return;const x=r.getBoundingClientRect().right+(document.body.classList.contains('pcol')?0:(p?p.getBoundingClientRect().width:0));b.style.left=(x-1)+'px';b.textContent=document.body.classList.contains('pcol')?'▶':'◀'}
+  function set(v){document.body.classList.toggle('pcol',v);try{localStorage.setItem('pp_pcol',v?'1':'0')}catch(e){}setTimeout(()=>{place();window.dispatchEvent(new Event('resize'))},30)}
+  b.onclick=()=>set(!document.body.classList.contains('pcol'));
+  document.addEventListener('click',e=>{const btn=e.target.closest&&e.target.closest('.cv-rail button');if(!btn)return;
+    if(document.body.classList.contains('pcol'))set(false);else if(btn.classList.contains('on'))set(true);
+  },true);
+  document.addEventListener('keydown',e=>{if(e.key==='Tab'&&e.altKey){e.preventDefault();b.click()}});
+  try{if(localStorage.getItem('pp_pcol')==='1')document.body.classList.add('pcol')}catch(e){}
+  setInterval(place,500);place();
 })();
 </script>
 </body>

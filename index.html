@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071356-->
+<html lang="tr"><!--pp-build:202611071405-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -154,6 +154,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <h2>Efekt nesneleri</h2>
     <div class="row fxbtns"><button id="fx-bld">+ 3D bina</button><button id="fx-road">+ Yol çizgisi</button><button id="fx-arc">+ Kavisli yazı</button><button id="fx-txt">+ Serbest yazı</button><button id="fx-grid">+ Parsel ızgarası</button><button id="fx-pin">+ Konum pini</button><button id="fx-area">+ Renkli alan</button><button id="fx-infolist">+ Bilgi listesi</button><button id="fx-loc">+ Konum yazısı</button><button id="fx-ptxt">+ Perspektif yazı</button><button id="fx-spot">+ Vurgu alanı (karart)</button><button id="fx-lines">+ Renkli satırlar</button><button id="fx-billb">+ Eğik başlık + kart</button><button id="fx-arrow">+ Ok ➜</button></div>
     <p style="margin:4px 0 8px;font-size:12px;opacity:.75;color:var(--mut)">Önce arsayı çizip “Takip Et” yapın, sonra efekt ekleyin. Videoda beyaz noktaları sürükleyerek şekil verin, yazının/çizginin üzerinden tutup taşıyın.</p>
+    <label class="chk"><input type="checkbox" id="fxsnap" checked> Yol çizgisi noktaları birbirine ve arsa köşelerine kitlensin (yaklaştırınca yapışır)</label>
     <label class="chk"><input type="checkbox" id="gson"> Hepsi birlikte çıksın ve aynı anda kaybolsun (efektler, etiketler, arsa çizgisi ve yazı). Dışarıda bırakmak istediğiniz nesnenin “Ortak zamana bağlı” kutusunu kapatın</label>
     <div class="row"><label>Birlikte çıkış (sn)<input type="number" id="gts" min="0" max="600" step="0.1" value="0"></label><label>Birlikte kaybolma (sn, 0 = hiç)<input type="number" id="gte" min="0" max="600" step="0.1" value="0"></label></div>
     <div class="row"><button type="button" id="gtsnow">⏱ Çıkış = şimdiki an</button><button type="button" id="gtenow">⏱ Kaybolma = şimdiki an</button></div>
@@ -505,7 +506,7 @@ cv.addEventListener('pointermove',e=>{
   if(fxSz){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height),O=fxSz.o,ex=O._ext||[200,200];const nx=fxSz.w0+(ix-fxSz.x0)/ex[0]*100,ny=fxSz.h0+(iy-fxSz.y0)/ex[1]*100;if(e.shiftKey){O.wx=Math.round(clamp(nx,30,400));O.hy=Math.round(clamp(ny,30,400))}else{const k=clamp((nx/fxSz.w0+ny/fxSz.h0)/2,Math.max(30/fxSz.w0,30/fxSz.h0),Math.min(400/fxSz.w0,400/fxSz.h0));O.wx=Math.round(fxSz.w0*k);O.hy=Math.round(fxSz.h0*k)}O._k='';return}
   if(txDrag){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);txO=[txO[0]+ix-txDrag.lx,txO[1]+iy-txDrag.ly];txDrag.lx=ix;txDrag.ly=iy;return}
   if(fxDrag){const r=cv.getBoundingClientRect(),[ix,iy]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height),o=fxDrag.o,[jx,jy]=fxInv(o,ix,iy),[kx,ky]=fxInv(o,fxDrag.lx,fxDrag.ly),m=fxMap(),b=fxBase(m,jx,jy),b0=fxBase(m,kx,ky);
-    if(fxDrag.i>=0)o.pts[fxDrag.i]=b;else{const dx=b[0]-b0[0],dy=b[1]-b0[1];o.pts=o.pts.map(a=>[a[0]+dx,a[1]+dy])}
+    if(fxDrag.i>=0){let bb=b;if(o.type==='road'){const sp=fxSnapPt(ix,iy,o,fxDrag.i);if(sp){const[sx,sy]=fxInv(o,sp[0],sp[1]);bb=fxBase(m,sx,sy)}}o.pts[fxDrag.i]=bb}else{const dx=b[0]-b0[0],dy=b[1]-b0[1];o.pts=o.pts.map(a=>[a[0]+dx,a[1]+dy])}
     fxDrag.lx=ix;fxDrag.ly=iy;o._k='';return}
   if(ldrag){const r=cv.getBoundingClientRect(),rx=(e.clientX-r.left)*W/r.width,ry=(e.clientY-r.top)*H/r.height,[ix,iy]=toImg(rx,ry);
     if(ldrag.k==='logo'&&logoHit){logoPos=[Math.max(0,Math.min(1-logoHit[2]/W,(rx-ldrag.ox)/W)),Math.max(0,Math.min(1-logoHit[3]/H,(ry-ldrag.oy)/H))]}
@@ -521,7 +522,7 @@ cv.addEventListener('pointermove',e=>{
 ['dragenter','dragover'].forEach(ev=>cv.addEventListener(ev,e=>{e.preventDefault();cv.style.outline='3px dashed #2bc4ff'}));
 ['dragleave','drop'].forEach(ev=>cv.addEventListener(ev,e=>{e.preventDefault();cv.style.outline=''}));
 cv.addEventListener('drop',e=>{const fl=e.dataTransfer&&e.dataTransfer.files;if(!fl||!fl.length)return;addFiles(fl,!bg)});
-const endDrag=()=>{if(labSz){logAct('Etiket boyutu: '+labSz.L.txt+' (en %'+labSz.L.wx+', boy %'+labSz.L.hy+')','lsz');labSz=null;renderLabels();return}if(fxSz){logAct('Efekt boyutu: '+FXN[fxSz.o.type]+' (en %'+(fxSz.o.wx||100)+', boy %'+(fxSz.o.hy||100)+')','fxz');fxSz=null;renderFx();return}if(fxDrag)logAct('Efekt taşındı / şekli değişti: '+FXN[fxDrag.o.type],'fxd');else if(txDrag)logAct('Ana yazı taşındı','txd');else if(ldrag)logAct('Etiket / logo taşındı','ldr');else if(drag!==null)logAct('Arsa çizgisi düzenlendi','pdr');drag=null;ldrag=null;fxDrag=null;txDrag=null};cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+const endDrag=()=>{window.__snapPt=null;if(labSz){logAct('Etiket boyutu: '+labSz.L.txt+' (en %'+labSz.L.wx+', boy %'+labSz.L.hy+')','lsz');labSz=null;renderLabels();return}if(fxSz){logAct('Efekt boyutu: '+FXN[fxSz.o.type]+' (en %'+(fxSz.o.wx||100)+', boy %'+(fxSz.o.hy||100)+')','fxz');fxSz=null;renderFx();return}if(fxDrag)logAct('Efekt taşındı / şekli değişti: '+FXN[fxDrag.o.type],'fxd');else if(txDrag)logAct('Ana yazı taşındı','txd');else if(ldrag)logAct('Etiket / logo taşındı','ldr');else if(drag!==null)logAct('Arsa çizgisi düzenlendi','pdr');drag=null;ldrag=null;fxDrag=null;txDrag=null};cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
 $('undo').onclick=()=>{logAct('Geri al');
   if(fxDraw){if(fxDraw.pts.length)fxDraw.pts.pop();else fxCancel();return}
   if(!pts.length&&fxs.length){fxDel(fxs[fxs.length-1]);$('st').textContent='Son efekt silindi.';return}
@@ -906,7 +907,7 @@ function drawLineX(){
   ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.beginPath();ctx.arc(ax,ay,r,0,7);ctx.fillStyle='#e5353b';ctx.fill();ctx.lineWidth=2*s;ctx.strokeStyle='#fff';ctx.stroke();
   ctx.beginPath();const d=r*.45;ctx.moveTo(ax-d,ay-d);ctx.lineTo(ax+d,ay+d);ctx.moveTo(ax+d,ay-d);ctx.lineTo(ax-d,ay+d);ctx.lineWidth=2.4*s;ctx.lineCap='round';ctx.stroke();ctx.restore();
 }
-function draw(now){ctx.save();try{seqTick(now);if(seq&&seq.items[seq.i].k!=='main')drawScene(now);else{drawInner(now);if(trk)drawTrk();drawLabels(now);drawLineX();ctx.setTransform(1,0,0,1,0,0);drawLogo()}if(window.drawSubs)window.drawSubs(now);drawFlashes(now);if(window.drawSizeHud)window.drawSizeHud(now)}finally{ctx.restore()}}
+function draw(now){ctx.save();try{seqTick(now);if(seq&&seq.items[seq.i].k!=='main')drawScene(now);else{drawInner(now);if(trk)drawTrk();drawLabels(now);try{window.drawSnapRing&&window.drawSnapRing()}catch(e){}drawLineX();ctx.setTransform(1,0,0,1,0,0);drawLogo()}if(window.drawSubs)window.drawSubs(now);drawFlashes(now);if(window.drawSizeHud)window.drawSizeHud(now)}finally{ctx.restore()}}
 function drawInner(now){
   const s=W/1280,col=$('col').value,th=+$('th').value*s,dur=+$('dur').value*1000;
   const live=isVid&&kfs.length>0&&!bg.paused;
@@ -1346,6 +1347,7 @@ function fxClick(x,y,now){
   fxLast=now;
   if(dbl&&d.type==='ptxt'&&d.pts.length===1){const q=ptxtGround(d.pts[0]);if(q){d.pts=q;fxFinish()}else{d.pts=[];toast('Zemin bulunamadı. Zemine (ufuk çizgisinin altına) çift tıklayın veya 4 köşeyi tıklayın.')}return}
   if(dbl&&d.type!=='arc'){fxFinish();return}
+  if(d.type==='road'){const sp=fxSnapPt(x,y,null,-1);if(sp){d.pts.push(fxBase(m,sp[0],sp[1]));window.__snapPt=null;if(d.type==='arc'&&d.pts.length===3)fxFinish();return}}
   d.pts.push(b);
   if(d.type==='arc'&&d.pts.length===3)fxFinish();
   if(d.type==='txt'&&d.pts.length===2)fxFinish();
@@ -3130,5 +3132,28 @@ body.cvs .cv-top button{white-space:nowrap}
   };
   window.sfxSynth=synth;
 })();
-</script><script>(function(){const b=document.getElementById("strtest");if(b)b.onclick=()=>{if(window.sfxMuted)m.onclick();window.sceneSfx()};const m=document.getElementById("strmute");if(m)m.onclick=()=>{window.sfxMuted=!window.sfxMuted;m.textContent=window.sfxMuted?"🔇 Ses kapalı":"🔊 Ses açık";m.setAttribute("aria-pressed",window.sfxMuted?"true":"false");m.style.opacity=window.sfxMuted?".65":"1"}})();</script></body>
+</script><script>(function(){const b=document.getElementById("strtest");if(b)b.onclick=()=>{if(window.sfxMuted)m.onclick();window.sceneSfx()};const m=document.getElementById("strmute");if(m)m.onclick=()=>{window.sfxMuted=!window.sfxMuted;m.textContent=window.sfxMuted?"🔇 Ses kapalı":"🔊 Ses açık";m.setAttribute("aria-pressed",window.sfxMuted?"true":"false");m.style.opacity=window.sfxMuted?".65":"1"}})();</script><script id="fxsnap-js">
+(function(){
+  window.__snapPt=null;
+  window.fxSnapPt=function(ix,iy,self,idx){
+    window.__snapPt=null;
+    try{
+      const c=document.getElementById('fxsnap');if(c&&!c.checked)return null;
+      const R=16*W/1280;let best=null,bd=R;
+      const test=(q,j,t)=>{if(!q)return;const d=Math.hypot(q[0]-ix,q[1]-iy);if(d<bd){bd=d;best=q}};
+      fxs.forEach(t=>{if(t.type!=='road'||!t._P)return;t._P.forEach((P,j)=>{if(t===self&&j===idx)return;test(fxFw(t,P[0],P[1]))})});
+      if(fxDraw&&fxDraw.type==='road'){const m=fxMap();fxDraw.pts.forEach(b=>{const q=fxProj(m,b[0],b[1]);test(q)})}
+      if(closed&&curFull&&curValid)curFull.forEach(q=>test(q));else if(closed&&pts&&pts.length>2&&!isVid)pts.forEach(q=>test(q));
+      if(best){window.__snapPt=best;return best}
+    }catch(e){}
+    return null;
+  };
+  window.drawSnapRing=function(){
+    const q=window.__snapPt;if(!q)return;
+    ctx.save();ctx.setTransform(1,0,0,1,0,0);const s=W/1280;
+    ctx.strokeStyle='#00e5ff';ctx.fillStyle='rgba(0,229,255,.25)';ctx.lineWidth=3*s;ctx.beginPath();ctx.arc(q[0],q[1],13*s,0,7);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(q[0],q[1],3.5*s,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.restore();
+  };
+})();
+</script></body>
 </html>

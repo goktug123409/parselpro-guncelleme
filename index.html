@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071405-->
+<html lang="tr"><!--pp-build:202611071424-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -150,6 +150,8 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Yazı kaç saniyede kaybolmaya başlasın: <span style="display:inline-flex;align-items:center;gap:6px;margin-left:6px"><input id="txfv" type="number" min="0" max="600" step="0.1" value="8" style="width:64px;display:inline-block" oninput="$('txfadet').value=this.value"> sn</span><input id="txfadet" type="range" min="1" max="40" step="0.5" value="8" oninput="$('txfv').value=this.value"></label>
     <p style="margin:0 0 6px;font-size:12px;opacity:.75;color:var(--mut)">Videoda süre, çizginin işaretlendiği andan sayılır. Sürüklerken hiçbir şey kaybolmaz.</p>
     <label>Çizgi efekti<select id="ln"><option value="draw">Sade neon</option><option value="pulse">Nabız gibi parlama</option><option value="flow">Akan ışık</option></select></label>
+    <label>Ana çizgi şekli<select id="lmode"><option value="2d">2 boyutlu (düz neon çizgi)</option><option value="3d">3 boyutlu (yükselen neon duvar)</option></select></label>
+    <label>3 boyutlu duvar yüksekliği <span id="lh3v">14</span>%<input id="lh3" type="range" min="4" max="40" value="14" oninput="$('lh3v').textContent=this.value"></label>
 
     <h2>Efekt nesneleri</h2>
     <div class="row fxbtns"><button id="fx-bld">+ 3D bina</button><button id="fx-road">+ Yol çizgisi</button><button id="fx-arc">+ Kavisli yazı</button><button id="fx-txt">+ Serbest yazı</button><button id="fx-grid">+ Parsel ızgarası</button><button id="fx-pin">+ Konum pini</button><button id="fx-area">+ Renkli alan</button><button id="fx-infolist">+ Bilgi listesi</button><button id="fx-loc">+ Konum yazısı</button><button id="fx-ptxt">+ Perspektif yazı</button><button id="fx-spot">+ Vurgu alanı (karart)</button><button id="fx-lines">+ Renkli satırlar</button><button id="fx-billb">+ Eğik başlık + kart</button><button id="fx-arrow">+ Ok ➜</button></div>
@@ -965,6 +967,7 @@ function drawInner(now){
     ctx.save();ctx.shadowColor=col;ctx.shadowBlur=16*s*gm;ctx.strokeStyle=col;ctx.lineWidth=th;path();ctx.stroke();ctx.restore();
     ctx.strokeStyle='#fff';ctx.lineWidth=th*.35;path();ctx.stroke();
     if(ln==='flow'&&p>=1){ctx.save();ctx.setLineDash([36*s,70*s]);ctx.lineDashOffset=-now/10*s;ctx.strokeStyle='#fff';ctx.lineWidth=th*.9;ctx.shadowColor=col;ctx.shadowBlur=18*s;path();ctx.stroke();ctx.restore()}
+    if($('lmode')&&$('lmode').value==='3d'&&window.draw3DLine){try{window.draw3DLine({poly,lens,left,p,now,s,col,th,gm})}catch(e){}}
     // corner dots
     if($('ls').value!=='card'&&$('sab').checked)pts.forEach(a=>{ctx.beginPath();ctx.arc(a[0],a[1],th*1.1,0,7);ctx.fillStyle='#fff';ctx.shadowColor=col;ctx.shadowBlur=14*s;ctx.fill();ctx.shadowBlur=0});
     ctx.restore();
@@ -3153,6 +3156,67 @@ body.cvs .cv-top button{white-space:nowrap}
     ctx.save();ctx.setTransform(1,0,0,1,0,0);const s=W/1280;
     ctx.strokeStyle='#00e5ff';ctx.fillStyle='rgba(0,229,255,.25)';ctx.lineWidth=3*s;ctx.beginPath();ctx.arc(q[0],q[1],13*s,0,7);ctx.fill();ctx.stroke();
     ctx.beginPath();ctx.arc(q[0],q[1],3.5*s,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.restore();
+  };
+})();
+</script><script id="l3d-js">
+(function(){
+  let ck=null,cpose=null;
+  function pose(Q0){
+    const key=Q0.map(a=>a[0].toFixed(1)+','+a[1].toFixed(1)).join('|');
+    if(ck===key)return cpose;ck=key;cpose=null;
+    try{
+      if(Q0.length<4)return null;
+      let Q=Q0;
+      if(Q0.length>4){let best=-1,n=Math.min(Q0.length,14),S=Q0.slice(0,n);
+        for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)for(let k=j+1;k<n;k++)for(let l=k+1;l<n;l++){const q=[S[i],S[j],S[k],S[l]];let a=0;for(let t=0;t<4;t++){const p1=q[t],p2=q[(t+1)%4];a+=p1[0]*p2[1]-p2[0]*p1[1]}a=Math.abs(a);if(a>best){best=a;Q=q}}}
+      const[x0,y0]=Q[0],[x1,y1]=Q[1],[x2,y2]=Q[2],[x3,y3]=Q[3],sx=x0-x1+x2-x3,sy=y0-y1+y2-y3;
+      let a,b,d2,e,g=0,h=0;
+      if(Math.abs(sx)<1e-6&&Math.abs(sy)<1e-6){a=x1-x0;b=x3-x0;d2=y1-y0;e=y3-y0}
+      else{const dx1=x1-x2,dx2=x3-x2,dy1=y1-y2,dy2=y3-y2,den=dx1*dy2-dx2*dy1;if(Math.abs(den)<1e-9)return null;g=(sx*dy2-dx2*sy)/den;h=(dx1*sy-sx*dy1)/den;a=x1-x0+g*x1;b=x3-x0+h*x3;d2=y1-y0+g*y1;e=y3-y0+h*y3}
+      const rho=Math.min(8,Math.max(.25,ptxtAsp(Q))),M=[a/rho,b,x0,d2/rho,e,y0,g/rho,h,1],I=inv3(M);if(!I)return null;
+      const F=.7*W,u0=W/2,v0=H/2,K3=v=>[(v[0]-u0*v[2])/F,(v[1]-v0*v[2])/F,v[2]],A=K3([M[0],M[3],M[6]]),B=K3([M[1],M[4],M[7]]),Cc=K3([M[2],M[5],M[8]]);
+      let N=[A[1]*B[2]-A[2]*B[1],A[2]*B[0]-A[0]*B[2],A[0]*B[1]-A[1]*B[0]];const nl=Math.hypot(...N)||1;N=N.map(v=>v/nl);const lam=(Math.hypot(...A)+Math.hypot(...B))/2;
+      let sg=1;
+      const fw=(X,Y,hh)=>{hh=hh||0;const x3=X*A[0]+Y*B[0]+Cc[0]+hh*sg*lam*N[0],y3=X*A[1]+Y*B[1]+Cc[1]+hh*sg*lam*N[1],z3=X*A[2]+Y*B[2]+Cc[2]+hh*sg*lam*N[2];return z3<=1e-6?null:[u0+F*x3/z3,v0+F*y3/z3]};
+      const iv=(x,y)=>{const w=I[6]*x+I[7]*y+I[8];return Math.abs(w)<1e-9?null:[(I[0]*x+I[1]*y+I[2])/w,(I[3]*x+I[4]*y+I[5])/w]};
+      const c0=iv((x0+x2)/2,(y0+y2)/2);if(!c0)return null;
+      const b0=fw(c0[0],c0[1],0),t0=fw(c0[0],c0[1],1);if(b0&&t0&&t0[1]>b0[1])sg=-1;
+      cpose={fw,iv,unit:Math.sqrt(rho)};
+    }catch(e){cpose=null}
+    return cpose;
+  }
+  window.draw3DLine=function(o){
+    const {poly,lens,left,p,now,s,col,th,gm}=o;
+    const n=poly.length-1;if(n<2)return;
+    const hpct=(+(document.getElementById('lh3')||{value:14}).value||14)/100;
+    const hk=easeOut(clamp(p/.9));if(hk<=0)return;
+    const P=poly.slice(0,n),pz=pose(P);
+    let tops;
+    if(pz){tops=P.map(q=>{const c=pz.iv(q[0],q[1]);if(!c)return null;return pz.fw(c[0],c[1],hpct*pz.unit*hk*1.6)})}
+    else{const L=Math.sqrt(Math.abs(P.reduce((a,q,i)=>{const r=P[(i+1)%P.length];return a+q[0]*r[1]-r[0]*q[1]},0))/2)||W*.1;tops=P.map(q=>[q[0],q[1]-hpct*1.6*hk*L*.8])}
+    if(tops.some(t=>!t||!isFinite(t[0])||!isFinite(t[1])))return;
+    // edges with covered fraction
+    let cum=0;const E=[];
+    for(let i=0;i<n;i++){const l=lens[i],f=Math.max(0,Math.min(1,(left-cum)/l));cum+=l;if(f<=0)break;E.push({i,f})}
+    // far edges first
+    E.sort((a,b)=>((P[a.i][1]+P[(a.i+1)%n][1])-(P[b.i][1]+P[(b.i+1)%n][1])));
+    ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+    E.forEach(({i,f})=>{
+      const j=(i+1)%n,b0=P[i],b1=P[j],t0=tops[i],t1=tops[j];
+      const e1=[b0[0]+(b1[0]-b0[0])*f,b0[1]+(b1[1]-b0[1])*f],e2=[t0[0]+(t1[0]-t0[0])*f,t0[1]+(t1[1]-t0[1])*f];
+      const g=ctx.createLinearGradient(0,Math.max(b0[1],b1[1]),0,Math.min(t0[1],t1[1]));
+      g.addColorStop(0,hexA(col,.45));g.addColorStop(1,hexA(col,.05));
+      ctx.beginPath();ctx.moveTo(b0[0],b0[1]);ctx.lineTo(e1[0],e1[1]);ctx.lineTo(e2[0],e2[1]);ctx.lineTo(t0[0],t0[1]);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+      // top neon edge
+      ctx.save();ctx.shadowColor=col;ctx.shadowBlur=14*s*gm;ctx.strokeStyle=col;ctx.lineWidth=Math.max(2,th*.7);ctx.beginPath();ctx.moveTo(t0[0],t0[1]);ctx.lineTo(e2[0],e2[1]);ctx.stroke();
+      ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(1,th*.25);ctx.stroke();ctx.restore();
+    });
+    // vertical posts
+    E.forEach(({i,f})=>{
+      const drawPost=k=>{ctx.save();ctx.shadowColor=col;ctx.shadowBlur=12*s*gm;ctx.strokeStyle=hexA(col,.9);ctx.lineWidth=Math.max(2,th*.55);ctx.beginPath();ctx.moveTo(P[k][0],P[k][1]);ctx.lineTo(tops[k][0],tops[k][1]);ctx.stroke();ctx.restore();ctx.beginPath();ctx.arc(tops[k][0],tops[k][1],th*.9,0,7);ctx.fillStyle='#fff';ctx.fill()};
+      drawPost(i);if(f>=1)drawPost((i+1)%n);
+    });
+    ctx.restore();
   };
 })();
 </script></body>

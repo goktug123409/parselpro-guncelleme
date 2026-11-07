@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071432-->
+<html lang="tr"><!--pp-build:202611071437-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -152,6 +152,17 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Çizgi efekti<select id="ln"><option value="draw">Sade neon</option><option value="pulse">Nabız gibi parlama</option><option value="flow">Akan ışık</option></select></label>
     <label>Ana çizgi şekli<select id="lmode"><option value="2d">2 boyutlu (düz neon çizgi)</option><option value="3d">3 boyutlu (yükselen neon duvar)</option></select></label>
     <label>3 boyutlu duvar yüksekliği <span id="lh3v">14</span>%<input id="lh3" type="range" min="4" max="40" value="14" oninput="$('lh3v').textContent=this.value"></label>
+    <div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--bd)">
+    <label class="chk"><input type="checkbox" id="msron"> 📏 Ölçüleri göster (kenar uzunlukları ve alan)</label>
+    <div class="row"><label>Tapu alanı (m²)<input id="msrarea" type="number" min="0" step="1" placeholder="örn. 273"></label><label>Referans kenar uzunluğu (m)<input id="msrlen" type="number" min="0" step="0.1" placeholder="örn. 18.4"></label></div>
+    <div class="s" style="font-weight:600;margin-top:4px">Kenarların gerçek ölçüsü (tapudan; yazarsanız otomatik değerin yerine geçer)</div>
+    <div class="row" id="msredges" style="flex-wrap:wrap"></div>
+    <div class="row"><button type="button" id="msrpick">👆 Referans kenarı ekranda seç</button></div>
+    <label class="chk"><input type="checkbox" id="msrk" checked> Kenar uzunluklarını yaz</label>
+    <label class="chk"><input type="checkbox" id="msra" checked> Alanı (m²) ortaya yaz</label>
+    <div class="s" id="msrinfo"></div>
+    <div class="s" style="font-size:12px">Sadece tapu alanını yazarsanız kenarlar ona göre hesaplanır. Bir kenarın gerçek uzunluğunu da yazarsanız o esas alınır (düzensiz arsalarda daha doğru). Otomatik değerler arsayı dikdörtgene yakın varsayar; düzensiz arsalarda kenar ölçülerini yukarıya kendiniz yazın, alan ve toplam doğru kalır.</div>
+    </div>
 
     <h2>Efekt nesneleri</h2>
     <div class="row fxbtns"><button id="fx-bld">+ 3D bina</button><button id="fx-road">+ Yol çizgisi</button><button id="fx-arc">+ Kavisli yazı</button><button id="fx-txt">+ Serbest yazı</button><button id="fx-grid">+ Parsel ızgarası</button><button id="fx-pin">+ Konum pini</button><button id="fx-area">+ Renkli alan</button><button id="fx-infolist">+ Bilgi listesi</button><button id="fx-loc">+ Konum yazısı</button><button id="fx-ptxt">+ Perspektif yazı</button><button id="fx-spot">+ Vurgu alanı (karart)</button><button id="fx-lines">+ Renkli satırlar</button><button id="fx-billb">+ Eğik başlık + kart</button><button id="fx-arrow">+ Ok ➜</button></div>
@@ -977,6 +988,7 @@ function drawInner(now){
     ctx.strokeStyle='#fff';ctx.lineWidth=th*.35;path();ctx.stroke();
     if(ln==='flow'&&p>=1){ctx.save();ctx.setLineDash([36*s,70*s]);ctx.lineDashOffset=-now/10*s;ctx.strokeStyle='#fff';ctx.lineWidth=th*.9;ctx.shadowColor=col;ctx.shadowBlur=18*s;path();ctx.stroke();ctx.restore()}
     if($('lmode')&&$('lmode').value==='3d'&&window.draw3DLine){try{window.draw3DLine({poly,lens,left,p,now,s,col,th,gm})}catch(e){}}
+    try{window.drawMeasures&&window.drawMeasures({P:pts,s,col,p})}catch(e){}
     // corner dots
     if($('ls').value!=='card'&&$('sab').checked)pts.forEach(a=>{ctx.beginPath();ctx.arc(a[0],a[1],th*1.1,0,7);ctx.fillStyle='#fff';ctx.shadowColor=col;ctx.shadowBlur=14*s;ctx.fill();ctx.shadowBlur=0});
     ctx.restore();
@@ -3196,6 +3208,7 @@ body.cvs .cv-top button{white-space:nowrap}
     }catch(e){cpose=null}
     return cpose;
   }
+  window.parcelPose=pose;
   window.draw3DLine=function(o){
     const {poly,lens,left,p,now,s,col,th,gm}=o;
     const n=poly.length-1;if(n<2)return;
@@ -3270,6 +3283,84 @@ body.cvs .cv-top button{white-space:nowrap}
     setTimeout(()=>{if(ps)stopPrev()},Math.min(total,40)*1000+1000);
   };
   info();
+})();
+</script>
+<script id="msr-js">
+(function(){
+  const $m=id=>document.getElementById(id);
+  let cache=null,ckey='',edge=0,picking=false,man=[],built=-1;
+  const fmt=(v,d)=>v.toFixed(d).replace('.',',');
+  function calc(P){
+    const n=P.length,pz=window.parcelPose&&n>=4?window.parcelPose(P):null;
+    const C=P.map(q=>{if(pz){const c=pz.iv(q[0],q[1]);if(c)return c}return[q[0],q[1]]});
+    const L=C.map((c,i)=>{const d=C[(i+1)%n];return Math.hypot(d[0]-c[0],d[1]-c[1])});
+    let ar=0;C.forEach((c,i)=>{const d=C[(i+1)%n];ar+=c[0]*d[1]-d[0]*c[1]});ar=Math.abs(ar)/2;
+    const ref=+$m('msrlen').value,am=+$m('msrarea').value;
+    let k=null;
+    if(ref>0&&L[Math.min(edge,n-1)]>0)k=ref/L[Math.min(edge,n-1)];else if(am>0&&ar>0)k=Math.sqrt(am/ar);
+    if(!k)return null;
+    return{len:L.map(v=>v*k),area:(am>0&&!(ref>0))?am:ar*k*k};
+  }
+  window.drawMeasures=function(o){
+    try{
+      if(!$m('msron')||!$m('msron').checked)return;
+      const P=o.P,n=P.length;if(!(closed&&n>=3))return;
+      const playing=isVid&&bg&&!bg.paused,key=n+'|'+$m('msrarea').value+'|'+$m('msrlen').value+'|'+edge;
+      if(!cache||key!==ckey||!playing){const r=calc(P);if(r||!playing){cache=r;ckey=key}}
+      const R=cache;
+      const al=clamp((o.p-.55)/.35);if(al<=0)return;
+      const s=o.s;ctx.save();ctx.globalAlpha*=al;
+      const cen=[P.reduce((a,q)=>a+q[0],0)/n,P.reduce((a,q)=>a+q[1],0)/n];
+      const pill=(txt,x,y,fs,hi)=>{
+        ctx.font='800 '+fs+'px system-ui,"Segoe UI",Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        const w=ctx.measureText(txt).width+fs*.9,h=fs*1.55,r=h/2;
+        ctx.beginPath();ctx.moveTo(x-w/2+r,y-h/2);ctx.arcTo(x+w/2,y-h/2,x+w/2,y+h/2,r);ctx.arcTo(x+w/2,y+h/2,x-w/2,y+h/2,r);ctx.arcTo(x-w/2,y+h/2,x-w/2,y-h/2,r);ctx.arcTo(x-w/2,y-h/2,x+w/2,y-h/2,r);ctx.closePath();
+        ctx.fillStyle='rgba(8,12,20,.72)';ctx.fill();ctx.lineWidth=Math.max(1.5,2*s);ctx.strokeStyle=hi?'#ffd23d':o.col;ctx.stroke();
+        ctx.fillStyle='#fff';ctx.fillText(txt,x,y+fs*.04);
+      };
+      const anyMan=man.some(v=>v>0);
+      if(!R&&!anyMan){
+        pill('Ölçü için alan (m²) veya kenar uzunlukları girin',cen[0],cen[1],18*s,false);
+        ctx.restore();return;
+      }
+      if($m('msrk').checked){
+        for(let i=0;i<n;i++){
+          const val=man[i]>0?man[i]:(R?R.len[i]:0);if(!(val>0))continue;
+          const a=P[i],b=P[(i+1)%n],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
+          let nx=-(b[1]-a[1]),ny=b[0]-a[0];const nl=Math.hypot(nx,ny)||1;nx/=nl;ny/=nl;
+          if((mx-cen[0])*nx+(my-cen[1])*ny<0){nx=-nx;ny=-ny}
+          const off=26*s;pill(fmt(val,val>=100?0:1)+' m',mx+nx*off,my+ny*off,19*s,false);
+        }
+      }
+      if(R&&$m('msra').checked)pill(R.area>=100?Math.round(R.area).toLocaleString('tr-TR')+' m²':fmt(R.area,1)+' m²',cen[0],cen[1]+30*s,26*s,false);
+      ctx.restore();
+    }catch(e){}
+  };
+  $m('msrpick').onclick=()=>{
+    picking=!picking;$m('msrpick').textContent=picking?'✖ Seçimi iptal et':'👆 Referans kenarı ekranda seç';
+    $m('msrinfo').textContent=picking?'Uzunluğunu bildiğiniz kenarın üzerine tıklayın.':info();
+    cv.style.cursor=picking?'crosshair':'';
+  };
+  function info(){return 'Referans kenar: '+(edge+1)+'. kenar'+(+$m('msrlen').value>0?' = '+$m('msrlen').value+' m':' (uzunluk girilmedi)')}
+  cv.addEventListener('pointerdown',e=>{
+    if(!picking)return;
+    const P=pts;if(!closed||P.length<3){return}
+    e.stopImmediatePropagation();e.preventDefault();
+    const r=cv.getBoundingClientRect(),[x,y]=toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);
+    let best=-1,bd=1e9;
+    for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],d=fxSegD(x,y,a,b);if(d<bd){bd=d;best=i}}
+    if(best>=0){edge=best;picking=false;$m('msrpick').textContent='👆 Referans kenarı ekranda seç';cv.style.cursor='';$m('msrinfo').textContent=info()+'. Uzunluğu yukarıya girin.';$m('msron').checked=true;cache=null}
+  },true);
+  ['msrlen','msrarea'].forEach(id=>$m(id).addEventListener('input',()=>{cache=null;$m('msrinfo').textContent=info()}));
+  function build(){
+    const n=(closed&&pts)?pts.length:0;if(n===built)return;built=n;const box=$m('msredges');if(!box)return;
+    box.innerHTML='';if(n<3){box.textContent='Önce arsayı çizin.';return}
+    man=man.slice(0,n);
+    for(let i=0;i<n;i++){const l=document.createElement('label');l.style.minWidth='46%';l.innerHTML='Kenar '+(i+1)+' (m)<input type="number" min="0" step="0.1" placeholder="otomatik" value="'+(man[i]>0?man[i]:'')+'">';
+      l.querySelector('input').addEventListener('input',e=>{man[i]=+e.target.value||0});box.appendChild(l)}
+  }
+  setInterval(build,400);build();
+  $m('msrinfo').textContent=info();
 })();
 </script>
 </body>

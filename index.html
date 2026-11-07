@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072230-->
+<html lang="tr"><!--pp-build:202611072234-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4189,18 +4189,20 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
 (function(){
   const KEY='pp_ptl_h';let sc=null,box=null,h=0;
   const st=document.createElement('style');
-  st.textContent='#ptl .rz{position:absolute;left:0;right:0;top:0;height:10px;cursor:ns-resize;z-index:8;display:flex;justify-content:center;align-items:flex-start}#ptl .rz::after{content:"";margin-top:3px;width:46px;height:4px;border-radius:4px;background:rgba(255,255,255,.22);transition:background .15s}#ptl .rz:hover::after,#ptl .rz.on::after{background:#35c8ff}#ptl{position:relative}#ptl .ph{padding-top:12px}';
+  st.textContent='#ptl .rz{position:absolute;left:0;right:0;top:0;height:14px;cursor:ns-resize;z-index:8;display:flex;justify-content:center;align-items:flex-start}#ptl .rz::after{content:"";margin-top:3px;width:46px;height:4px;border-radius:4px;background:rgba(255,255,255,.22);transition:background .15s}#ptl .rz:hover::after,#ptl .rz.on::after{background:#35c8ff}#ptl{position:relative}#ptl .ph{padding-top:12px}';
   document.head.appendChild(st);
   const upd=()=>{try{document.documentElement.style.setProperty('--ptl-h',(box.offsetHeight||0)+'px')}catch(e){}window.dispatchEvent(new Event('resize'))};
   const apply=v=>{const mx=Math.round(innerHeight*.7);h=Math.max(90,Math.min(mx,v));sc.style.setProperty('height',h+'px','important');sc.style.setProperty('max-height','none','important');upd()};
   function init(){
     box=document.getElementById('ptl');sc=document.getElementById('ptl-sc');if(!box||!sc)return false;
-    const r=document.createElement('div');r.className='rz';r.title='Yukarı çek: zaman çizelgesini büyüt • aşağı çek: küçült • çift tık: sıfırla';box.insertBefore(r,box.firstChild);
+    const r=document.createElement('div');r.className='rz';r.title='Yukarı çek (veya başlık çubuğunu tut ve yukarı çek): zaman çizelgesini büyüt • aşağı çek: küçült • çift tık: sıfırla';box.insertBefore(r,box.firstChild);
     try{const v=+localStorage.getItem(KEY);if(v>0)apply(v)}catch(e){}
     let d=null;
-    r.addEventListener('pointerdown',e=>{d={y:e.clientY,h:sc.offsetHeight};r.classList.add('on');r.setPointerCapture(e.pointerId);e.preventDefault()});
+    const start=(e,el)=>{d={y:e.clientY,h:sc.offsetHeight};r.classList.add('on');el.setPointerCapture(e.pointerId);e.preventDefault()};
+    r.addEventListener('pointerdown',e=>start(e,r));
+    const ph=box.querySelector('.ph');if(ph){ph.style.cursor='ns-resize';ph.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;start(e,ph)});ph.addEventListener('pointermove',e=>{if(d)apply(d.h+(d.y-e.clientY))});ph.addEventListener('pointerup',()=>end());ph.addEventListener('pointercancel',()=>end())}
     r.addEventListener('pointermove',e=>{if(!d)return;apply(d.h+(d.y-e.clientY))});
-    const end=()=>{if(!d)return;d=null;r.classList.remove('on');try{localStorage.setItem(KEY,String(h))}catch(e){}};
+    function end(){if(!d)return;d=null;r.classList.remove('on');try{localStorage.setItem(KEY,String(h))}catch(e){}}
     r.addEventListener('pointerup',end);r.addEventListener('pointercancel',end);
     r.addEventListener('dblclick',()=>{sc.style.removeProperty('height');sc.style.removeProperty('max-height');try{localStorage.removeItem(KEY)}catch(e){}upd()});
     return true;

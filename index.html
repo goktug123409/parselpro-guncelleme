@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072053-->
+<html lang="tr"><!--pp-build:202611072107-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3739,33 +3739,41 @@ window.ppHelp=function(){
   const NAMEW=150,ROWH=28;
   let box,head,scroll,content,phead,tinfo,zoom=1,collapsed=false,sig='',drag=null,pps=60,Tt=5,off=0,lastX=0;
   const css=document.createElement('style');
-  css.textContent='#ptl{flex:none;display:flex;flex-direction:column;background:#0c1119;border-top:1px solid rgba(255,255,255,.08);color:#dfe6f3;font:12px system-ui,"Segoe UI",sans-serif;user-select:none}'+
-  '#ptl .ph{display:flex;align-items:center;gap:8px;padding:6px 12px;border-bottom:1px solid rgba(255,255,255,.06)}'+
-  '#ptl .ph b{font-size:13px}#ptl .ph .sp{flex:1}'+
-  '#ptl .ph button{background:#1a2335;border:1px solid #27324a;color:#fff;border-radius:8px;padding:3px 10px;cursor:pointer;font-size:12px}'+
-  '#ptl .ph button:hover{border-color:#3a4d78}'+
-  '#ptl .sc{position:relative;overflow:auto;flex:none;height:min(170px,26vh)}'+
+  css.textContent='#ptl{flex:none;display:flex;flex-direction:column;margin:0 12px 12px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#121926,#0d121b);border:1px solid rgba(255,255,255,.09);box-shadow:0 18px 40px -18px rgba(0,0,0,.8);color:#dfe6f3;font:12px system-ui,"Segoe UI",sans-serif;user-select:none;contain:layout paint}'+
+  '#ptl .ph{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06)}'+
+  '#ptl .ph b{font-size:13px;font-weight:800;letter-spacing:.2px}#ptl .ph .sp{flex:1}'+
+  '#ptl .tm{font:700 12px ui-monospace,Consolas,monospace;color:#7fd4ff;background:rgba(53,200,255,.12);padding:3px 9px;border-radius:999px}'+
+  '#ptl .hnt{color:#7d889e;font-size:11.5px}'+
+  '#ptl .ph button{width:28px;height:26px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:8px;cursor:pointer;font-size:13px;line-height:1;transition:background .15s}'+
+  '#ptl .ph button:hover{background:rgba(255,255,255,.14)}'+
+  '#ptl .sc{position:relative;overflow:auto;flex:none;height:min(170px,26vh);scrollbar-width:thin;scrollbar-color:#2a3550 transparent}'+
   '#ptl .ct{position:relative;min-height:100%}'+
-  '#ptl .rw{display:flex;height:'+ROWH+'px;border-bottom:1px solid rgba(255,255,255,.04)}'+
-  '#ptl .rw.sel{background:rgba(53,200,255,.07)}'+
-  '#ptl .nm{position:sticky;left:0;z-index:4;flex:none;width:'+NAMEW+'px;background:#0c1119;border-right:1px solid rgba(255,255,255,.08);padding:0 10px;line-height:'+ROWH+'px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}'+
-  '#ptl .rw.sel .nm{background:#121c2b;color:#7fd4ff}'+
+  '#ptl .rw{display:flex;height:'+ROWH+'px}'+
+  '#ptl .rw:nth-child(odd){background:rgba(255,255,255,.015)}'+
+  '#ptl .rw.sel{background:rgba(53,200,255,.09)}'+
+  '#ptl .nm{position:sticky;left:0;z-index:4;flex:none;width:'+NAMEW+'px;background:#0e141f;padding:0 10px 0 14px;line-height:'+ROWH+'px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:#b8c3d8;border-right:1px solid rgba(255,255,255,.07)}'+
+  '#ptl .nm::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;background:var(--dc,#4fb8ff);box-shadow:0 0 8px var(--dc,#4fb8ff)}'+
+  '#ptl .nm.nd::before{display:none}#ptl .nm.nd{padding-left:12px}#ptl .nm:hover{color:#fff}#ptl .rw.sel .nm{background:#132338;color:#fff}'+
   '#ptl .tk{position:relative;flex:none}'+
-  '#ptl .bar{position:absolute;top:4px;height:'+(ROWH-8)+'px;border-radius:7px;color:#06101b;font-weight:700;font-size:11px;line-height:'+(ROWH-8)+'px;padding:0 8px;overflow:hidden;white-space:nowrap;cursor:grab;box-sizing:border-box}'+
-  '#ptl .bar.inf{border-top-right-radius:2px;border-bottom-right-radius:2px;background-image:linear-gradient(90deg,transparent 70%,rgba(0,0,0,.35))}'+
-  '#ptl .bar.lock{opacity:.45;cursor:not-allowed}'+
-  '#ptl .bar .eh{position:absolute;top:0;bottom:0;width:8px;cursor:ew-resize;background:rgba(0,0,0,.25)}'+
-  '#ptl .bar .eh.l{left:0;border-radius:7px 0 0 7px}#ptl .bar .eh.r{right:0;border-radius:0 7px 7px 0}'+
-  '#ptl .rl .tk{cursor:pointer}'+
-  '#ptl .tick{position:absolute;top:0;bottom:0;border-left:1px solid rgba(255,255,255,.12);padding-left:4px;font-size:10px;color:#8793aa;line-height:'+ROWH+'px}'+
-  '#ptl .ph-line{position:absolute;top:0;bottom:0;width:2px;background:#ff4d6d;z-index:3;pointer-events:none;box-shadow:0 0 8px #ff4d6d}'+
-  '#ptl .empty{padding:16px;color:#8793aa}';
+  '#ptl .bar{position:absolute;top:5px;height:'+(ROWH-10)+'px;border-radius:999px;color:#071018;font-weight:700;font-size:10.5px;line-height:'+(ROWH-10)+'px;padding:0 12px;overflow:hidden;white-space:nowrap;cursor:grab;box-sizing:border-box;background:var(--bc);box-shadow:0 4px 12px -4px var(--bc),inset 0 1px 0 rgba(255,255,255,.35);transition:filter .12s}'+
+  '#ptl .bar:hover{filter:brightness(1.12)}#ptl .rw.sel .bar{box-shadow:0 0 0 2px #fff,0 6px 16px -4px var(--bc)}'+
+  '#ptl .bar.inf{border-top-right-radius:6px;border-bottom-right-radius:6px;-webkit-mask-image:linear-gradient(90deg,#000 80%,rgba(0,0,0,.45));mask-image:linear-gradient(90deg,#000 80%,rgba(0,0,0,.45))}'+
+  '#ptl .bar.lock{opacity:.4;cursor:not-allowed;filter:saturate(.5)}'+
+  '#ptl .bar .eh{position:absolute;top:0;bottom:0;width:10px;cursor:ew-resize}'+
+  '#ptl .bar .eh::after{content:"";position:absolute;top:7px;bottom:7px;left:4px;width:2px;border-radius:2px;background:rgba(0,0,0,.35)}'+
+  '#ptl .bar .eh.l{left:0}#ptl .bar .eh.r{right:0}'+
+  '#ptl .rl{background:rgba(255,255,255,.04)!important}#ptl .rl .tk{cursor:pointer}'+
+  '#ptl .tick{position:absolute;bottom:0;height:9px;border-left:1px solid rgba(255,255,255,.22)}'+
+  '#ptl .tick i{position:absolute;bottom:10px;left:4px;font:600 10px ui-monospace,Consolas,monospace;font-style:normal;color:#7d889e}'+
+  '#ptl .ph-line{position:absolute;top:0;bottom:0;left:0;width:2px;margin-left:-1px;background:#ff4d6d;z-index:3;pointer-events:none;will-change:transform}'+
+  '#ptl .ph-line::before{content:"";position:absolute;top:0;left:-5px;border:6px solid transparent;border-top:9px solid #ff4d6d;border-bottom:0}'+
+  '#ptl .empty{padding:18px;color:#7d889e}';
   document.head.appendChild(css);
   function fmt(t){t=Math.max(0,t);return Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')}
   function mount(){
     const m=document.querySelector('.cv-main');if(!m)return false;
     box=document.createElement('div');box.id='ptl';
-    box.innerHTML='<div class="ph"><b>⏱ Zaman çizelgesi</b><span id="ptl-t" style="color:#8793aa"></span><span class="sp"></span><span style="color:#8793aa">Çubuğu sürükle = kaydır • kenarlarından çek = süre</span><button id="ptl-zo" title="Uzaklaş">−</button><button id="ptl-zi" title="Yakınlaş">+</button><button id="ptl-cl" title="Küçült / büyüt">▾</button></div><div class="sc" id="ptl-sc"><div class="ct" id="ptl-ct"></div></div>';
+    box.innerHTML='<div class="ph"><b>⏱ Zaman çizelgesi</b><span id="ptl-t" class="tm"></span><span class="sp"></span><span class="hnt">Çubuğu sürükle = kaydır • kenarlarından çek = süre</span><button id="ptl-zo" title="Uzaklaş">−</button><button id="ptl-zi" title="Yakınlaş">+</button><button id="ptl-cl" title="Küçült / büyüt">▾</button></div><div class="sc" id="ptl-sc"><div class="ct" id="ptl-ct"></div></div>';
     m.appendChild(box);scroll=g('ptl-sc');content=g('ptl-ct');tinfo=g('ptl-t');
     g('ptl-zi').onclick=()=>{zoom=Math.min(10,zoom*1.5);sig=''};g('ptl-zo').onclick=()=>{zoom=Math.max(.4,zoom/1.5);sig=''};
     g('ptl-cl').onclick=()=>{collapsed=!collapsed;scroll.style.display=collapsed?'none':'';g('ptl-cl').textContent=collapsed?'▴':'▾';size()};
@@ -3789,14 +3797,14 @@ window.ppHelp=function(){
     let h='';
     // ruler
     let step=1;const want=70/pps;[.5,1,2,5,10,15,30,60].some(s=>{step=s;return s>=want});
-    let tk='';for(let t=0;t<=Tt+1e-6;t+=step)tk+='<div class="tick" style="left:'+(t*pps)+'px">'+(step<1?t.toFixed(1)+'s':fmt(t))+'</div>';
-    h+='<div class="rw rl" id="ptl-ruler"><div class="nm" style="cursor:default;color:#8793aa">Zaman</div><div class="tk" style="width:'+W+'px">'+tk+'</div></div>';
-    h+='<div class="rw"><div class="nm" style="cursor:default">🎞 Ana video / foto</div><div class="tk" style="width:'+W+'px"><div class="bar lock" style="left:0;width:'+(Tt*pps)+'px;background:#5a6a86;cursor:default;opacity:.7">'+(isVid?'Video':'Fotoğraf')+' • '+Tt.toFixed(1)+' sn</div></div></div>';
+    let tk='';for(let t=0;t<=Tt+1e-6;t+=step)tk+='<div class="tick" style="left:'+(t*pps)+'px"><i>'+(step<1?t.toFixed(1)+'s':fmt(t))+'</i></div>';
+    h+='<div class="rw rl" id="ptl-ruler"><div class="nm nd" style="cursor:default;color:#8793aa">Zaman</div><div class="tk" style="width:'+W+'px">'+tk+'</div></div>';
+    h+='<div class="rw"><div class="nm nd" style="cursor:default">🎞 Ana video / foto</div><div class="tk" style="width:'+W+'px"><div class="bar lock" style="left:0;width:'+(Tt*pps)+'px;--bc:#5a6a86;cursor:default;opacity:.75">'+(isVid?'Video':'Fotoğraf')+' • '+Tt.toFixed(1)+' sn</div></div></div>';
     if(!its.length)h+='<div class="empty">Henüz efekt veya etiket yok. Efektler / Etiketler sekmesinden ekleyince burada süre çubuğu olarak görünür.</div>';
     its.forEach((it,i)=>{
       const s=(off+it.ts)*pps,e=it.te>0?(off+it.te)*pps:Tt*pps,w=Math.max(10,e-s),sel=(it.o===fxSel||it.o===labSel);
       const lab=it.ts.toFixed(1)+'s → '+(it.te>0?it.te.toFixed(1)+'s':'∞');
-      h+='<div class="rw'+(sel?' sel':'')+'" data-i="'+i+'"><div class="nm" data-i="'+i+'" title="'+it.name.replace(/"/g,'')+'">'+it.name.replace(/</g,'&lt;')+'</div><div class="tk" style="width:'+W+'px"><div class="bar'+(it.te>0?'':' inf')+(it.lock?' lock':'')+'" data-i="'+i+'" style="left:'+s+'px;width:'+w+'px;background:'+it.col+'" title="'+(it.lock?'Grup zamanı açık: süre Efektler sekmesindeki grup ayarından gelir':lab)+'">'+(it.lock?'':'<span class="eh l" data-z="l"></span><span class="eh r" data-z="r"></span>')+lab+'</div></div></div>';
+      h+='<div class="rw'+(sel?' sel':'')+'" data-i="'+i+'"><div class="nm" style="--dc:'+it.col+'" data-i="'+i+'" title="'+it.name.replace(/"/g,'')+'">'+it.name.replace(/</g,'&lt;')+'</div><div class="tk" style="width:'+W+'px"><div class="bar'+(it.te>0?'':' inf')+(it.lock?' lock':'')+'" data-i="'+i+'" style="left:'+s+'px;width:'+w+'px;--bc:'+it.col+'" title="'+(it.lock?'Grup zamanı açık: süre Efektler sekmesindeki grup ayarından gelir':lab)+'">'+(it.lock?'':'<span class="eh l" data-z="l"></span><span class="eh r" data-z="r"></span>')+lab+'</div></div></div>';
     });
     content.innerHTML=h+'<div class="ph-line" id="ptl-pl"></div>';
     content.style.width=(NAMEW+W)+'px';phead=g('ptl-pl');size();
@@ -3847,17 +3855,28 @@ window.ppHelp=function(){
     try{return JSON.stringify([Tt.toFixed(1),zoom,G(),g('gts')&&g('gts').value,g('gte')&&g('gte').value,scroll.clientWidth,isVid,(kfs&&kfs[0]&&kfs[0].t)||0,
       fxs.map(o=>[o.type,o.txt&&String(o.txt).slice(0,14),o.ts,o.te,o.grp]),labels.map(L=>[L.txt,L.ts,L.te,L.grp]),fxs.indexOf(fxSel),labels.indexOf(labSel)])}catch(e){return ''}
   }
+  let lastT=-1,lastPx=-1;
+  function frame(){
+    try{
+      if(box&&box.style.display!=='none'&&!collapsed&&phead){
+        const t=curT(),x=NAMEW+t*pps;
+        if(x!==lastPx){lastPx=x;phead.style.transform='translateX('+x+'px)'}
+        const k=Math.floor(t*4);if(k!==lastT){lastT=k;tinfo.textContent=fmt(t)+' / '+fmt(Tt)}
+        if(isVid&&bg&&!bg.paused){const L=scroll.scrollLeft,Wd=scroll.clientWidth;if(x<L+NAMEW||x>L+Wd-20)scroll.scrollLeft=Math.max(0,x-NAMEW-40)}
+      }
+    }catch(e){}
+    requestAnimationFrame(frame);
+  }
   function tick(){
     try{
       const has=!!(typeof bg!=='undefined'&&bg);
-      box.style.display=has?'':'none';
+      const disp=has?'':'none';
+      if(box.style.display!==disp){box.style.display=disp;size()}
       if(has&&!collapsed&&!drag){const s=signature();if(s!==sig){sig=s;build()}}
-      if(has&&!collapsed&&phead){const t=curT(),x=NAMEW+t*pps;phead.style.left=x+'px';tinfo.textContent=fmt(t)+' / '+fmt(Tt);
-        if(isVid&&bg&&!bg.paused){const L=scroll.scrollLeft,Wd=scroll.clientWidth;if(x<L+NAMEW||x>L+Wd-20)scroll.scrollLeft=Math.max(0,x-NAMEW-40)}}
-      if(has)size();
     }catch(e){}
   }
-  const iv=setInterval(()=>{if(mount()){clearInterval(iv);setInterval(tick,120);tick()}},300);
+  window.addEventListener('resize',()=>{sig=''});
+  const iv=setInterval(()=>{if(mount()){clearInterval(iv);setInterval(tick,400);tick();requestAnimationFrame(frame)}},300);
 })();
 </script>
 </body>

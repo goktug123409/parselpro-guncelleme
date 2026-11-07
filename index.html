@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072213-->
+<html lang="tr"><!--pp-build:202611072217-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -543,7 +543,7 @@ cv.addEventListener('pointerdown',e=>{
    if(logoImg&&logoHit&&rx>=logoHit[0]&&rx<=logoHit[0]+logoHit[2]&&ry>=logoHit[1]&&ry<=logoHit[1]+logoHit[3]){ldrag={k:'logo',ox:rx-logoHit[0],oy:ry-logoHit[1]};cv.setPointerCapture(e.pointerId);return}
    for(let i=labels.length-1;i>=0;i--){const L=labels[i];if(!L.hit)continue;
      if(x>=L.hit[0]&&x<=L.hit[0]+L.hit[2]&&y>=L.hit[1]&&y<=L.hit[1]+L.hit[3]){labSel=L;ldrag={k:'pill',L,lx:x,ly:y};cv.setPointerCapture(e.pointerId);return}
-     if(L.ax&&Math.hypot(x-L.ax[0],y-L.ax[1])<L.ax[2]*.9&&closed&&curFull){labSel=L;ldrag={k:'anc',L};cv.setPointerCapture(e.pointerId);return}}}
+     if(L.ax&&Math.hypot(x-L.ax[0],y-L.ax[1])<L.ax[2]*.9&&(L.bx!==undefined||(closed&&curFull))){labSel=L;ldrag={k:'anc',L};cv.setPointerCapture(e.pointerId);return}}}
   if(isVid)bg.pause();
   if(closed){
     const hi=nearest(x,y);
@@ -567,7 +567,7 @@ cv.addEventListener('pointermove',e=>{
   if(ldrag){const r=cv.getBoundingClientRect(),rx=(e.clientX-r.left)*W/r.width,ry=(e.clientY-r.top)*H/r.height,[ix,iy]=toImg(rx,ry);
     if(ldrag.k==='logo'&&logoHit){logoPos=[Math.max(0,Math.min(1-logoHit[2]/W,(rx-ldrag.ox)/W)),Math.max(0,Math.min(1-logoHit[3]/H,(ry-ldrag.oy)/H))]}
     else if(ldrag.k==='pill'){ldrag.L.dx=(ldrag.L.dx||0)+ix-ldrag.lx;ldrag.L.dy=(ldrag.L.dy||0)+iy-ldrag.ly;ldrag.lx=ix;ldrag.ly=iy}
-    else if(ldrag.k==='anc'){const L=ldrag.L,Q=labQuad(curFull,L.qi),uv=Q&&invQuad(sqP(Q),ix,iy);if(uv){L.u=uv[0];L.v=uv[1]}}
+    else if(ldrag.k==='anc'){const L=ldrag.L;if(L.bx!==undefined){const bb=fxBase(isVid?fxMap():null,ix,iy);L.bx=bb[0];L.by=bb[1]}else{const Q=labQuad(curFull,L.qi),uv=Q&&invQuad(sqP(Q),ix,iy);if(uv){L.u=uv[0];L.v=uv[1]}}}
     return}
   if(drag===null)return;
   const r=cv.getBoundingClientRect();
@@ -2050,10 +2050,8 @@ function labQuad(P,qi){
 }
 function addLabelAt(x,y){
   placing=false;toastUntil=0;cv.style.cursor='crosshair';$('st').textContent='';
-  if(!closed||!curFull||curFull.length<3){$('st').textContent='Önce arsanın köşelerini işaretleyip alanı kapatın.';try{toast('Önce arsanın köşelerini işaretleyip alanı kapatın.')}catch(e){}return}
-  const qi=quadIdx(curFull),Q=labQuad(curFull,qi);if(!Q)return;
-  const uv=invQuad(sqP(Q),x,y);if(!uv)return;
-  labels.push({txt:'Yeni etiket',cap:'',u:uv[0],v:uv[1],qi});labSel=labels[labels.length-1];if(isVid)try{bg.pause()}catch(e){}logAct('Etiket eklendi');renderLabels();try{toast('Etiket eklendi. Yazısını Efekt bölümünden değiştirebilirsiniz.')}catch(e){}
+  const bb=fxBase(isVid?fxMap():null,x,y);
+  labels.push({txt:'Yeni etiket',cap:'',bx:bb[0],by:bb[1]});labSel=labels[labels.length-1];if(isVid)try{bg.pause()}catch(e){}logAct('Etiket eklendi');renderLabels();try{toast('Etiket eklendi. Yazısını Efekt bölümünden değiştirebilirsiniz.')}catch(e){}
 }
 let labSel=null,labSz=null;
 const VICONS={
@@ -2203,14 +2201,17 @@ function drawEmoji3(c,em,cx,cy,r,ang){
 function vi3ang(L,now){const m=L.i3||'swing';if(stillMode)return .5;if(m==='spin')return(now/1400)%(Math.PI*2);if(m==='tilt')return .5;return .55*Math.sin(now/900)+.15}
 function drawLabels(now){
   labels.forEach(L=>{L._x=null;L._z=null});
-  if(!labels.length||!closed||!curValid||!curFull||curFull.length<3)return;
+  if(!labels.length)return;
   const base=Math.min(W,H)*.04,s=Math.min(W,H)/720;
   const tl=isVid?(bg.paused?(kfs.length?bg.currentTime-kfs[0].t:99):bg.currentTime-(kfs.length?kfs[0].t:0)):tLoop(now)/1000;
   labels.forEach((L,i)=>{
     if(L.tlHide){L.hit=null;L._z=null;L._x=null;return}
-    const Q=labQuad(curFull,L.qi);if(!Q||Q.some(q=>!q))return;
-    const P=sqP(Q),w0=P.g*L.u+P.h*L.v+1,w=Math.abs(w0)<.04?(w0<0?-.04:.04):w0;
-    const X=(P.a*L.u+P.b*L.v+P.x0)/w,Y=(P.d*L.u+P.e*L.v+P.y0)/w;
+    let X,Y;
+    if(L.bx===undefined){if(!closed||!curValid||!curFull||curFull.length<3||drag!==null||ldrag)return;const Q=labQuad(curFull,L.qi);if(!Q||Q.some(q=>!q))return;
+      const P=sqP(Q),w0=P.g*L.u+P.h*L.v+1,w=Math.abs(w0)<.04?(w0<0?-.04:.04):w0;
+      X=(P.a*L.u+P.b*L.v+P.x0)/w;Y=(P.d*L.u+P.e*L.v+P.y0)/w;
+      const bb=fxBase(isVid?fxMap():null,X,Y);if(isFinite(bb[0])&&isFinite(bb[1])){L.bx=bb[0];L.by=bb[1]}}
+    else{const pp=fxProj(isVid?fxMap():null,L.bx,L.by);if(!pp)return;X=pp[0];Y=pp[1]}
     const G=$('gson')&&$('gson').checked&&L.grp!==false,ts=G?(+$('gts').value||0):(L.ts===undefined?.8+.45*i:L.ts),te=stillMode?0:(G?(+$('gte').value||0):(L.te||0)),isSel=L===labSel;
     const ad=.8*(L.adx||100)/100;let r=clamp((tl-ts)/ad),fo=1;
     if(te&&tl>te)fo=1-clamp((tl-te)/(G?Math.max(.6,ad*.75):ad));

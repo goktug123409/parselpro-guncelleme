@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071202-->
+<html lang="tr"><!--pp-build:202611071216-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -143,6 +143,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Saber gücü (glow)<input id="gw" type="range" min="0" max="200" value="100"></label>
     <label>Çizgi kalınlığı (core)<input id="th" type="range" min="2" max="14" value="6"></label>
     <label style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;margin:6px 0;text-align:left"><input type="checkbox" id="loopon" style="width:auto;flex:none"> Animasyon bitince başa sarıp tekrar çizsin (döngü)</label>
+    <label style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;margin:6px 0;text-align:left"><input type="checkbox" id="fxend" style="width:auto;flex:none" checked> Videoda efektler SON karede başlasın (video bitince son karede çizilir; döngü kapalıyken)</label>
     <label style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;margin:6px 0;text-align:left"><input type="checkbox" id="fadeon" style="width:auto;flex:none"> Çizgiler bir süre sonra kaybolsun</label>
     <label>Çizgi kaybolma şekli<select id="fadem"><option value="reverse">Çizginin tersi (geri çekilerek)</option><option value="fade">Yumuşak solma</option><option value="shrink">Merkeze küçülerek</option></select></label>
     <label>Çizgiler kaç saniyede kaybolmaya başlasın: <span style="display:inline-flex;align-items:center;gap:6px;margin-left:6px"><input id="fadetv" type="number" min="0" max="600" step="0.1" value="4" style="width:64px;display:inline-block" oninput="$('fadet').value=this.value"> sn</span><input id="fadet" type="range" min="1" max="30" step="0.5" value="4" oninput="$('fadetv').value=this.value"></label>
@@ -907,10 +908,11 @@ function draw(now){ctx.save();try{seqTick(now);if(seq&&seq.items[seq.i].k!=='mai
 function drawInner(now){
   const s=W/1280,col=$('col').value,th=+$('th').value*s,dur=+$('dur').value*1000;
   const live=isVid&&kfs.length>0&&!bg.paused;
-  const time=live?(bg.currentTime-kfs[0].t)*1000:tLoop(now);
+  const FC=fxClockV(now);
+  const time=FC!=null?Math.max(0,FC)*1000:(live?(bg.currentTime-kfs[0].t)*1000:tLoop(now));
   let lineA=1,qL=0,qT=0;
   {const editing=drag!==null||!!ldrag||!!txDrag||!!fxDrag||!!fxSz||!!fxDraw;
-   const tt=(isVid&&kfs.length)?bg.currentTime-kfs[0].t:((isVid&&bg.paused)?-1:time/1000);
+   const tt=FC!=null?FC:((isVid&&kfs.length)?bg.currentTime-kfs[0].t:((isVid&&bg.paused)?-1:time/1000));
    if(!editing&&tt>=0&&!stillMode){
      const GG=$('gson').checked&&+$('gte').value>0;
      if(GG)qL=clamp((tt-(+$('gte').value))/.6);else if($('fadeon').checked)qL=clamp((tt-(+$('fadetv').value))/1.4);
@@ -918,7 +920,7 @@ function drawInner(now){
    }
    const fm=$('fadem').value;lineA=fm==='reverse'?1-clamp((qL-.75)/.25):1-easeOut(qL);
   }
-  const p=(isVid&&bg.paused)?1:clamp(time/dur);
+  const p=FC!=null?(FC<0?0:clamp(time/dur)):((isVid&&bg.paused)?1:clamp(time/dur));
   curFull=pts;curValid=!trk;
   if(trk)pts=trk.poly;
   else if(closed&&kfs.length){const kf=curKf(vt());if(kf&&kf.T){pts=dispPoly(kf.b,kf.T,kf.k);curFull=kf.p;curValid=kf.b.every(([x,y])=>kf.T[6]*x+kf.T[7]*y+kf.T[8]>.06)}else{pts=interp(vt());curFull=pts}}
@@ -1840,7 +1842,7 @@ function drawFx(now,s,p){
     if(!(P.every(a=>Math.abs(a[0])<W*6&&Math.abs(a[1])<H*6)))return;
     const age=(now-o.t0)/ (+$('dur').value*1000||3000);
     const editing=!!fxDraw||!!fxDrag||!!fxSz,dd=(+$('dur').value||3),G=$('gson')&&$('gson').checked&&o.grp!==false,ts=G?(+$('gts').value||0):(o.ts||0),LK=o.type==='road'&&o.lk!==false&&!G&&$('fadeon')&&$('fadeon').checked,te=stillMode?0:(G?(+$('gte').value||0):LK?(+$('fadetv').value||0):(o.te||0));o._exm=LK?($('fadem').value==='reverse'?'retract':'fade'):o.ex;
-    const tt=live?bg.currentTime-kfs[0].t:isVid?bg.currentTime:tLoop(now)/1000;
+    const FCx=fxClockV(now),tt=FCx!=null?FCx:(live?bg.currentTime-kfs[0].t:isVid?bg.currentTime:tLoop(now)/1000);
     let fa=1;
     const SK=o.type==='spot'&&o.keep!==false,tS=(SK&&!isVid)?(now-Math.max(t0,o.t0||0))/1000:tt;
     if(SK&&!editing&&tS<ts)return;
@@ -2111,7 +2113,7 @@ function drawLabels(now){
   labels.forEach(L=>{L._x=null;L._z=null});
   if(!labels.length||!closed||!curValid||!curFull||curFull.length<3)return;
   const base=Math.min(W,H)*.04,s=Math.min(W,H)/720;
-  const tl=isVid?(bg.paused?(kfs.length?bg.currentTime-kfs[0].t:99):bg.currentTime-(kfs.length?kfs[0].t:0)):tLoop(now)/1000;
+  const FCl=fxClockV(now),tl=FCl!=null?FCl:(isVid?(bg.paused?(kfs.length?bg.currentTime-kfs[0].t:99):bg.currentTime-(kfs.length?kfs[0].t:0)):tLoop(now)/1000);
   labels.forEach((L,i)=>{
     const Q=labQuad(curFull,L.qi);if(!Q||Q.some(q=>!q))return;
     const P=sqP(Q),w0=P.g*L.u+P.h*L.v+1,w=Math.abs(w0)<.04?(w0<0?-.04:.04):w0;
@@ -2173,7 +2175,7 @@ function buildSeq(){
   if(!intro.length&&!outro.length&&!end&&clips.length<2)return null;
   const items=[];let k=0;
   intro.forEach(t=>items.push({k:'text',txt:t,dur:sd,i:k++}));
-  if(clips.length>1)clips.forEach((c,ci)=>items.push({k:'main',clip:ci,dur:c.vid?(c.dur||(c.el&&c.el.duration)||5):clipPDur(c)}));else items.push({k:'main',dur:(isVid&&bg&&bg.duration)?bg.duration:(+$('dur').value+2)});
+  if(clips.length>1)clips.forEach((c,ci)=>items.push({k:'main',clip:ci,dur:c.vid?(c.dur||(c.el&&c.el.duration)||5):clipPDur(c)}));else items.push({k:'main',dur:(isVid&&bg&&bg.duration)?bg.duration+((window.fxTail&&window.fxTail())||0):(+$('dur').value+2)});
   outro.forEach(t=>items.push({k:'text',txt:t,dur:sd,i:k++}));
   if(end)items.push({k:'end',dur:+$('esd').value||3.5});
   return{items,total:items.reduce((a,x)=>a+x.dur,0)};
@@ -2320,7 +2322,7 @@ $('rec').onclick=()=>{
   const hasA=!!(window.narrAudio&&window.narrHas&&window.narrHas());
   const types=hasA?['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm']:['video/mp4;codecs=avc1.640028','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'];
   const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
-  const sq=buildSeq(),dur=sq?sq.total*1000:((isVid&&bg.duration)?bg.duration*1000:loopMs());
+  const sq=buildSeq(),dur=sq?sq.total*1000:((isVid&&bg.duration)?(bg.duration+((window.fxTail&&window.fxTail())||0))*1000:loopMs());
   const vstream=cv.captureStream(30),aud=hasA?window.narrAudio(vstream):null;
   const mr=new MediaRecorder(vstream,mime?{mimeType:mime,videoBitsPerSecond:12e6}:{});
   const ch=[];mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
@@ -3083,5 +3085,21 @@ body.cvs .cv-top button{white-space:nowrap}
   },300);
 })();
 </script>
-</body>
+<script id="fxend-js">
+(function(){
+  let pr=null;
+  window.fxTail=function(){const c=document.getElementById('fxend');return(isVid&&bg&&c&&c.checked&&!bg.loop&&!stillMode)?loopMs()/1000:0};
+  window.fxClockV=function(now){
+    try{
+      const c=document.getElementById('fxend');
+      if(!isVid||!bg||!c||!c.checked||bg.loop||stillMode)return null;
+      const hold=(loopMs()-1)/1000;
+      if(bg.ended){if(pr==null)pr=now;return Math.min(hold,Math.max(0,(now-pr)/1000))}
+      pr=null;
+      if(!bg.paused&&!bg.seeking)return -1;
+      return hold;
+    }catch(e){return null}
+  };
+})();
+</script></body>
 </html>

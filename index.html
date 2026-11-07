@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072126-->
+<html lang="tr"><!--pp-build:202611072129-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3993,6 +3993,17 @@ window.ppHelp=function(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
   window.addEventListener('blur',close);
 })();
+</script>
+<script id="pause-js">
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Pause'&&e.code!=='Pause')return;
+  e.preventDefault();
+  try{
+    if(!(typeof bg!=='undefined'&&bg))return;
+    const b=document.getElementById('ptl-pl2');
+    if(b)b.click();else if(isVid){if(bg.paused)bg.play();else bg.pause()}
+  }catch(x){}
+});
 </script>
 </body>
 </html>

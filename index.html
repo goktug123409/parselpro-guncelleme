@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072121-->
+<html lang="tr"><!--pp-build:202611072126-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3736,6 +3736,12 @@ window.ppHelp=function(){
 <script id="ptl-js">
 (function(){
   const g=id=>document.getElementById(id);
+  // Fotoğraf modunda tıklanan yerde kalma (bekletme)
+  window.__tHold=null;window.__tHoldT0=null;
+  try{const _tl=tLoop;tLoop=function(now){
+    if(window.__tHold!=null){if(recording||t0!==window.__tHoldT0){window.__tHold=null}else return window.__tHold*1000}
+    return _tl(now)}}catch(e){}
+  function seekTo(t){try{if(isVid){bg.pause();bg.currentTime=t}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
   const NAMEW=150,ROWH=28;
   let box,head,scroll,content,phead,tinfo,zoom=1,collapsed=false,sig='',drag=null,pps=60,Tt=5,off=0,lastX=0;
   const css=document.createElement('style');
@@ -3773,9 +3779,16 @@ window.ppHelp=function(){
   function mount(){
     const m=document.querySelector('.cv-main');if(!m)return false;
     box=document.createElement('div');box.id='ptl';
-    box.innerHTML='<div class="ph"><b>⏱ Zaman çizelgesi</b><span id="ptl-t" class="tm"></span><span class="sp"></span><span class="hnt">Çubuğu sürükle = kaydır • kenarlarından çek = süre</span><button id="ptl-zo" title="Uzaklaş">−</button><button id="ptl-zi" title="Yakınlaş">+</button><button id="ptl-cl" title="Küçült / büyüt">▾</button></div><div class="sc" id="ptl-sc"><div class="ct" id="ptl-ct"></div></div>';
+    box.innerHTML='<div class="ph"><b>⏱ Zaman çizelgesi</b><span id="ptl-t" class="tm"></span><span class="sp"></span><span class="hnt">Çubuğu sürükle = kaydır • kenarlarından çek = süre</span><button id="ptl-pl2" title="Oynat / durdur" style="width:34px">▶</button><button id="ptl-zo" title="Uzaklaş (Ctrl + tekerlek)">−</button><button id="ptl-zi" title="Yakınlaş">+</button><button id="ptl-cl" title="Küçült / büyüt">▾</button></div><div class="sc" id="ptl-sc"><div class="ct" id="ptl-ct"></div></div>';
     m.appendChild(box);scroll=g('ptl-sc');content=g('ptl-ct');tinfo=g('ptl-t');
-    g('ptl-zi').onclick=()=>{zoom=Math.min(10,zoom*1.5);sig=''};g('ptl-zo').onclick=()=>{zoom=Math.max(.4,zoom/1.5);sig=''};
+    g('ptl-pl2').onclick=()=>{try{if(isVid){if(bg.paused)bg.play();else bg.pause()}else{if(window.__tHold!=null){t0=performance.now()-window.__tHold*1000;window.__tHold=null}else{window.__tHold=tLoop(performance.now())/1000;window.__tHoldT0=t0}}}catch(e){}};
+    scroll.addEventListener('wheel',e=>{
+      if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();
+      const rc=scroll.getBoundingClientRect(),cx=e.clientX-rc.left,tAt=(scroll.scrollLeft+cx-NAMEW)/pps;
+      const nz=Math.max(.4,Math.min(40,zoom*(e.deltaY<0?1.18:1/1.18)));if(nz===zoom)return;zoom=nz;
+      build();sig=signature();scroll.scrollLeft=Math.max(0,NAMEW+tAt*pps-cx);
+    },{passive:false});
+    g('ptl-zi').onclick=()=>{zoom=Math.min(40,zoom*1.5);sig=''};g('ptl-zo').onclick=()=>{zoom=Math.max(.4,zoom/1.5);sig=''};
     g('ptl-cl').onclick=()=>{collapsed=!collapsed;scroll.style.display=collapsed?'none':'';g('ptl-cl').textContent=collapsed?'▴':'▾';size()};
     return true;
   }
@@ -3819,7 +3832,7 @@ window.ppHelp=function(){
     document.addEventListener('pointerdown',e=>{
       if(!box||!box.contains(e.target))return;
       const rul=e.target.closest&&e.target.closest('#ptl-ruler .tk');
-      if(rul){const r=rul.getBoundingClientRect(),t=Math.max(0,Math.min(Tt,(e.clientX-r.left)/pps));try{if(isVid){bg.currentTime=t}else{t0=performance.now()-t*1000}}catch(x){};drag={seek:true};return}
+      if(rul){const r=rul.getBoundingClientRect(),t=Math.max(0,Math.min(Tt,(e.clientX-r.left)/pps));seekTo(t);drag={seek:true};return}
       const nm=e.target.closest&&e.target.closest('.nm[data-i]');
       if(nm){const it=content.__its[+nm.dataset.i];if(it)select(it);return}
       const bar=e.target.closest&&e.target.closest('.bar[data-i]');
@@ -3830,7 +3843,7 @@ window.ppHelp=function(){
       e.preventDefault();
     });
     document.addEventListener('pointermove',e=>{
-      if(!drag||drag.seek){if(drag&&drag.seek){const r=content.querySelector('#ptl-ruler .tk');if(r&&e.buttons){const rr=r.getBoundingClientRect(),t=Math.max(0,Math.min(Tt,(e.clientX-rr.left)/pps));try{if(isVid)bg.currentTime=t;else t0=performance.now()-t*1000}catch(x){}}}return}
+      if(!drag||drag.seek){if(drag&&drag.seek){const r=content.querySelector('#ptl-ruler .tk');if(r&&e.buttons){const rr=r.getBoundingClientRect(),t=Math.max(0,Math.min(Tt,(e.clientX-rr.left)/pps));seekTo(t)}}return}
       const d=e.clientX-drag.x0;if(Math.abs(d)>3)drag.moved=true;if(!drag.moved)return;
       const dt=Math.round(d/pps/.05)*.05,it=drag.it,o=it.o,span=Math.max(.2,Tt-off);
       let ts=drag.ts0,te=drag.te0;
@@ -3862,6 +3875,7 @@ window.ppHelp=function(){
         const t=curT(),x=NAMEW+t*pps;
         if(x!==lastPx){lastPx=x;phead.style.transform='translateX('+x+'px)'}
         const k=Math.floor(t*4);if(k!==lastT){lastT=k;tinfo.textContent=fmt(t)+' / '+fmt(Tt)}
+        const pl=document.getElementById('ptl-pl2');if(pl){const run=isVid?!bg.paused:window.__tHold==null;const lb=run?'⏸':'▶';if(pl.textContent!==lb)pl.textContent=lb}
         if(isVid&&bg&&!bg.paused){const L=scroll.scrollLeft,Wd=scroll.clientWidth;if(x<L+NAMEW||x>L+Wd-20)scroll.scrollLeft=Math.max(0,x-NAMEW-40)}
       }
     }catch(e){}

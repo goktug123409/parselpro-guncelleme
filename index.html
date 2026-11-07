@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611072244-->
+<html lang="tr"><!--pp-build:202611072248-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3064,7 +3064,7 @@ body.cvs .cv-top button{white-space:nowrap}
     const add=(...n)=>n.forEach(x=>bar.appendChild(x));
     const sep=()=>{const s=document.createElement('div');s.className='cv-sep';return s};
     if(!o&&!L){
-      const s=document.createElement('span');s.className='cv-hint';s.textContent='Bir yazıya, efekte veya etikete tıkla: yazı tipi, boyut, renk ve animasyon ayarları burada çıkar.';add(s);return;
+      return;
     }
     const nm=document.createElement('span');nm.className='cv-name';nm.textContent=o?NAME(o):'Etiket';add(nm);
     /* yazi tipi */
@@ -4251,5 +4251,6 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
   setInterval(()=>{try{const te=window.__trimEnd();if(!te||!isVid||!bg||recording||bg.paused||seq)return;const t0k=kfs.length?kfs[0].t:0;if(bg.currentTime-t0k>=te){if(bg.loop||(g('loopon')&&g('loopon').checked))bg.currentTime=t0k;else bg.pause()}}catch(e){}},120);
 })();
 </script>
+<style id="ovf-fix3">.cv-tb:empty{display:none!important}</style>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611071025-->
+<html lang="tr"><!--pp-build:202611071106-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2048,6 +2048,7 @@ VX.fire=VX.flame;
 
 const RE_ICONS=[['📍','Konum'],['🏠','Ev'],['🏡','Müstakil'],['🏢','Bina'],['🏗️','İnşaat'],['🏘️','Site'],['🌆','Şehir'],['🏞️','Manzara'],['🌊','Deniz'],['🏖️','Plaj'],['🌅','Gün batımı'],['⛰️','Dağ'],['🌳','Ağaç'],['🌾','Tarla'],['🍇','Bağ'],['🫒','Zeytinlik'],['💧','Su'],['⚡','Elektrik'],['🛣️','Yol'],['🚗','Araç yolu'],['🚌','Ulaşım'],['🚇','Metro'],['✈️','Havalimanı'],['⛽','Benzinlik'],['🅿️','Otopark'],['🛒','Market'],['🏪','Dükkan'],['🍽️','Restoran'],['☕','Kafe'],['🏫','Okul'],['🎓','Üniversite'],['🏥','Hastane'],['💊','Eczane'],['🕌','Cami'],['🏛️','Belediye'],['🏦','Banka'],['📐','İmar'],['📏','Ölçü'],['📜','Tapu'],['🔑','Anahtar'],['💰','Fiyat'],['🏷️','Satılık'],['📞','Telefon'],['✅','Uygun'],['⭐','Fırsat'],['🔥','Acil'],['🧭','Yön'],['🛡️','Güvenli'],['🧱','Yapı'],['🌐','İnternet']];
 function renderLabels(){
+  labels.forEach(L=>{L._seen=0});
   const box=$('lab-list');box.textContent='';
   labels.forEach((L,i)=>{
     const row=document.createElement('div');row.className='fxrow';row.dataset.nm='Etiket #'+(i+1);
@@ -2120,6 +2121,7 @@ function drawLabels(now){
     const ad=.8*(L.adx||100)/100;let r=clamp((tl-ts)/ad),fo=1;
     if(te&&tl>te)fo=1-clamp((tl-te)/(G?Math.max(.6,ad*.75):ad));
     if(isSel){r=Math.max(r,1);fo=1}
+    if(!recording&&!stillMode){if(r>=1)L._seen=1;else if(L._seen)r=1}
     if(r<=0||fo<=0)return;
     const e=easeOut(r),sz=base*(L.sz||100)/100,an=L.an||'slide',shape=L.shape||'pill',lsty=L.ls||'box',bgc=L.bg||'#ffffff',fg=L.fg||'#232323',lc=L.lc||'#ffffff',cc=L.cc||'#ffffff',fv=L.font||'Poppins';
     ctx.save();ctx.globalAlpha=(an==='pop'?Math.min(1,r*2):e)*fo;ctx.textBaseline='middle';ctx.textAlign='center';

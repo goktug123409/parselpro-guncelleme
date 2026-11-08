@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081010-->
+<html lang="tr"><!--pp-build:202611081015-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4204,7 +4204,7 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
     const r=document.createElement('div');r.className='rz';r.title='Yukarı çek (veya başlık çubuğunu tut ve yukarı çek): zaman çizelgesini büyüt • aşağı çek: küçült • çift tık: sıfırla';box.insertBefore(r,box.firstChild);
     try{const v=+localStorage.getItem(KEY);if(v>0)apply(v)}catch(e){}
     let d=null;
-    const start=(e,el)=>{d={y:e.clientY,h:sc.offsetHeight};r.classList.add('on');el.setPointerCapture(e.pointerId);e.preventDefault()};
+    const start=(e,el)=>{if(sc.style.display==='none'){const cb=document.getElementById('ptl-cl');if(cb)cb.click()}d={y:e.clientY,h:Math.max(sc.offsetHeight,90)};r.classList.add('on');el.setPointerCapture(e.pointerId);e.preventDefault()};
     r.addEventListener('pointerdown',e=>start(e,r));
     const ph=box.querySelector('.ph');if(ph){ph.style.cursor='ns-resize';ph.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;start(e,ph)});ph.addEventListener('pointermove',e=>{if(d)apply(d.h+(d.y-e.clientY))});ph.addEventListener('pointerup',()=>end());ph.addEventListener('pointercancel',()=>end())}
     r.addEventListener('pointermove',e=>{if(!d)return;apply(d.h+(d.y-e.clientY))});

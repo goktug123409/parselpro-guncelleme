@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081105-->
+<html lang="tr"><!--pp-build:202611081110-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3757,12 +3757,34 @@ window.ppHelp=function(){
     const t=sk.pend;sk.pend=null;
     if(Math.abs(bg.currentTime-t)<.001){sk.busy=false;return}
     sk.busy=true;sk.n++;let fin=false;
-    const done=()=>{if(fin)return;fin=true;bg.removeEventListener('seeked',done);clearTimeout(tm);sk.busy=false;if(sk.pend!=null)doSeek()};
+    const done=()=>{if(fin)return;fin=true;bg.removeEventListener('seeked',done);clearTimeout(tm);sk.busy=false;try{if(bg.__fc&&bg.__step&&!bg.seeking){const k=Math.round(bg.currentTime/bg.__step);if(!bg.__fc.has(k)){const c=document.createElement('canvas');c.width=480;c.height=Math.max(1,Math.round(480*bg.videoHeight/bg.videoWidth));c.getContext('2d').drawImage(bg,0,0,c.width,c.height);bg.__fc.set(k,c)}}}catch(e){}if(sk.pend!=null)doSeek()};
     const tm=setTimeout(done,700);
     bg.addEventListener('seeked',done);
     bg.currentTime=t;
   }
-  function seekTo(t){try{if(isVid){bg.pause();sk.last=t;sk.pend=t;if(!sk.busy)doSeek()}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
+  function nearF(v,t){const m=v&&v.__fc;if(!m||!v.__step)return null;const k=Math.round(t/v.__step);for(const d of [0,1,-1,2,-2]){const f=m.get(k+d);if(f)return f}return null}
+  function prefill(v){
+    if(v.__pf)return;const dur=v.duration;if(!isFinite(dur)||dur<=0||!v.videoWidth)return;
+    v.__pf=1;v.__fc=new Map;const step=Math.max(.5,dur/200);v.__step=step;
+    const pv=document.createElement('video');pv.muted=true;pv.preload='auto';pv.src=v.currentSrc||v.src;
+    const w=480,h=Math.max(1,Math.round(w*v.videoHeight/v.videoWidth));let i=0;
+    const next=()=>{
+      if(!clips.some(c=>c.el===v)){pv.removeAttribute('src');pv.load();return}
+      if((drag&&drag.kind==='seek')||recording){setTimeout(next,400);return}
+      const t=i*step;if(t>dur){v.__pfDone=1;pv.removeAttribute('src');pv.load();return}
+      let fin=false;const done=()=>{if(fin)return;fin=true;pv.removeEventListener('seeked',done);clearTimeout(tm);
+        try{const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(pv,0,0,w,h);v.__fc.set(i,c)}catch(e){}
+        i++;setTimeout(next,0)};
+      const tm=setTimeout(done,3000);pv.addEventListener('seeked',done);pv.currentTime=Math.min(t,dur-.05);
+    };
+    const go=()=>next();if(pv.readyState>=1)go();else pv.addEventListener('loadedmetadata',go,{once:true});
+  }
+  setInterval(()=>{try{if(isVid&&bg&&!bg.__pf)prefill(bg)}catch(e){}},1000);
+  try{const _db=drawBg;drawBg=function(now){
+    const f=window.__scrubF;
+    if(f){if(drag&&drag.kind==='seek'||sk.busy||sk.pend!=null){try{ctx.drawImage(f,0,0,W,H);return}catch(e){}}else window.__scrubF=null}
+    return _db(now)}}catch(e){}
+  function seekTo(t){try{if(isVid){bg.pause();sk.last=t;sk.pend=t;const f=nearF(bg,t);window.__scrubF=(drag&&drag.kind==='seek')?f:null;if(!sk.busy)doSeek()}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
   const NAMEW=176,ROWH=28,FPS=30;
   let box,scroll,content,phead,tinfo,zoom=1,collapsed=false,sig='',drag=null,pps=60,Tt=5,off=0,snapOn=true,msel=[],lastPrim=null,editing=false;
   window.tlMarkers=window.tlMarkers||[];

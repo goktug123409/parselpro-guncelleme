@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081141-->
+<html lang="tr"><!--pp-build:202611081142-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3805,9 +3805,10 @@ window.ppHelp=function(){
   function hookT(v){if(v.__th)return;v.__th=1;Object.defineProperty(v,'currentTime',{configurable:true,get(){return(sk.last!=null&&(sk.busy||sk.pend!=null||(drag&&drag.kind==='seek')))?sk.last:_cd.get.call(v)},set(x){_cd.set.call(v,x)}})}
   function seekTo(t){try{if(isVid){window.__scrubSticky=true;hookT(bg);bg.pause();sk.last=t;sk.pend=t;const f=nearF(bg,t);window.__scrubF=(drag&&drag.kind==='seek')?f:null;if(!sk.busy)doSeek()}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
   const NAMEW=176,ROWH=28,FPS=30;
-  const dragTip=(bar,ts,te)=>{try{let t=document.getElementById('ptl-dtip');if(!t){t=document.createElement('div');t.id='ptl-dtip';t.style.cssText='position:fixed;z-index:99999;pointer-events:none;background:#0b1220;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:4px 9px;font:700 12px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.5);white-space:nowrap';document.body.appendChild(t)}
-    const r=bar.getBoundingClientRect();t.textContent=ts.toFixed(1)+'s → '+(te>0?te.toFixed(1)+'s  •  '+(te-ts).toFixed(1)+' sn':'∞');t.style.display='block';t.style.left=Math.max(4,r.left)+'px';t.style.top=Math.max(4,r.top-34)+'px';clearTimeout(t.__h);t.__h=setTimeout(()=>{t.style.display='none'},700)}catch(e){}};
-  const barTxt=(ts,te,w)=>{if(!(te>0))return ts.toFixed(1)+'s → ∞';const d=(te-ts).toFixed(1);return w>=135?ts.toFixed(1)+'s → '+te.toFixed(1)+'s  •  '+d+' sn':w>=62?d+' sn':w>=34?d:''};
+  const nm=n=>{n=String(n||'').replace(/\s+/g,' ').trim();return n.length>24?n.slice(0,23)+'…':n};
+  const dragTip=(bar,ts,te,name)=>{try{let t=document.getElementById('ptl-dtip');if(!t){t=document.createElement('div');t.id='ptl-dtip';t.style.cssText='position:fixed;z-index:99999;pointer-events:none;background:#0b1220;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:4px 9px;font:700 12px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.5);white-space:nowrap';document.body.appendChild(t)}
+    const r=bar.getBoundingClientRect();t.textContent=(name?nm(name)+':  ':'')+ts.toFixed(1)+'s → '+(te>0?te.toFixed(1)+'s  •  '+(te-ts).toFixed(1)+' sn':'∞');t.style.display='block';t.style.left=Math.max(4,r.left)+'px';t.style.top=Math.max(4,r.top-34)+'px';clearTimeout(t.__h);t.__h=setTimeout(()=>{t.style.display='none'},700)}catch(e){}};
+  const barTxt=(ts,te,w,name)=>{const pre=(name&&w>=250)?nm(name)+'  ':'';if(!(te>0))return pre+ts.toFixed(1)+'s → ∞';const d=(te-ts).toFixed(1);return w>=135?pre+ts.toFixed(1)+'s → '+te.toFixed(1)+'s  •  '+d+' sn':w>=62?d+' sn':w>=34?d:''};
   let box,scroll,content,phead,tinfo,zoom=1,collapsed=false,sig='',drag=null,pps=60,Tt=5,off=0,snapOn=true,msel=[],lastPrim=null,editing=false;
   window.tlMarkers=window.tlMarkers||[];
   const css=document.createElement('style');
@@ -3949,7 +3950,7 @@ window.ppHelp=function(){
       const lab=it.ts.toFixed(1)+'s → '+(it.te>0?it.te.toFixed(1)+'s  •  '+(it.te-it.ts).toFixed(1)+' sn':'∞');
       const ainW=Math.min(len*.9,it.din)*pps,aoutW=it.te>0?Math.min(len*.5,it.dout)*pps:0;
       const seg=(it.lock?'':'<span class="eh l" data-z="l"></span><span class="eh r" data-z="r"></span>')+'<span class="ain" style="width:'+ainW+'px"></span>'+(aoutW?'<span class="aout" style="width:'+aoutW+'px"></span>':'')+(it.lock?'':'<span class="ah" data-a="in" style="left:'+ainW+'px" title="Giriş animasyonu süresi (sürükle)"></span>'+(aoutW&&it.ho?'<span class="ah" data-a="out" style="left:'+(w-aoutW)+'px" title="Çıkış animasyonu süresi (sürükle)"></span>':''));
-      h+='<div class="rw'+(sel?' sel':'')+'" data-i="'+i+'"><div class="nm" style="--dc:'+it.col+'" data-i="'+i+'" title="'+esc(it.name)+'"><span class="nn">'+esc(it.name)+'</span><span class="ib'+(it.hide?' act':'')+'" data-act="eye" title="Göster / gizle">'+(it.hide?'🙈':'👁')+'</span><span class="ib'+(it.lk?' act':'')+'" data-act="lock" title="Kilitle / kilidi aç">'+(it.lk?'🔒':'🔓')+'</span></div><div class="tk" style="width:'+W+'px"><div class="bar'+(it.te>0?'':' inf')+(it.lock?' lock':'')+(it.hide?' hid':'')+(sel?' sel':'')+'" data-i="'+i+'" style="left:'+s+'px;width:'+w+'px;--bc:'+it.col+'" title="'+(it.grp?'Grup zamanı açık: süre Efektler sekmesindeki grup ayarından gelir':it.lk?'Kilitli':lab+'  —  Ortadan sürükle: kaydır • sol/sağ kenar: ne zaman girsin/çıksın • beyaz yuvarlak: giriş/çıkış animasyonunun süresi')+'">'+seg+'<span class="bl">'+barTxt(it.ts,it.te,w)+'</span></div></div></div>';
+      h+='<div class="rw'+(sel?' sel':'')+'" data-i="'+i+'"><div class="nm" style="--dc:'+it.col+'" data-i="'+i+'" title="'+esc(it.name)+'"><span class="nn">'+esc(it.name)+'</span><span class="ib'+(it.hide?' act':'')+'" data-act="eye" title="Göster / gizle">'+(it.hide?'🙈':'👁')+'</span><span class="ib'+(it.lk?' act':'')+'" data-act="lock" title="Kilitle / kilidi aç">'+(it.lk?'🔒':'🔓')+'</span></div><div class="tk" style="width:'+W+'px"><div class="bar'+(it.te>0?'':' inf')+(it.lock?' lock':'')+(it.hide?' hid':'')+(sel?' sel':'')+'" data-i="'+i+'" style="left:'+s+'px;width:'+w+'px;--bc:'+it.col+'" title="'+(it.grp?'Grup zamanı açık: süre Efektler sekmesindeki grup ayarından gelir':it.lk?'Kilitli':lab+'  —  Ortadan sürükle: kaydır • sol/sağ kenar: ne zaman girsin/çıksın • beyaz yuvarlak: giriş/çıkış animasyonunun süresi')+'">'+seg+'<span class="bl">'+barTxt(it.ts,it.te,w,it.name)+'</span></div></div></div>';
     });
     let ov='';mk.forEach(t=>{ov+='<div class="mkl" style="left:'+(NAMEW+t*pps)+'px"></div>'});
     content.innerHTML=h+ov+'<div class="ph-line" id="ptl-pl"></div>';
@@ -4037,7 +4038,7 @@ window.ppHelp=function(){
       guide(sh);
       drag.set.forEach(x=>{if(!x.bar)return;const ts=x.nts!==undefined?x.nts:x.ts0,te=x.nte!==undefined?x.nte:x.te0,s=(off+ts)*pps,en=te>0?(off+te)*pps:Tt*pps,w=Math.max(10,en-s);
         x.bar.style.left=s+'px';x.bar.style.width=w+'px';x.bar.classList.toggle('inf',!(te>0));
-        const bl=x.bar.querySelector('.bl');if(bl)bl.textContent=barTxt(ts,te,w);dragTip(x.bar,ts,te)});
+        const bl=x.bar.querySelector('.bl');if(bl)bl.textContent=barTxt(ts,te,w,x.it.name);dragTip(x.bar,ts,te,x.it.name)});
     });
     document.addEventListener('pointerup',()=>{
       if(!drag)return;const d=drag;drag=null;guide(null);

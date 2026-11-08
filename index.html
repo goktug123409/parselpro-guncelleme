@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081238-->
+<html lang="tr"><!--pp-build:202611081246-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3777,7 +3777,7 @@ window.ppHelp=function(){
     const cap=k=>{if(v.__fc.has(k))return;try{const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(pv,0,0,w,h);v.__fc.set(k,c)}catch(e){}};
     const run=()=>{
       if(pv.requestVideoFrameCallback){
-        let nk=0;pv.playbackRate=Math.min(16,Math.max(2,dur/4));
+        let nk=0;pv.playbackRate=Math.min(8,Math.max(2,dur/4));
         const cb=(now,md)=>{
           if(!clips.some(c=>c.el===v)){stop();return}
           if((drag&&drag.kind==='seek')||recording){pv.pause();setTimeout(()=>{pv.play().catch(()=>{});pv.requestVideoFrameCallback(cb)},300);return}

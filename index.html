@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081407-->
+<html lang="tr"><!--pp-build:202611081413-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4926,7 +4926,7 @@ drawLabels=function(now){oDL.apply(this,arguments);
     ctx.restore()}catch(er){}
 };
 
-let stick=null;const VAR={road:2,area:3,parsel:3,spot:3,bld:3,ptxt:3};
+let stick=null;const VAR={road:2,area:3,parsel:3,spot:3,bld:3};
 let mx=null;cv.addEventListener('pointermove',e=>{mx=xy(e)},true);cv.addEventListener('pointerleave',()=>{mx=null});
 const fxTarget=()=>{if(!(closed||fxs.length)||fxDraw||placing||recording||stillMode||(isVid&&bg&&!bg.paused))return null;
   if(fxSel&&fxs.includes(fxSel)&&fxSel._P){stick={o:fxSel,t:performance.now()};return fxSel}

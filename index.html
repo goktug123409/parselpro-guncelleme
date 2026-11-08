@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081229-->
+<html lang="tr"><!--pp-build:202611081238-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4850,6 +4850,39 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
     return true;
   }
   const iv=setInterval(()=>{if(build())clearInterval(iv)},400);
+})();
+</script>
+<script>
+/* tuval üstünde yazı düzenleme: yazıya çift tıkla */
+(function(){
+  let box=null;
+  function close(ok){if(!box)return;const b=box;box=null;try{if(ok&&b.apply)b.apply(b.ta.value)}catch(e){}b.wrap.remove()}
+  function open(cx,cy,text,apply,hint){
+    close(true);
+    const wrap=document.createElement('div');wrap.style.cssText='position:fixed;z-index:100000;left:'+Math.max(8,Math.min(innerWidth-290,cx-140))+'px;top:'+Math.max(8,Math.min(innerHeight-130,cy-50))+'px;width:280px;background:#0b1220;border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:8px;box-shadow:0 12px 34px rgba(0,0,0,.6);font:600 12px system-ui,sans-serif;color:#cdd6ea';
+    const ta=document.createElement('textarea');ta.value=text;ta.rows=3;ta.style.cssText='width:100%;box-sizing:border-box;resize:none;font:700 16px system-ui,sans-serif;padding:8px;border-radius:8px;background:#121923;color:#fff;border:1px solid #27324a;outline:none';
+    const h=document.createElement('div');h.style.cssText='margin-top:5px;opacity:.75';h.textContent=hint||'Ctrl+Enter = tamam • Esc = vazgeç';
+    wrap.appendChild(ta);wrap.appendChild(h);document.body.appendChild(wrap);
+    box={wrap,ta,apply};
+    ta.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){close(false)}else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();close(true)}},true);
+    ta.addEventListener('keyup',e=>e.stopPropagation(),true);
+    const t0=Date.now();
+    ta.addEventListener('blur',()=>{if(Date.now()-t0<700&&box&&box.ta===ta){setTimeout(()=>{if(box&&box.ta===ta){ta.focus()}},0);return}setTimeout(()=>{if(box&&box.ta===ta&&document.activeElement!==ta)close(true)},150)});
+    setTimeout(()=>{ta.focus();ta.select()},30);setTimeout(()=>{if(box&&box.ta===ta&&document.activeElement!==ta)ta.focus()},350);
+  }
+  function pos(e){const r=cv.getBoundingClientRect();return toImg((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height)}
+  cv.addEventListener('dblclick',e=>{
+    try{
+      if(placing||fxDraw||recording)return;
+      const q=pos(e);
+      const L=labelHitAt(q[0],q[1]);
+      if(L&&typeof L.txt==='string'){e.preventDefault();e.stopPropagation();labSel=L;
+        open(e.clientX,e.clientY,L.txt,v=>{if(v.trim()===''||v===L.txt)return;L.txt=v;try{renderLabels()}catch(x){}try{logAct('Etiket yazısı: '+v.replace(/\n/g,' / '))}catch(x){}},'Etiket yazısı • Ctrl+Enter = tamam • Esc = vazgeç');return}
+      const h=fxHitAt(q[0],q[1]);
+      if(h&&h.o&&typeof h.o.txt==='string'&&h.o.type!=='road'&&h.o.type!=='spot'){const o=h.o;e.preventDefault();e.stopPropagation();fxSel=o;
+        open(e.clientX,e.clientY,o.txt,v=>{if(v===o.txt)return;o.txt=v;o._k='';try{document.fonts.load(fontV(o.font||$('ff').value,40),v)}catch(x){}try{renderFx()}catch(x){}try{logAct('Efekt yazısı: '+v.replace(/\n/g,' / '))}catch(x){}},'Yazıyı değiştir • Enter = alt satır • Ctrl+Enter = tamam • Esc = vazgeç')}
+    }catch(err){}
+  },true);
 })();
 </script>
 </body>

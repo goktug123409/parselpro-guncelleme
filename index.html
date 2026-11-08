@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081220-->
+<html lang="tr"><!--pp-build:202611081229-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -175,8 +175,8 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <p style="margin:4px 0 8px;font-size:12px;opacity:.75;color:var(--mut)">Önce arsayı çizip “Takip Et” yapın, sonra efekt ekleyin. Videoda beyaz noktaları sürükleyerek şekil verin, yazının/çizginin üzerinden tutup taşıyın.</p>
     <label class="chk"><input type="checkbox" id="fxsnap" checked> Yol çizgisi noktaları birbirine ve arsa köşelerine kitlensin (yaklaştırınca yapışır)</label>
     <label class="chk"><input type="checkbox" id="gson"> Hepsi birlikte çıksın ve aynı anda kaybolsun (efektler, etiketler, arsa çizgisi ve yazı). Dışarıda bırakmak istediğiniz nesnenin “Ortak zamana bağlı” kutusunu kapatın</label>
-    <div class="row"><label>Birlikte çıkış (sn)<input type="number" id="gts" min="0" max="600" step="0.1" value="0"></label><label>Birlikte kaybolma (sn, 0 = hiç)<input type="number" id="gte" min="0" max="600" step="0.1" value="0"></label></div>
-    <div class="row"><button type="button" id="gtsnow">⏱ Çıkış = şimdiki an</button><button type="button" id="gtenow">⏱ Kaybolma = şimdiki an</button></div>
+    <div class="row" style="display:none"><label>Birlikte çıkış (sn)<input type="number" id="gts" min="0" max="600" step="0.1" value="0"></label><label>Birlikte kaybolma (sn, 0 = hiç)<input type="number" id="gte" min="0" max="600" step="0.1" value="0"></label></div>
+    <div class="row" style="display:none"><button type="button" id="gtsnow">⏱ Çıkış = şimdiki an</button><button type="button" id="gtenow">⏱ Kaybolma = şimdiki an</button></div>
     <div class="s" id="gsinfo"></div>
     <div id="fx-list"></div>
 
@@ -2802,7 +2802,7 @@ lgInfo();
   const info=()=>{const on=g('gson').checked,e=document.getElementById('gsinfo');if(!e)return;
     if(!on){e.textContent='Kapalı: her nesne kendi zamanını kullanır.';return}
     const n=fxs.filter(o=>o.grp!==false).length,m=labels.filter(L=>L.grp!==false).length,te=+g('gte').value;
-    e.textContent='Bağlı: '+n+' efekt, '+m+' etiket + arsa çizgisi ve yazı. Çıkış '+(+g('gts').value||0)+' sn'+(te>0?', kaybolma '+te+' sn.':'. Kaybolma 0 olduğu için hiç kaybolmaz: bir süre yazın veya “Kaybolma = şimdiki an”a basın.')};
+    e.textContent='Bağlı: '+n+' efekt, '+m+' etiket + arsa çizgisi ve yazı. Çıkış '+(+g('gts').value||0)+' sn'+(te>0?', kaybolma '+te+' sn.':'. Kaybolma 0 olduğu için hiç kaybolmaz: her etiketin süresini zaman çizelgesinden ayarlayın.')};
   g('gson').addEventListener('change',()=>{if(g('gson').checked&&!(+g('gte').value>0)){const d=(isVid&&bg&&bg.duration)?Math.max(3,Math.round(bg.duration*.7*10)/10):(+g('dur').value||3)+2;g('gte').value=d;logAct('Ortak kaybolma süresi otomatik: '+d+' sn')}info()});
   ['gts','gte'].forEach(i=>g(i).addEventListener('input',info));
   g('gtsnow').onclick=()=>{g('gts').value=Math.max(0,Math.round(curT()*10)/10);g('gts').dispatchEvent(new Event('input'));if(!g('gson').checked){g('gson').checked=true;g('gson').dispatchEvent(new Event('change'))}};

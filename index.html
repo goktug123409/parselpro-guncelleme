@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081201-->
+<html lang="tr"><!--pp-build:202611081207-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3813,6 +3813,9 @@ window.ppHelp=function(){
     if(T.classList.contains('ah')){const l=parseFloat(T.style.left)||0;const inn=T.dataset.a==='in';const sec=(inn?l:(bar.offsetWidth-l))/pps;txt=(inn?'Giriş':'Çıkış')+' animasyonu süresi: '+sec.toFixed(2)+' sn  (beyaz noktayı sürükle)'}
     else if(T.classList.contains('eh')){txt=T.classList.contains('l')?'Başlangıç: bu saniyede ekrana girer (sürükle)':'Bitiş: bu saniyede kaybolmaya başlar (sürükle)'}
     if(txt)showTip(bar,txt,true)}catch(x){}});
+  const ovlHtml=its=>{try{return its.map((it,i)=>{if(!msel.includes(it.o))return'';const s=(off+it.ts)*pps,e=it.te>0?(off+it.te)*pps:Tt*pps,w=Math.max(10,e-s),len=w/pps,ainW=Math.min(len*.9,it.din||0)*pps,aoutW=it.te>0?Math.min(len*.5,it.dout||0)*pps:0;
+    return '<div class="ovl'+(it.lock?' lk':'')+'" data-oi="'+i+'" style="left:'+s+'px;width:'+w+'px" title="'+esc(it.name)+'"><span class="oa" style="left:0;width:'+ainW+'px;background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.35))"></span>'+(aoutW?'<span class="oa" style="right:0;width:'+aoutW+'px;background:linear-gradient(90deg,rgba(255,255,255,.35),rgba(255,255,255,.05))"></span>':'')+'<b>'+(it.k==='fx'?'Efektler':'Etiketler')+':  '+esc(String(it.name).replace(/^🏷\s*/,''))+'</b>'+(it.lock?'':'<span class="eh l" data-z="l"></span><span class="eh r" data-z="r"></span>')+'</div>'}).join('')}catch(e){return''}};
+  const selChip=its=>{try{const s=its.filter(it=>msel.includes(it.o));if(!s.length)return'';return (s[0].k==='fx'?'✨ Efekt: ':'🏷 Etiket: ')+String(s[0].name).replace(/^🏷\s*/,'')+(s.length>1?' +'+(s.length-1):'')+' – düzenleniyor  '}catch(e){return''}};
   const vlen=()=>{try{const te=window.__trimEnd?window.__trimEnd():0;return(isVid&&te>0)?Math.min(Tt,te):Tt}catch(e){return Tt}};
   const tc=t=>{const f=Math.round(t*FPS),s=Math.floor(f/FPS),p=n=>String(n).padStart(2,'0');return p(Math.floor(s/3600))+':'+p(Math.floor(s/60)%60)+':'+p(s%60)+':'+p(f%FPS)};
   function paintStrip(){try{const c=content&&content.querySelector('.bar.vid canvas');if(!c||!bg)return;const w=Math.max(10,Math.min(8000,Math.round(Tt*pps))),h=40;c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#1d2a3b';x.fillRect(0,0,w,h);
@@ -3880,6 +3883,13 @@ window.ppHelp=function(){
 #ptl .bar.vid.sel{box-shadow:0 0 0 2px #fff}
 #ptl .bar.vid .vz{position:absolute;right:0;top:0;bottom:0;width:12px;cursor:ew-resize;z-index:3;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55))}
 #ptl .bar.vid .vz::after{content:'';position:absolute;right:4px;top:12px;bottom:12px;width:3px;border-radius:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+#ptl .ovl{position:absolute;top:4px;height:40px;box-sizing:border-box;border:2px solid #fff;border-radius:5px;background:rgba(36,150,235,.5);color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:5;cursor:grab;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+#ptl .ovl.lk{cursor:not-allowed;opacity:.7}
+#ptl .ovl b{font:700 12px system-ui,sans-serif;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.6);position:relative;z-index:1;pointer-events:none;padding:0 14px;overflow:hidden;text-overflow:ellipsis}
+#ptl .ovl .oa{position:absolute;top:0;bottom:0;pointer-events:none}
+#ptl .ovl .eh{position:absolute;top:0;bottom:0;width:12px;cursor:ew-resize;z-index:3}
+#ptl .ovl .eh.l{left:0}#ptl .ovl .eh.r{right:0}
+#ptl .ovl .eh::after{content:'';position:absolute;top:10px;bottom:10px;left:4px;width:3px;border-radius:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
 #ptl-mq{position:fixed;z-index:99998;pointer-events:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.55);border-radius:3px;display:none}
 #ptl .bar .ah{top:auto;bottom:1px;width:8px;height:8px;margin:0 0 0 -4px;border-radius:50%;background:#fff;border:1.5px solid rgba(0,0,0,.6);box-sizing:border-box;opacity:0;transition:opacity .12s}
 #ptl .bar.sel .ah{opacity:1}
@@ -3964,7 +3974,7 @@ window.ppHelp=function(){
     let tk='';for(let t=0;t<=Tt+1e-6;t+=step)tk+='<div class="tick" style="left:'+(t*pps)+'px"><i>'+(step<1?t.toFixed(1)+'s':fmt(t))+'</i></div>';
     mk.forEach((t,i)=>{tk+='<div class="mk" data-mi="'+i+'" style="left:'+(t*pps)+'px" title="İşaretçi '+fmt(t)+' ('+t.toFixed(1)+' sn) — tıkla: git • sağ tık: sil">⚑</div>'});
     h+='<div class="rw rl" id="ptl-ruler"><div class="nm nd" style="cursor:default;color:#8793aa">Zaman</div><div class="tk" style="width:'+W+'px">'+tk+'</div></div>';
-    h+='<div class="rw vr"><div class="nm nd" style="cursor:default">🎞 Ana video / foto</div><div class="tk" style="width:'+W+'px"><div class="vghost" style="width:'+(Tt*pps)+'px"></div><div class="bar vid'+(window.__mainSel?' sel':'')+'" style="left:0;width:'+(vlen()*pps)+'px" title="Ana video: tıkla = seç"><canvas></canvas><span class="bl">'+esc(String((clips&&clips[clipCur]&&clips[clipCur].name)||(isVid?'Video':'Fotoğraf')))+'  '+tc(vlen())+'</span>'+(isVid?'<span class="vz" data-vz="1" title="Videonun sonunu kırp: kenardan tut, sürükle"></span>':'')+'</div></div></div>';
+    h+='<div class="rw vr"><div class="nm nd" style="cursor:default">🎞 Ana video / foto</div><div class="tk" style="width:'+W+'px"><div class="vghost" style="width:'+(Tt*pps)+'px"></div><div class="bar vid'+(window.__mainSel?' sel':'')+'" style="left:0;width:'+(vlen()*pps)+'px" title="Ana video: tıkla = seç"><canvas></canvas><span class="bl">'+esc(String((clips&&clips[clipCur]&&clips[clipCur].name)||(isVid?'Video':'Fotoğraf')))+'  '+tc(vlen())+'</span>'+(isVid?'<span class="vz" data-vz="1" title="Videonun sonunu kırp: kenardan tut, sürükle"></span>':'')+'</div>'+ovlHtml(its)+'</div></div>';
     // sahne şeridi (kendi ölçeği: giriş + ana + kapanış)
     if(false&&sc&&sc.items.length>1){
       const ppsS=(avail/sc.total)*zoom;let x=0,sb='';
@@ -4026,6 +4036,8 @@ window.ppHelp=function(){
       if(nm){const it=content.__its[+nm.dataset.i];if(it)select(it,e.shiftKey||e.ctrlKey||e.metaKey);return}
       const sz=cl('.sb .eh');
       if(sz){const sb=cl('.sb'),sc=content.__sc,it=sc&&sc.items[+sb.dataset.si];if(it){drag={kind:'scn',it,x0:e.clientX,d0:it.dur,k:it.k,sc,ppsS:(Math.max(300,(scroll.clientWidth||600)-NAMEW-20)/sc.total)*zoom,moved:true};e.preventDefault()}return}
+      {const ov=cl('.ovl');if(ov){const it=content.__its[+ov.dataset.oi];if(it&&!it.lock){const z=(T.dataset&&T.dataset.z)||'m';const set=z==='m'?itemsOf(msel).filter(x=>!x.lock):[it];
+        drag={kind:z,it,set:set.map(x=>({it:x,ts0:x.ts,te0:x.te,bar:content.querySelector('.bar[data-i="'+content.__its.indexOf(x)+'"]')})),x0:e.clientX,moved:false,alt:e.altKey};e.preventDefault()}return}}
       {const vb=cl('.bar.vid');if(vb){window.__mainSel=!window.__mainSel;vb.classList.toggle('sel',window.__mainSel);return}if(window.__mainSel){window.__mainSel=false;const o=content.querySelector('.bar.vid');o&&o.classList.remove('sel')}}
       const nar=cl('.bar[data-nar]');
       if(nar){const n=window.__nar();drag={kind:'nar',x0:e.clientX,d0:n.d,moved:false,bar:nar};e.preventDefault();return}
@@ -4073,7 +4085,7 @@ window.ppHelp=function(){
         drag.set.forEach(x=>{const o=x.it.o;o.ts=+(x.ts0+dt).toFixed(2);o.te=x.te0>0?+(x.te0+dt).toFixed(2):0;x.nts=o.ts;x.nte=o.te})}
       guide(sh);
       drag.set.forEach(x=>{if(!x.bar)return;const ts=x.nts!==undefined?x.nts:x.ts0,te=x.nte!==undefined?x.nte:x.te0,s=(off+ts)*pps,en=te>0?(off+te)*pps:Tt*pps,w=Math.max(10,en-s);
-        x.bar.style.left=s+'px';x.bar.style.width=w+'px';x.bar.classList.toggle('inf',!(te>0));
+        x.bar.style.left=s+'px';x.bar.style.width=w+'px';x.bar.classList.toggle('inf',!(te>0));{const ov2=content.querySelector('.ovl[data-oi="'+content.__its.indexOf(x.it)+'"]');if(ov2){ov2.style.left=s+'px';ov2.style.width=w+'px'}}
         const bl=x.bar.querySelector('.bl');if(bl)bl.textContent=barTxt(ts,te,w,x.it.name);dragTip(x.bar,ts,te,x.it.name)});
     });
     document.addEventListener('pointerup',()=>{

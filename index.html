@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081348-->
+<html lang="tr"><!--pp-build:202611081354-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -230,6 +230,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Yazı tipi<select id="ff"><option value="sys">Sistem (varsayılan)</option><option value="Montserrat">Montserrat</option><option value="Anton">Anton</option><option value="Oswald">Oswald</option><option value="Playfair Display">Playfair Display</option><option value="Pacifico">Pacifico (el yazısı)</option><option value="Poppins">Poppins</option><option value="Bebas Neue">Bebas Neue (dar, kalın)</option><option value="Barlow Condensed">Barlow Condensed (dar)</option><option value="Fjalla One">Fjalla One (dar)</option><option value="Archivo Black">Archivo Black (geniş, kalın)</option><option value="Poppins Black">Poppins Black (yuvarlak)</option><option value="Poppins ExtraBold">Poppins ExtraBold</option><option value="Poppins Light">Poppins İnce (Light)</option><option value="Archivo Italic">Archivo Eğik (kalın italik)</option><option value="Bangers">Bangers (çizgi film)</option><option value="Permanent Marker">Permanent Marker (kalem)</option><option value="Lobster">Lobster (şık el yazısı)</option><option value="Bungee">Bungee (tabela)</option><option value="Russo One">Russo One (teknik)</option><option value="Righteous">Righteous (retro)</option><option value="Black Ops One">Black Ops One (askeri)</option><option value="Rubik Mono One">Rubik Mono One (blok)</option><option value="Dancing Script">Dancing Script (zarif)</option><option value="Teko">Teko (spor)</option><option value="Raleway">Raleway (zarif, geniş)</option><option value="Nunito">Nunito (yumuşak)</option><option value="Rubik">Rubik</option><option value="Inter">Inter (modern)</option><option value="DM Sans">DM Sans</option><option value="Space Grotesk">Space Grotesk (teknik)</option><option value="Roboto Condensed">Roboto Condensed (dar)</option><option value="Kanit">Kanit</option><option value="Prompt">Prompt</option><option value="Outfit">Outfit</option><option value="Sora">Sora</option><option value="Urbanist">Urbanist</option><option value="League Spartan">League Spartan (geometrik)</option><option value="Lilita One">Lilita One (eğlenceli)</option><option value="Passion One">Passion One</option><option value="Staatliches">Staatliches (dar)</option><option value="Abril Fatface">Abril Fatface (dergi)</option><option value="Cinzel">Cinzel (klasik)</option><option value="Caveat">Caveat (el yazısı)</option><option value="Orbitron">Orbitron (fütüristik)</option><option value="Exo 2">Exo 2</option><option value="Chakra Petch">Chakra Petch</option><option value="Titillium Web">Titillium Web</option><option value="Saira Condensed">Saira Condensed (dar)</option><option value="Unbounded">Unbounded (geniş)</option><option value="Syne">Syne (sanatsal)</option><option value="Fredoka">Fredoka (yuvarlak)</option><option value="Oswald Light">Oswald İnce</option><option value="Playfair Italic">Playfair Eğik (şık italik)</option></select></label>
     <label>Yazı boyutu<input id="fs" type="range" min="40" max="200" value="110"></label>
     <label>Parlama (glow) <span id="glwv">0</span><input id="glw" type="range" min="0" max="80" value="0" oninput="$('glwv').textContent=this.value"></label>
+    <label>Zemin yazısı dönüşü (°) <span id="txrotv">0</span><input id="txrot" type="range" min="-180" max="180" value="0" oninput="$('txrotv').textContent=this.value"></label>
     <div class="row"><label>Yazı kontur rengi<input id="oc" type="color" value="#000000"></label><label>Kontur kalınlığı <span id="owv">0</span><input id="ow" type="range" min="0" max="20" value="0" oninput="$('owv').textContent=this.value"></label></div>
     <div class="row"><label>Ana yazı rengi<input id="c1" type="color" value="#2bc4ff"></label><label>Alt yazı rengi<input id="c2" type="color" value="#ffffff"></label></div>
     <label>Yazı animasyonu<select id="an"><option value="pop">Yaylanma</option><option value="drop">Yukarıdan düşme</option><option value="slide">Soldan kayma</option><option value="fade">Belirme</option><option value="type">Daktilo</option><option value="flip">Çevrilme</option></select></label>
@@ -1031,7 +1032,7 @@ function drawInner(now){
     ctx.restore();
     // label
     if(closed&&n>=3){
-      {const[hx,hy]=centroid(pts),fz=+$('fs').value*s;ctx.save();ctx.font=mainFont(fz);const tw0=Math.min(ctx.measureText($('t1').value).width,W*.86);ctx.restore();txH=$('hidemain').checked?null:[hx+txO[0],hy-fz*1.25+txO[1],tw0/2+12*s,fz*.75]}
+      {const[hx,hy]=centroid(pts),fz=+$('fs').value*s;ctx.save();ctx.font=mainFont(fz);const tw0=Math.min(ctx.measureText($('t1').value).width,W*.86);ctx.restore();txH=$('hidemain').checked?null:[hx+txO[0],hy-fz*1.25+txO[1],tw0/2+12*s,fz*.75];if($('ls').value==='ground'&&!$('hidemain').checked){const Q=groundQuad(),g2=(.8+.2)*.82*clamp(+$('fs').value/110,.3,3);txH=[hx+txO[0],hy+txO[1],Math.max(30*s,Math.hypot(Q[1][0]-Q[0][0],Q[1][1]-Q[0][1])/2*g2),Math.max(24*s,Math.hypot(Q[3][0]-Q[0][0],Q[3][1]-Q[0][1])/2*g2)]}}
       const k0=$('hidemain').checked?0:clamp((p-.8)/.2),alt=$('ls').value!=='neon',k=alt?0:k0;if(alt&&k0>0){ctx.save();ctx.translate(txO[0],txO[1]);txExit(qT,s);drawLabelAlt(k0,time,s);ctx.restore()}
       if(k>0){
         ctx.save();ctx.translate(txO[0],txO[1]);txExit(qT,s);
@@ -1265,7 +1266,7 @@ function drawLabelAlt(k,time,s){
     }
   }else{
     const Q=groundQuad(),mx=(Q[0][0]+Q[1][0]+Q[2][0]+Q[3][0])/4,my=(Q[0][1]+Q[1][1]+Q[2][1]+Q[3][1])/4,gs=(.8+.2*kk)*.82*clamp(+$('fs').value/110,.3,3);
-    const Qi=Q.map(p=>[mx+(p[0]-mx)*gs,my+(p[1]-my)*gs]);
+    const ra=(+($('txrot')&&$('txrot').value)||0)*Math.PI/180,cr=Math.cos(ra),sr=Math.sin(ra);const Qi=Q.map(p=>{const dx=(p[0]-mx)*gs,dy=(p[1]-my)*gs;return[mx+dx*cr-dy*sr,my+dx*sr+dy*cr]});
     const[T,Dk]=groundTex(Q),map=sq2q(Qi),st=Math.max(1,s*1.6);
     for(let i=5;i>=1;i--)drawWarp(Dk,map,8,4,i*st);
     {const gw=+($('glw')&&$('glw').value)||0;if(gw>0){ctx.save();ctx.shadowColor=$('c1').value;for(const m of [1,.55]){ctx.shadowBlur=gw*m*s*.9;drawWarp(T,map,4,2,0)}ctx.restore()}}

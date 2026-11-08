@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081110-->
+<html lang="tr"><!--pp-build:202611081115-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3757,7 +3757,7 @@ window.ppHelp=function(){
     const t=sk.pend;sk.pend=null;
     if(Math.abs(bg.currentTime-t)<.001){sk.busy=false;return}
     sk.busy=true;sk.n++;let fin=false;
-    const done=()=>{if(fin)return;fin=true;bg.removeEventListener('seeked',done);clearTimeout(tm);sk.busy=false;try{if(bg.__fc&&bg.__step&&!bg.seeking){const k=Math.round(bg.currentTime/bg.__step);if(!bg.__fc.has(k)){const c=document.createElement('canvas');c.width=480;c.height=Math.max(1,Math.round(480*bg.videoHeight/bg.videoWidth));c.getContext('2d').drawImage(bg,0,0,c.width,c.height);bg.__fc.set(k,c)}}}catch(e){}if(sk.pend!=null)doSeek()};
+    const done=()=>{if(fin)return;fin=true;bg.removeEventListener('seeked',done);clearTimeout(tm);sk.busy=false;try{if(bg.__fc&&bg.__step&&!bg.seeking){const k=Math.round(bg.currentTime/bg.__step);if(!bg.__fc.has(k)){const c=document.createElement('canvas');c.width=400;c.height=Math.max(1,Math.round(400*bg.videoHeight/bg.videoWidth));c.getContext('2d').drawImage(bg,0,0,c.width,c.height);bg.__fc.set(k,c)}}}catch(e){}if(sk.pend!=null)doSeek()};
     const tm=setTimeout(done,700);
     bg.addEventListener('seeked',done);
     bg.currentTime=t;
@@ -3765,19 +3765,32 @@ window.ppHelp=function(){
   function nearF(v,t){const m=v&&v.__fc;if(!m||!v.__step)return null;const k=Math.round(t/v.__step);for(const d of [0,1,-1,2,-2]){const f=m.get(k+d);if(f)return f}return null}
   function prefill(v){
     if(v.__pf)return;const dur=v.duration;if(!isFinite(dur)||dur<=0||!v.videoWidth)return;
-    v.__pf=1;v.__fc=new Map;const step=Math.max(.5,dur/200);v.__step=step;
+    v.__pf=1;v.__fc=new Map;const step=Math.max(1/20,dur/240);v.__step=step;
     const pv=document.createElement('video');pv.muted=true;pv.preload='auto';pv.src=v.currentSrc||v.src;
-    const w=480,h=Math.max(1,Math.round(w*v.videoHeight/v.videoWidth));let i=0;
-    const next=()=>{
-      if(!clips.some(c=>c.el===v)){pv.removeAttribute('src');pv.load();return}
-      if((drag&&drag.kind==='seek')||recording){setTimeout(next,400);return}
-      const t=i*step;if(t>dur){v.__pfDone=1;pv.removeAttribute('src');pv.load();return}
-      let fin=false;const done=()=>{if(fin)return;fin=true;pv.removeEventListener('seeked',done);clearTimeout(tm);
-        try{const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(pv,0,0,w,h);v.__fc.set(i,c)}catch(e){}
-        i++;setTimeout(next,0)};
-      const tm=setTimeout(done,3000);pv.addEventListener('seeked',done);pv.currentTime=Math.min(t,dur-.05);
-    };
-    const go=()=>next();if(pv.readyState>=1)go();else pv.addEventListener('loadedmetadata',go,{once:true});
+    const w=400,h=Math.max(1,Math.round(w*v.videoHeight/v.videoWidth));
+    const stop=()=>{v.__pfDone=1;try{pv.pause();pv.removeAttribute('src');pv.load()}catch(e){}};
+    const cap=k=>{if(v.__fc.has(k))return;try{const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(pv,0,0,w,h);v.__fc.set(k,c)}catch(e){}};
+    const run=()=>{
+      if(pv.requestVideoFrameCallback){
+        let nk=0;pv.playbackRate=Math.min(16,Math.max(2,dur/4));
+        const cb=(now,md)=>{
+          if(!clips.some(c=>c.el===v)){stop();return}
+          if((drag&&drag.kind==='seek')||recording){pv.pause();setTimeout(()=>{pv.play().catch(()=>{});pv.requestVideoFrameCallback(cb)},300);return}
+          const t=md.mediaTime;while(nk*step<=t+1e-3){cap(nk);nk++}
+          if(pv.ended||t>=dur-.05){stop();return}
+          pv.requestVideoFrameCallback(cb)};
+        pv.addEventListener('ended',stop,{once:true});
+        pv.requestVideoFrameCallback(cb);pv.play().catch(()=>stop());
+      }else{
+        let i=0;const next=()=>{
+          if(!clips.some(c=>c.el===v)){stop();return}
+          if((drag&&drag.kind==='seek')||recording){setTimeout(next,400);return}
+          const t=i*step;if(t>dur){stop();return}
+          let fin=false;const done=()=>{if(fin)return;fin=true;pv.removeEventListener('seeked',done);clearTimeout(tm);cap(i);i++;setTimeout(next,0)};
+          const tm=setTimeout(done,3000);pv.addEventListener('seeked',done);pv.currentTime=Math.min(t,dur-.05)};
+        next();
+      }};
+    if(pv.readyState>=1)run();else pv.addEventListener('loadedmetadata',run,{once:true});
   }
   setInterval(()=>{try{if(isVid&&bg&&!bg.__pf)prefill(bg)}catch(e){}},1000);
   try{const _db=drawBg;drawBg=function(now){

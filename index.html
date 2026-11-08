@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081126-->
+<html lang="tr"><!--pp-build:202611081135-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2203,7 +2203,7 @@ function drawLabels(now){
   labels.forEach(L=>{L._x=null;L._z=null});
   if(!labels.length)return;
   const base=Math.min(W,H)*.04,s=Math.min(W,H)/720;
-  const tl=isVid?(bg.paused?(kfs.length?bg.currentTime-kfs[0].t:99):bg.currentTime-(kfs.length?kfs[0].t:0)):tLoop(now)/1000;
+  const tl=isVid?(bg.paused?(kfs.length?bg.currentTime-kfs[0].t:(window.__scrubSticky?bg.currentTime:99)):bg.currentTime-(kfs.length?kfs[0].t:0)):tLoop(now)/1000;
   labels.forEach((L,i)=>{
     if(L.tlHide){L.hit=null;L._z=null;L._x=null;return}
     let X,Y;
@@ -2215,7 +2215,7 @@ function drawLabels(now){
     const G=$('gson')&&$('gson').checked&&L.grp!==false,ts=G?(+$('gts').value||0):(L.ts===undefined?.8+.45*i:L.ts),te=stillMode?0:(G?(+$('gte').value||0):(L.te||0)),isSel=L===labSel;
     const ad=.8*(L.adx||100)/100;let r=clamp((tl-ts)/ad),fo=1;
     if(te&&tl>te)fo=1-clamp((tl-te)/(G?Math.max(.6,ad*.75):ad));
-    if(isSel&&(ldrag||!(isVid?!bg.paused:window.__tHold==null))){r=Math.max(r,1);fo=1}
+    if(isSel&&(ldrag||!(isVid?!bg.paused:window.__tHold==null))){const sc=window.__scrubOn&&window.__scrubOn();if(!sc||tl<ts)r=Math.max(r,1);if(!sc)fo=1}
     if(!recording&&!stillMode&&!te&&$('loopon')&&$('loopon').checked){const Lm=isVid?(bg.duration||0)-(kfs.length?kfs[0].t:0):loopMs()/1000;if(Lm>1.2&&tl>Lm-.5)fo=Math.min(fo,Math.max(0,(Lm-tl)/.5));if(isSel&&(ldrag||!(isVid?!bg.paused:window.__tHold==null)))fo=1}
     if(r<=0||fo<=0)return;
     const e=easeOut(r),sz=base*(L.sz||100)/100,an=L.an||'slide',shape=L.shape||'pill',lsty=L.ls||'box',bgc=L.bg||'#ffffff',fg=L.fg||'#232323',lc=L.lc||'#ffffff',cc=L.cc||'#ffffff',fv=L.font||'Poppins';
@@ -3755,9 +3755,9 @@ window.ppHelp=function(){
   function doSeek(){
     if(sk.pend==null||!bg){sk.busy=false;return}
     const t=sk.pend;sk.pend=null;
-    if(Math.abs(bg.currentTime-t)<.001){sk.busy=false;return}
+    if(Math.abs(natT(bg)-t)<.001){sk.busy=false;return}
     sk.busy=true;sk.n++;let fin=false;
-    const done=()=>{if(fin)return;fin=true;bg.removeEventListener('seeked',done);clearTimeout(tm);sk.busy=false;try{if(bg.__fc&&bg.__step&&!bg.seeking){const k=Math.round(bg.currentTime/bg.__step);if(!bg.__fc.has(k)){const c=document.createElement('canvas');const W2=bg.__sqw||800;c.width=W2;c.height=Math.max(1,Math.round(W2*bg.videoHeight/bg.videoWidth));c.getContext('2d').drawImage(bg,0,0,c.width,c.height);bg.__fc.set(k,c)}}}catch(e){}if(sk.pend!=null)doSeek()};
+    const done=()=>{if(fin)return;fin=true;bg.removeEventListener('seeked',done);clearTimeout(tm);sk.busy=false;try{if(bg.__fc&&bg.__step&&!bg.seeking){const k=Math.round(natT(bg)/bg.__step);if(!bg.__fc.has(k)){const c=document.createElement('canvas');const W2=bg.__sqw||800;c.width=W2;c.height=Math.max(1,Math.round(W2*bg.videoHeight/bg.videoWidth));c.getContext('2d').drawImage(bg,0,0,c.width,c.height);bg.__fc.set(k,c)}}}catch(e){}if(sk.pend!=null)doSeek()};
     const tm=setTimeout(done,700);
     bg.addEventListener('seeked',done);
     bg.currentTime=t;
@@ -3799,7 +3799,11 @@ window.ppHelp=function(){
     const f=window.__scrubF;
     if(f){if(drag&&drag.kind==='seek'||sk.busy||sk.pend!=null){try{ctx.drawImage(f,0,0,W,H);return}catch(e){}}else window.__scrubF=null}
     return _db(now)}}catch(e){}
-  function seekTo(t){try{if(isVid){bg.pause();sk.last=t;sk.pend=t;const f=nearF(bg,t);window.__scrubF=(drag&&drag.kind==='seek')?f:null;if(!sk.busy)doSeek()}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
+  const _cd=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,'currentTime');
+  function natT(v){return _cd.get.call(v)}
+  window.__scrubOn=()=>!!(drag&&drag.kind==='seek')||!!(isVid&&bg&&(sk.busy||sk.pend!=null));
+  function hookT(v){if(v.__th)return;v.__th=1;Object.defineProperty(v,'currentTime',{configurable:true,get(){return(sk.last!=null&&(sk.busy||sk.pend!=null||(drag&&drag.kind==='seek')))?sk.last:_cd.get.call(v)},set(x){_cd.set.call(v,x)}})}
+  function seekTo(t){try{if(isVid){window.__scrubSticky=true;hookT(bg);bg.pause();sk.last=t;sk.pend=t;const f=nearF(bg,t);window.__scrubF=(drag&&drag.kind==='seek')?f:null;if(!sk.busy)doSeek()}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
   const NAMEW=176,ROWH=28,FPS=30;
   let box,scroll,content,phead,tinfo,zoom=1,collapsed=false,sig='',drag=null,pps=60,Tt=5,off=0,snapOn=true,msel=[],lastPrim=null,editing=false;
   window.tlMarkers=window.tlMarkers||[];

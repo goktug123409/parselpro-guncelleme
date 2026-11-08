@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081118-->
+<html lang="tr"><!--pp-build:202611081126-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3838,6 +3838,9 @@ window.ppHelp=function(){
 #ptl .bar .aout{right:0;background:linear-gradient(90deg,rgba(255,255,255,.4),rgba(255,255,255,.08))}
 #ptl .bar .ah{position:absolute;top:3px;bottom:3px;width:7px;margin-left:-3px;border-radius:4px;background:rgba(0,0,0,.45);cursor:col-resize;z-index:3}
 #ptl .bar .bl{position:relative;z-index:1;pointer-events:none}
+#ptl .bar .ah{top:auto;bottom:1px;width:8px;height:8px;margin:0 0 0 -4px;border-radius:50%;background:#fff;border:1.5px solid rgba(0,0,0,.6);box-sizing:border-box;opacity:0;transition:opacity .12s}
+#ptl .bar.sel .ah{opacity:1}
+#ptl .bar .eh::after{background:rgba(0,0,0,.5);left:3px;width:3px}
 #ptl .rl{background:rgba(255,255,255,.04)!important}#ptl .rl .tk{cursor:pointer}
 #ptl .tick{position:absolute;bottom:0;height:9px;border-left:1px solid rgba(255,255,255,.22)}
 #ptl .tick i{position:absolute;bottom:10px;left:4px;font:600 10px ui-monospace,Consolas,monospace;font-style:normal;color:#7d889e}
@@ -3939,7 +3942,7 @@ window.ppHelp=function(){
       const lab=it.ts.toFixed(1)+'s → '+(it.te>0?it.te.toFixed(1)+'s':'∞');
       const ainW=Math.min(len*.9,it.din)*pps,aoutW=it.te>0?Math.min(len*.5,it.dout)*pps:0;
       const seg=(it.lock?'':'<span class="eh l" data-z="l"></span><span class="eh r" data-z="r"></span>')+'<span class="ain" style="width:'+ainW+'px"></span>'+(aoutW?'<span class="aout" style="width:'+aoutW+'px"></span>':'')+(it.lock?'':'<span class="ah" data-a="in" style="left:'+ainW+'px" title="Giriş animasyonu süresi (sürükle)"></span>'+(aoutW&&it.ho?'<span class="ah" data-a="out" style="left:'+(w-aoutW)+'px" title="Çıkış animasyonu süresi (sürükle)"></span>':''));
-      h+='<div class="rw'+(sel?' sel':'')+'" data-i="'+i+'"><div class="nm" style="--dc:'+it.col+'" data-i="'+i+'" title="'+esc(it.name)+'"><span class="nn">'+esc(it.name)+'</span><span class="ib'+(it.hide?' act':'')+'" data-act="eye" title="Göster / gizle">'+(it.hide?'🙈':'👁')+'</span><span class="ib'+(it.lk?' act':'')+'" data-act="lock" title="Kilitle / kilidi aç">'+(it.lk?'🔒':'🔓')+'</span></div><div class="tk" style="width:'+W+'px"><div class="bar'+(it.te>0?'':' inf')+(it.lock?' lock':'')+(it.hide?' hid':'')+(sel?' sel':'')+'" data-i="'+i+'" style="left:'+s+'px;width:'+w+'px;--bc:'+it.col+'" title="'+(it.grp?'Grup zamanı açık: süre Efektler sekmesindeki grup ayarından gelir':it.lk?'Kilitli':lab)+'">'+seg+'<span class="bl">'+lab+'</span></div></div></div>';
+      h+='<div class="rw'+(sel?' sel':'')+'" data-i="'+i+'"><div class="nm" style="--dc:'+it.col+'" data-i="'+i+'" title="'+esc(it.name)+'"><span class="nn">'+esc(it.name)+'</span><span class="ib'+(it.hide?' act':'')+'" data-act="eye" title="Göster / gizle">'+(it.hide?'🙈':'👁')+'</span><span class="ib'+(it.lk?' act':'')+'" data-act="lock" title="Kilitle / kilidi aç">'+(it.lk?'🔒':'🔓')+'</span></div><div class="tk" style="width:'+W+'px"><div class="bar'+(it.te>0?'':' inf')+(it.lock?' lock':'')+(it.hide?' hid':'')+(sel?' sel':'')+'" data-i="'+i+'" style="left:'+s+'px;width:'+w+'px;--bc:'+it.col+'" title="'+(it.grp?'Grup zamanı açık: süre Efektler sekmesindeki grup ayarından gelir':it.lk?'Kilitli':lab+'  —  Ortadan sürükle: kaydır • sol/sağ kenar: ne zaman girsin/çıksın • beyaz yuvarlak: giriş/çıkış animasyonunun süresi')+'">'+seg+'<span class="bl">'+lab+'</span></div></div></div>';
     });
     let ov='';mk.forEach(t=>{ov+='<div class="mkl" style="left:'+(NAMEW+t*pps)+'px"></div>'});
     content.innerHTML=h+ov+'<div class="ph-line" id="ptl-pl"></div>';

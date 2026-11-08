@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081032-->
+<html lang="tr"><!--pp-build:202611081105-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3751,7 +3751,18 @@ window.ppHelp=function(){
   try{const _tl=tLoop;tLoop=function(now){
     if(window.__tHold!=null){if(recording||t0!==window.__tHoldT0){window.__tHold=null}else return window.__tHold*1000}
     return _tl(now)}}catch(e){}
-  function seekTo(t){try{if(isVid){bg.pause();bg.currentTime=t}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
+  const sk={pend:null,busy:false,last:null,n:0};window.__skn=sk;
+  function doSeek(){
+    if(sk.pend==null||!bg){sk.busy=false;return}
+    const t=sk.pend;sk.pend=null;
+    if(Math.abs(bg.currentTime-t)<.001){sk.busy=false;return}
+    sk.busy=true;sk.n++;let fin=false;
+    const done=()=>{if(fin)return;fin=true;bg.removeEventListener('seeked',done);clearTimeout(tm);sk.busy=false;if(sk.pend!=null)doSeek()};
+    const tm=setTimeout(done,700);
+    bg.addEventListener('seeked',done);
+    bg.currentTime=t;
+  }
+  function seekTo(t){try{if(isVid){bg.pause();sk.last=t;sk.pend=t;if(!sk.busy)doSeek()}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
   const NAMEW=176,ROWH=28,FPS=30;
   let box,scroll,content,phead,tinfo,zoom=1,collapsed=false,sig='',drag=null,pps=60,Tt=5,off=0,snapOn=true,msel=[],lastPrim=null,editing=false;
   window.tlMarkers=window.tlMarkers||[];
@@ -4094,7 +4105,7 @@ window.ppHelp=function(){
   function frame(){
     try{
       if(box&&box.style.display!=='none'&&!collapsed&&phead){
-        const t=curT(),x=NAMEW+t*pps;
+        const t=(drag&&drag.kind==='seek'&&sk.last!=null)?sk.last:curT(),x=NAMEW+t*pps;
         if(x!==lastPx){lastPx=x;phead.style.transform='translateX('+x+'px)'}
         const k=Math.floor(t*4);if(k!==lastT){lastT=k;tinfo.textContent=fmt(t)+' / '+fmt(Tt)}
         const pl=document.getElementById('ptl-pl2');if(pl){const run=isVid?!bg.paused:window.__tHold==null;const lb=run?'⏸':'▶';if(pl.textContent!==lb)pl.textContent=lb}

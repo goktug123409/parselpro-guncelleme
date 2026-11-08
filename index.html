@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081139-->
+<html lang="tr"><!--pp-build:202611081141-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3805,6 +3805,8 @@ window.ppHelp=function(){
   function hookT(v){if(v.__th)return;v.__th=1;Object.defineProperty(v,'currentTime',{configurable:true,get(){return(sk.last!=null&&(sk.busy||sk.pend!=null||(drag&&drag.kind==='seek')))?sk.last:_cd.get.call(v)},set(x){_cd.set.call(v,x)}})}
   function seekTo(t){try{if(isVid){window.__scrubSticky=true;hookT(bg);bg.pause();sk.last=t;sk.pend=t;const f=nearF(bg,t);window.__scrubF=(drag&&drag.kind==='seek')?f:null;if(!sk.busy)doSeek()}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
   const NAMEW=176,ROWH=28,FPS=30;
+  const dragTip=(bar,ts,te)=>{try{let t=document.getElementById('ptl-dtip');if(!t){t=document.createElement('div');t.id='ptl-dtip';t.style.cssText='position:fixed;z-index:99999;pointer-events:none;background:#0b1220;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:4px 9px;font:700 12px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.5);white-space:nowrap';document.body.appendChild(t)}
+    const r=bar.getBoundingClientRect();t.textContent=ts.toFixed(1)+'s → '+(te>0?te.toFixed(1)+'s  •  '+(te-ts).toFixed(1)+' sn':'∞');t.style.display='block';t.style.left=Math.max(4,r.left)+'px';t.style.top=Math.max(4,r.top-34)+'px';clearTimeout(t.__h);t.__h=setTimeout(()=>{t.style.display='none'},700)}catch(e){}};
   const barTxt=(ts,te,w)=>{if(!(te>0))return ts.toFixed(1)+'s → ∞';const d=(te-ts).toFixed(1);return w>=135?ts.toFixed(1)+'s → '+te.toFixed(1)+'s  •  '+d+' sn':w>=62?d+' sn':w>=34?d:''};
   let box,scroll,content,phead,tinfo,zoom=1,collapsed=false,sig='',drag=null,pps=60,Tt=5,off=0,snapOn=true,msel=[],lastPrim=null,editing=false;
   window.tlMarkers=window.tlMarkers||[];
@@ -4035,7 +4037,7 @@ window.ppHelp=function(){
       guide(sh);
       drag.set.forEach(x=>{if(!x.bar)return;const ts=x.nts!==undefined?x.nts:x.ts0,te=x.nte!==undefined?x.nte:x.te0,s=(off+ts)*pps,en=te>0?(off+te)*pps:Tt*pps,w=Math.max(10,en-s);
         x.bar.style.left=s+'px';x.bar.style.width=w+'px';x.bar.classList.toggle('inf',!(te>0));
-        const bl=x.bar.querySelector('.bl');if(bl)bl.textContent=barTxt(ts,te,w)});
+        const bl=x.bar.querySelector('.bl');if(bl)bl.textContent=barTxt(ts,te,w);dragTip(x.bar,ts,te)});
     });
     document.addEventListener('pointerup',()=>{
       if(!drag)return;const d=drag;drag=null;guide(null);

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081358-->
+<html lang="tr"><!--pp-build:202611081400-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -996,7 +996,7 @@ function drawInner(now){
   try{drawFx(now,s,p)}catch(e){$('st').textContent='Efekt hatası: '+e.message}
   const n=pts.length;
   if(n&&!(live&&time<0)){
-    ctx.save();ctx.globalAlpha*=lineA;
+    window.__lineA=lineA;ctx.save();ctx.globalAlpha*=lineA;
     if(qL>0&&$('fadem').value==='shrink'){const[sx0,sy0]=centroid(pts),k=1-.9*easeOut(qL);ctx.translate(sx0,sy0);ctx.scale(k,k);ctx.translate(-sx0,-sy0)}
     const poly=closed&&n>=3?pts.concat([pts[0]]):pts;
     const lens=[];let tot=0;
@@ -4915,9 +4915,10 @@ cv.addEventListener('dblclick',e=>{
   const[x,y]=xy(e),i=nearest(x,y);if(i<0)return;
   e.preventDefault();delAt(i);logAct('Köşe noktası silindi ('+pts.length+' nokta)');setKF();
 });
+let lastAct=0;['pointermove','pointerdown'].forEach(t=>cv.addEventListener(t,()=>{lastAct=performance.now()},true));
 const oDL=drawLabels;
 drawLabels=function(now){oDL.apply(this,arguments);
-  try{if(!closed||recording||stillMode||pts.length<3||!(hovOk()||typeof drag==='number'||(drag&&drag.idx)))return;
+  try{const dr=typeof drag==='number'||(drag&&drag.idx);if(!closed||recording||stillMode||pts.length<3||(window.__lineA!==undefined&&window.__lineA<.5)||!(dr||(hovOk()&&performance.now()-lastAct<2500)))return;
     const r=R();ctx.save();ctx.lineWidth=Math.max(2,2.5*W/1280);
     mids().forEach(m=>{ctx.globalAlpha=.65;ctx.fillStyle='rgba(255,255,255,.9)';ctx.strokeStyle='rgba(0,0,0,.55)';ctx.beginPath();ctx.arc(m[0],m[1],r*.55,0,7);ctx.fill();ctx.stroke();
       ctx.strokeStyle='#222';ctx.beginPath();ctx.moveTo(m[0]-r*.3,m[1]);ctx.lineTo(m[0]+r*.3,m[1]);ctx.moveTo(m[0],m[1]-r*.3);ctx.lineTo(m[0],m[1]+r*.3);ctx.stroke()});

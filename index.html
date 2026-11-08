@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081413-->
+<html lang="tr"><!--pp-build:202611081427-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1028,7 +1028,7 @@ function drawInner(now){
     if($('lmode')&&$('lmode').value==='3d'&&window.draw3DLine){try{window.draw3DLine({poly,lens,left,p,now,s,col,th,gm})}catch(e){}}
     try{window.drawMeasures&&window.drawMeasures({P:pts,s,col,p})}catch(e){}
     // corner dots
-    if($('ls').value!=='card'&&$('sab').checked){let cum=0;pts.forEach((a,i)=>{if(i>0)cum+=lens[i-1];const da=clamp((left-cum)/(th*4));if(da<=0)return;ctx.save();ctx.globalAlpha*=da;ctx.beginPath();ctx.arc(a[0],a[1],th*1.1,0,7);ctx.fillStyle='#fff';ctx.shadowColor=col;ctx.shadowBlur=14*s;ctx.fill();ctx.restore()})}
+    if($('ls').value!=='card'&&$('sab').checked){let cum=0;pts.forEach((a,i)=>{if(i>0)cum+=lens[i-1];const da=clamp((left-cum)/(th*4))*((recording||stillMode)?clamp(1-(time-(dur+1200))/700):Math.max(clamp(1-(time-(dur+1200))/700),(performance.now()-(window.__lastAct||0)<2500)?1:0));if(da<=0)return;ctx.save();ctx.globalAlpha*=da;ctx.beginPath();ctx.arc(a[0],a[1],th*1.1,0,7);ctx.fillStyle='#fff';ctx.shadowColor=col;ctx.shadowBlur=14*s;ctx.fill();ctx.restore()})}
     ctx.restore();
     // label
     if(closed&&n>=3){
@@ -4915,7 +4915,7 @@ cv.addEventListener('dblclick',e=>{
   const[x,y]=xy(e),i=nearest(x,y);if(i<0)return;
   e.preventDefault();e.stopImmediatePropagation();delAt(i);logAct('Köşe noktası silindi ('+pts.length+' nokta)');setKF();
 },true);
-let lastAct=0;['pointermove','pointerdown'].forEach(t=>cv.addEventListener(t,()=>{lastAct=performance.now()},true));
+let lastAct=0;['pointermove','pointerdown'].forEach(t=>cv.addEventListener(t,()=>{lastAct=window.__lastAct=performance.now()},true));
 const oDL=drawLabels;
 drawLabels=function(now){oDL.apply(this,arguments);
   try{const dr=typeof drag==='number'||(drag&&drag.idx);if(!closed||recording||stillMode||pts.length<3||(window.__lineA!==undefined&&window.__lineA<.5)||!(dr||(hovOk()&&performance.now()-lastAct<2500)))return;

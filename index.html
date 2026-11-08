@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081001-->
+<html lang="tr"><!--pp-build:202611081005-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4483,7 +4483,7 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
     const start=t=>{cur={t,els:[]};secs.push(cur)};
     if(g.dataset.g==='media'){
       const gi=body.findIndex(k=>k.querySelector&&(k.querySelector('#gr-b')||/Parlak/.test(k.textContent.slice(0,40))));
-      start('Yükle ve proje');body.forEach((k,i)=>{if(gi>=0&&i===gi)start('Renk ve kırpma');cur.els.push(k)});
+      start('Yükle ve proje');body.forEach((k,i)=>{if(gi>=0&&i===gi)start('Renk ve kırpma');else if(k.dataset&&k.dataset.sec)start(k.dataset.sec);cur.els.push(k)});
       return {hdr,secs};
     }
     body.forEach(k=>{
@@ -4564,6 +4564,79 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
 
   setInterval(()=>{try{updDet();updTitle()}catch(e){}},500);
   updDet();updTitle();
+})();
+</script>
+<script id="filt-js">
+(function(){
+  if(window.__filt)return;window.__filt=1;
+  const g=id=>document.getElementById(id);
+  const css=document.createElement('style');css.textContent=`
+.flt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.flt-grid button{position:relative;height:58px;border-radius:10px!important;overflow:hidden;padding:0 8px 6px!important;display:flex;align-items:flex-end;justify-content:flex-start;font-size:12.5px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.7);border:1px solid #27324a!important;background-size:cover!important}
+.flt-grid button.on{outline:2px solid #4d9bff;outline-offset:1px}
+`;document.head.appendChild(css);
+  const PRE=[
+    ['Orijinal',  [0,0,0,0,0,0],'linear-gradient(135deg,#3a4a3a,#6c8a5c)'],
+    ['Sinematik', [-4,22,-12,-14,45,12],'linear-gradient(135deg,#0d2a3a,#d98a3c)'],
+    ['Sıcak gün', [6,8,18,28,0,0],'linear-gradient(135deg,#f2a33a,#e5532f)'],
+    ['Soğuk',     [0,10,0,-28,0,0],'linear-gradient(135deg,#2d6fb5,#a9d8f5)'],
+    ['Canlı drone',[8,14,22,6,0,0],'linear-gradient(135deg,#1fae4b,#2f7bff)'],
+    ['Siyah beyaz',[0,18,-100,0,25,10],'linear-gradient(135deg,#111,#bbb)'],
+    ['Soluk film',[-2,-12,-25,10,30,22],'linear-gradient(135deg,#6a5f55,#b9a88f)'],
+    ['Gün batımı',[-4,12,20,38,30,0],'linear-gradient(135deg,#7a2b6b,#ff9a3c)']
+  ];
+  const sl=(id,t,min,max,step,v)=>'<label style="display:block;margin:6px 0"><span style="display:flex;justify-content:space-between"><span>'+t+'</span><b id="'+id+'v">'+v+'</b></span><input id="'+id+'" type="range" min="'+min+'" max="'+max+'" step="'+(step||1)+'" value="'+v+'" style="width:100%"></label>';
+  function ui(){
+    const grp=document.querySelector('.cv-grp[data-g="media"]');
+    if(!grp||!g('gr-b'))return false;if(g('flt-box'))return true;
+    const a=document.createElement('div');a.id='flt-box';a.dataset.sec='Filtreler';
+    a.innerHTML='<h2 style="margin:0 0 4px;font-size:15px;text-align:left">🎞 Filtreler</h2><div class="s">Tek tıkla hazır renk havası. Sonra “Renk ve kırpma” bölümünden ince ayar yapabilirsin.</div><div class="flt-grid" id="flt-grid"></div>';
+    const b=document.createElement('div');b.id='fxe-box';b.dataset.sec='Görünüm efektleri';
+    b.innerHTML='<h2 style="margin:0 0 4px;font-size:15px;text-align:left">✨ Görünüm efektleri</h2><div class="s">Önizlemede ve MP4/PNG çıktısında görünür.</div>'+
+      sl('ft-vig','Vinyet (kenarları karart)',0,100,1,0)+sl('ft-grain','Film greni',0,100,1,0)+
+      sl('ft-fi','Açılış kararması (sn)',0,5,0.1,0)+sl('ft-fo','Kapanış kararması (sn)',0,5,0.1,0)+
+      '<div class="s">Kararma videonun başında ve sonunda siyahtan açılır / siyaha kapanır. Zamanı başa alınca ekran siyah görünmesi normaldir.</div>';
+    grp.appendChild(a);grp.appendChild(b);
+    const grid=g('flt-grid');
+    PRE.forEach(p=>{const bt=document.createElement('button');bt.type='button';bt.textContent=p[0];bt.style.background=p[2];bt.dataset.f=p[0];
+      bt.onclick=()=>{
+        const ids=['gr-b','gr-c','gr-s','gr-w','ft-vig','ft-grain'];
+        ids.forEach((id,i)=>{const e=g(id);if(e){e.value=p[1][i];e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}});
+        grid.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===bt));
+        try{logAct('Filtre: '+p[0])}catch(e){}
+      };grid.appendChild(bt)});
+    ['ft-vig','ft-grain','ft-fi','ft-fo'].forEach(id=>g(id).addEventListener('input',()=>{g(id+'v').textContent=g(id).value}));
+    return true;
+  }
+  const iv=setInterval(()=>{if(ui())clearInterval(iv)},300);
+  const v=id=>{const e=g(id);return e?+e.value||0:0};
+  let noise=null;
+  const mkNoise=()=>{const c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d'),d=x.createImageData(160,160);for(let i=0;i<d.data.length;i+=4){const n=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=n;d.data[i+3]=255}x.putImageData(d,0,0);return c};
+  function curDur(){
+    try{
+      if(isVid&&bg){const t0k=kfs.length?kfs[0].t:0;const te=window.__trimEnd?window.__trimEnd():0;const D=(bg.duration||0)-t0k;return te>0?Math.min(te,D):D}
+      return loopMs()/1000;
+    }catch(e){return 0}
+  }
+  function curTm(){try{return isVid&&bg?bg.currentTime-(kfs.length?kfs[0].t:0):tLoop(performance.now())/1000}catch(e){return 0}}
+  const _db=drawBg;
+  drawBg=function(now){
+    _db(now);
+    const vg=v('ft-vig'),gr=v('ft-grain'),fi=v('ft-fi'),fo=v('ft-fo');
+    if(!vg&&!gr&&!fi&&!fo)return;
+    ctx.save();ctx.setTransform(1,0,0,1,0,0);
+    if(vg){const R=Math.hypot(W,H)/2,gd=ctx.createRadialGradient(W/2,H/2,R*.35,W/2,H/2,R*1.02);gd.addColorStop(0,'rgba(0,0,0,0)');gd.addColorStop(1,'rgba(0,0,0,'+(vg/100*.88)+')');ctx.fillStyle=gd;ctx.fillRect(0,0,W,H)}
+    if(gr){noise=noise||mkNoise();ctx.globalAlpha=gr/100*.45;ctx.globalCompositeOperation='overlay';
+      const pat=ctx.createPattern(noise,'repeat');ctx.translate(Math.floor(Math.random()*160),Math.floor(Math.random()*160));ctx.fillStyle=pat;ctx.fillRect(-160,-160,W+320,H+320);}
+    ctx.restore();
+    if(fi>0||fo>0){
+      const D=curDur(),t=curTm();let a=0;
+      if(fi>0&&t<fi)a=Math.max(a,1-t/fi);
+      if(fo>0&&D>0&&t>D-fo)a=Math.max(a,1-(D-t)/fo);
+      a=Math.min(1,Math.max(0,a));
+      if(a>0.001){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='rgba(0,0,0,'+a+')';ctx.fillRect(0,0,W,H);ctx.restore()}
+    }
+  };
 })();
 </script>
 </body>

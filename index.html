@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611080941-->
+<html lang="tr"><!--pp-build:202611080955-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4400,8 +4400,9 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
   /* --- kaydedince son projelere ekle --- */
   const _sf=window.saveFile;
   if(typeof _sf==='function')window.saveFile=saveFile=async function(blob,name,ext){
+    if(window.__auto&&ext==='zip'&&/\.parselpro\.zip$/i.test(name)){window.__auto=false;try{await addRecent(blob,name);window.__autoAt=Date.now()}catch(e){}return}
     const r=await _sf.apply(this,arguments);
-    try{if(ext==='zip'&&/\.parselpro\.zip$/i.test(name)){const t=($('st')||{}).textContent||'';if(!/iptal|Kaydedilemedi/i.test(t))await addRecent(blob,name)}}catch(e){}
+    try{if(ext==='zip'&&/\.parselpro\.zip$/i.test(name)){const t=($('st')||{}).textContent||'';if(!/iptal|Kaydedilemedi/i.test(t)){await addRecent(blob,name);window.__autoAt=Date.now()}}}catch(e){}
     return r;
   };
 
@@ -4428,6 +4429,141 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
   let last=null;
   const upd=()=>{const show=(typeof bg!=='undefined')&&!bg;if(show!==last){last=show;el.classList.toggle('off',!show);if(show)render()}};
   upd();setInterval(upd,250);render();
+})();
+</script>
+<script id="cap-js">
+(function(){
+  if(window.__cap)return;window.__cap=1;
+  const app=document.querySelector('.app'),panel=document.querySelector('.panel'),rail=document.querySelector('.cv-rail');
+  if(!app||!panel||!rail)return;
+  const css=document.createElement('style');css.id='cap-css';css.textContent=`
+@media(min-width:901px){
+ html body.cvs .app{grid-template-columns:500px minmax(0,1fr) 0;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"rail main det" "panel main det"}
+ html body.cvs .cv-rail{grid-area:rail;order:0;flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:stretch;padding:8px 8px 6px;gap:3px;overflow:visible;border-right:1px solid #1e2430;border-bottom:1px solid #1e2430;background:#0e131b}
+ html body.cvs .cv-rail button{width:calc(20% - 3px);padding:7px 2px 6px;font-size:11px}
+ html body.cvs .cv-rail button.on{background:#17233a;color:#5aa0ff;box-shadow:inset 0 -2px 0 #3d86ff}
+ html body.cvs .panel{grid-area:panel;order:0;display:grid!important;grid-template-columns:118px minmax(0,1fr);column-gap:14px;align-content:start;padding:14px 14px 22px}
+ html body.cvs .panel>.cv-grp{grid-column:2;grid-row:1;min-width:0}
+ html body.cvs .panel>:not(.cv-grp):not(#capsub){grid-column:1/-1}
+ html body.cvs .panel>#capsub{grid-column:1;grid-row:1;position:sticky;top:0;align-self:start;display:flex;flex-direction:column;gap:6px;z-index:3}
+ html body.cvs .panel>#capsub.one{display:none}
+ html body.cvs .panel>#capsub.one~.cv-grp{grid-column:1/-1}
+ html body.cvs .cv-main{grid-area:main;order:0}
+ #capdet{grid-area:det;display:none}
+ html body.cvs.pcol .app{grid-template-columns:86px minmax(0,1fr) 0;grid-template-areas:"rail main det" "rail main det"}
+ html body.cvs.pcol .cv-rail{flex-direction:column;flex-wrap:nowrap;align-items:center;padding:8px 0;overflow-y:auto;border-bottom:0}
+ html body.cvs.pcol .cv-rail button{width:66px}
+}
+@media(min-width:1520px){
+ html body.cvs .app{grid-template-columns:500px minmax(0,1fr) 250px}
+ html body.cvs.pcol .app{grid-template-columns:86px minmax(0,1fr) 250px}
+ #capdet{display:flex}
+}
+#capsub .si{padding:9px 10px;border-radius:8px;background:#121923;color:#c7d0e4;font:600 12.5px/1.25 system-ui,sans-serif;cursor:pointer;border:1px solid transparent;user-select:none}
+#capsub .si:hover{background:#18212f}
+#capsub .si.on{background:#16233b;color:#62a8ff;border-color:#25406e}
+.sec-off{display:none!important}
+#capdet{flex-direction:column;gap:10px;padding:14px;background:#0d1219;border-left:1px solid #1e2430;overflow-y:auto;font:13px system-ui,sans-serif;color:#e8eefc}
+#capdet h4{margin:0 0 2px;font-size:14px}
+#capdet .r{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;border-radius:8px;background:#121923}
+#capdet .r span{color:#8a97b0}#capdet .r b{font-weight:600;text-align:right;overflow-wrap:anywhere}
+#capdet .nm{font-weight:700;font-size:15px;overflow-wrap:anywhere}
+.cv-title .ast{display:inline-flex;align-items:center;gap:6px;margin-left:12px;font-weight:500;font-size:12px;opacity:.9}
+.cv-title .ast i{width:8px;height:8px;border-radius:50%;background:#43d17a;display:inline-block}
+.cv-title .ast.w i{background:#ffb84a}
+`;document.head.appendChild(css);
+
+  /* ---------- sol alt menü (bölümler) ---------- */
+  const sub=document.createElement('div');sub.id='capsub';panel.insertBefore(sub,panel.firstChild);
+  const selSec={};          /* grup -> seçili bölüm no */
+  const groups=()=>[...panel.querySelectorAll(':scope>.cv-grp')];
+  function sections(g){
+    const kids=[...g.children],hdr=kids[0]&&kids[0].classList.contains('cv-gh')?kids[0]:null,body=kids.filter(k=>k!==hdr);
+    const secs=[];let cur=null;
+    const start=t=>{cur={t,els:[]};secs.push(cur)};
+    if(g.dataset.g==='media'){
+      const gi=body.findIndex(k=>k.querySelector&&(k.querySelector('#gr-b')||/Parlak/.test(k.textContent.slice(0,40))));
+      start('Yükle ve proje');body.forEach((k,i)=>{if(gi>=0&&i===gi)start('Renk ve kırpma');cur.els.push(k)});
+      return {hdr,secs};
+    }
+    body.forEach(k=>{
+      if(k.tagName==='H2'){start(k.textContent.replace(/[^\p{L}\p{N}&\/\s’'().-]/gu,'').trim().replace(/\s+/g,' ')||'Ayarlar')}
+      else{if(!cur)start('Genel');}
+      cur.els.push(k);
+    });
+    if(!secs.length)start('Genel');
+    return {hdr,secs};
+  }
+  function applySec(g){
+    const {secs}=sections(g);const id=g.dataset.g;let n=selSec[id]||0;if(n>=secs.length)n=0;selSec[id]=n;
+    secs.forEach((s,i)=>s.els.forEach(e=>e.classList.toggle('sec-off',secs.length>1&&i!==n)));
+    return {secs,n};
+  }
+  function buildSub(){
+    const g=groups().find(x=>x.classList.contains('on'));if(!g){sub.innerHTML='';return}
+    const {secs,n}=applySec(g);cnt=secs.length;
+    sub.classList.toggle('one',secs.length<2);
+    sub.innerHTML='';
+    secs.forEach((s,i)=>{const d=document.createElement('div');d.className='si'+(i===n?' on':'');d.textContent=s.t;d.onclick=()=>{selSec[g.dataset.g]=i;buildSub();panel.scrollTop=0};sub.appendChild(d)});
+  }
+  let tmr=null,cnt=-1;
+  const later=()=>{if(tmr)return;tmr=setTimeout(()=>{tmr=null;try{const g=groups().find(x=>x.classList.contains('on'));if(!g)return;const n=sections(g).secs.length;if(n!==cnt){buildSub()}else applySec(g)}catch(e){}},200)};
+  const moA=new MutationObserver(()=>{try{buildSub()}catch(e){}});
+  const moC=new MutationObserver(later);
+  groups().forEach(g=>{moA.observe(g,{attributes:true,attributeFilter:['class']});moC.observe(g,{childList:true})});
+  buildSub();
+
+  /* ---------- sağ ayrıntı paneli ---------- */
+  const det=document.createElement('div');det.id='capdet';app.appendChild(det);
+  const fmtT=s=>{s=Math.max(0,Math.round(s||0));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+  const nameOf=()=>{try{return(clips[0]&&clips[0].name||'').replace(/\.[^.]+$/,'')||'Adsız proje'}catch(e){return 'Adsız proje'}};
+  function gradeTxt(){const v=id=>{const e=document.getElementById(id);return e?+e.value:0};const a=v('gr-b'),b=v('gr-c'),c=v('gr-s'),d=v('gr-w');return (a||b||c||d)?'Ayarlı':'Varsayılan'}
+  let lastDet='';
+  function updDet(){
+    let rows;
+    if(typeof bg==='undefined'||!bg){rows=[['Durum','Medya yok']]}
+    else{
+      const c=clips[clipCur]||{};
+      rows=[['Klip',(clipCur+1)+' / '+clips.length],['Tür',isVid?'Video':'Fotoğraf'],['Çözünürlük',(c.w||W)+'×'+(c.h||H)],['Süre',isVid?fmtT(bg.duration):'—'],
+        ['Arsa çizgisi',pts.length?pts.length+' nokta'+(closed?' (kapalı)':' (açık)'):'Yok'],['Takip',(typeof trk!=='undefined'&&trk)?'Hazır':'Kapalı'],
+        ['Etiket',String(labels.length)],['Efekt nesnesi',String(fxs.length)],['Renk ayarı',gradeTxt()]];
+    }
+    const nm=nameOf(),h='<h4>Ayrıntılar</h4><div class="nm">'+nm.replace(/</g,'&lt;')+'</div>'+rows.map(r=>'<div class="r"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>').join('');
+    if(h!==lastDet){lastDet=h;det.innerHTML=h}
+  }
+
+  /* ---------- üst çubuk: ad + otomatik kayıt ---------- */
+  const title=document.querySelector('.cv-title');
+  let lastT='';
+  const hhmm=t=>new Date(t).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  function updTitle(){
+    if(!title)return;
+    const has=typeof bg!=='undefined'&&bg;
+    const st=!has?'':(window.__autoAt?'<span class="ast"><i></i>Otomatik kaydedildi: '+hhmm(window.__autoAt)+'</span>':'<span class="ast w"><i></i>Değişiklikler otomatik kaydedilir</span>');
+    const h=(has?nameOf().replace(/</g,'&lt;'):'ParselPro · Göktuğ Filat')+st;
+    if(h!==lastT){lastT=h;title.innerHTML=h}
+  }
+
+  /* ---------- otomatik kayıt ---------- */
+  let dirty=false,lastSig='',busy=false;
+  const mark=()=>{dirty=true};
+  ['pointerup','keyup','change','input'].forEach(ev=>document.addEventListener(ev,mark,true));
+  const sig=()=>{try{return JSON.stringify([clips.length,clipCur,pts,closed,labels.length,fxs.length,[...document.querySelectorAll('.panel input[id],.panel select[id],.panel textarea[id]')].map(e=>e.type==='checkbox'?e.checked:e.value).join('|')])}catch(e){return ''}};
+  async function auto(){
+    if(busy||!dirty)return;
+    if(typeof bg==='undefined'||!bg||typeof clips==='undefined'||!clips.length)return;
+    if(typeof recording!=='undefined'&&recording)return;
+    const pe=document.getElementById('projemb');if(pe&&!pe.checked)return;
+    const s=sig();if(!s||s===lastSig){dirty=false;return}
+    busy=true;dirty=false;lastSig=s;
+    const oldLog=window.logAct;window.__auto=true;window.logAct=()=>{};
+    try{document.getElementById('projsave').click();await new Promise(r=>setTimeout(r,2500))}catch(e){}
+    window.__auto=false;window.logAct=oldLog;busy=false;
+  }
+  setInterval(auto,45000);
+
+  setInterval(()=>{try{updDet();updTitle()}catch(e){}},500);
+  updDet();updTitle();
 })();
 </script>
 </body>

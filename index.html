@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081005-->
+<html lang="tr"><!--pp-build:202611081010-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4637,6 +4637,81 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
       if(a>0.001){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='rgba(0,0,0,'+a+')';ctx.fillRect(0,0,W,H);ctx.restore()}
     }
   };
+})();
+</script>
+<script id="ptltools-js">
+(function(){
+  if(window.__ptt)return;window.__ptt=1;
+  const g=id=>document.getElementById(id);
+  const css=document.createElement('style');css.textContent=`
+#ptl .pt{display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:5px 10px 4px;border-bottom:1px solid rgba(255,255,255,.07)}
+#ptl .pt button{min-width:32px;height:30px;padding:0 7px;border-radius:7px;border:1px solid transparent;background:none;color:#cdd6ea;font:600 14px system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+#ptl .pt button span{font-size:12px;font-weight:600}
+#ptl .pt button:hover:not(:disabled){background:#1b2433}
+#ptl .pt button:disabled{opacity:.32;cursor:default}
+#ptl .pt button.on{background:#13304f;color:#6db4ff;border-color:#24508a}
+#ptl .pt i{width:1px;height:20px;background:rgba(255,255,255,.12);margin:0 5px}
+#ptl .ph #ptl-sn,#ptl .ph #ptl-mk,#ptl .ph #ptl-zo,#ptl .ph #ptl-zi{display:none}
+`;document.head.appendChild(css);
+  const key=(k)=>document.body.dispatchEvent(new KeyboardEvent('keydown',{key:k,bubbles:true,cancelable:true}));
+  const sel=()=>{try{return fxSel||labSel||null}catch(e){return null}};
+  const curT=()=>{try{if(isVid&&bg)return bg.currentTime-(kfs.length?kfs[0].t:0);return tLoop(performance.now())/1000}catch(e){return 0}};
+  const note=m=>{try{toast(m)}catch(e){}};
+  function split(){
+    const o=sel();if(!o){note('Önce zaman çizelgesinde bir çubuğa tıkla.');return}
+    const isLb=labels.indexOf(o)>=0,i=isLb?labels.indexOf(o):-1;
+    const s=o.ts===undefined?(isLb?.8+.45*i:0):o.ts,e=o.te||0,now=+curT().toFixed(2);
+    if(now<=s+.1||(e>0&&now>=e-.1)){note('Oynatma çizgisi bu çubuğun içinde değil.');return}
+    const cl=JSON.parse(JSON.stringify(o,(k,v)=>(k[0]==='_'||(v&&v.nodeType))?undefined:v));
+    delete cl.tlLock;cl.ts=now;cl.te=e;o.te=now;
+    if(isLb){cl.dd=0;labels.push(cl);labSel=cl;fxSel=null}else{cl._k='';fxs.push(cl);fxSel=cl;labSel=null}
+    try{renderFx()}catch(x){}try{renderLabels()}catch(x){}
+    try{logAct('Çubuk bölündü: '+now.toFixed(1)+' sn')}catch(x){}
+  }
+  const B=[
+    ['hundo','↶','Geri al (Ctrl+Z)',()=>{const b=g('hundo');b&&b.click()}],
+    ['hredo','↷','İleri al (Ctrl+Y)',()=>{const b=g('hredo');b&&b.click()}],
+    '|',
+    ['prev','⏮','Bir kare geri (←)',()=>key('ArrowLeft')],
+    ['next','⏭','Bir kare ileri (→)',()=>key('ArrowRight')],
+    '|',
+    ['split','✂','Böl: seçili çubuğu oynatma çizgisinde ikiye ayır (Ctrl+B)',split,'Böl'],
+    ['tl','⇤','Başı kırp: seçili çubuk oynatma çizgisinde başlasın (I)',()=>key('i'),'Başı kırp'],
+    ['tr','⇥','Sonu kırp: seçili çubuk oynatma çizgisinde bitsin (O)',()=>key('o'),'Sonu kırp'],
+    ['del','🗑','Seçili çubuğu sil (Delete)',()=>key('Delete'),'Sil'],
+    '|',
+    ['mk','⚑','Şu ana işaretçi ekle (M)',()=>{const b=g('ptl-mk');b&&b.click()}],
+    ['mic','🎙','Anlatım kaydet (mikrofon)',()=>{const b=g('nrec');if(b)b.click();else note('Anlatım sekmesinden kayıt başlatılır.')}],
+    '|',
+    ['sn','🧲','Yapışma (mıknatıs) aç / kapat',()=>{const b=g('ptl-sn');b&&b.click()}],
+    ['zo','−','Zaman çizelgesini uzaklaştır',()=>{const b=g('ptl-zo');b&&b.click()}],
+    ['zi','+','Zaman çizelgesini yakınlaştır',()=>{const b=g('ptl-zi');b&&b.click()}]
+  ];
+  const btn={};
+  function build(){
+    const box=g('ptl');if(!box||g('ptl-tools'))return !!g('ptl-tools');
+    const ph=box.querySelector('.ph');if(!ph)return false;
+    const row=document.createElement('div');row.id='ptl-tools';row.className='pt';
+    B.forEach(x=>{if(x==='|'){row.appendChild(document.createElement('i'));return}
+      const b=document.createElement('button');b.type='button';b.title=x[2];b.innerHTML=x[1]+(x[4]?'<span>'+x[4]+'</span>':'');
+      b.onclick=ev=>{ev.stopPropagation();x[3]()};row.appendChild(b);btn[x[0]]=b});
+    ph.parentNode.insertBefore(row,ph.nextSibling);
+    return true;
+  }
+  setInterval(build,400);
+  setInterval(()=>{
+    if(!g('ptl-tools'))return;
+    const u=g('hundo'),r=g('hredo'),has=!!sel();
+    btn.hundo.disabled=!(u&&!u.disabled);btn.hredo.disabled=!(r&&!r.disabled);
+    ['split','tl','tr','del'].forEach(k=>btn[k].disabled=!has);
+    const sn=g('ptl-sn');btn.sn.classList.toggle('on',!!(sn&&sn.classList.contains('on')));
+  },300);
+  document.addEventListener('keydown',e=>{
+    if(!(e.ctrlKey||e.metaKey)||(e.key!=='b'&&e.key!=='B'))return;
+    const t=e.target,tag=(t&&t.tagName||'').toUpperCase();
+    if(tag==='TEXTAREA'||tag==='SELECT'||(tag==='INPUT'&&!['range','checkbox','radio','button','color','file'].includes((t.type||'').toLowerCase())))return;
+    e.preventDefault();split();
+  },true);
 })();
 </script>
 </body>

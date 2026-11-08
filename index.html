@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081332-->
+<html lang="tr"><!--pp-build:202611081339-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1839,9 +1839,9 @@ function fxArc(o,P,fp,now,s,sc){
   const pt=t=>[(1-t)*(1-t)*A[0]+2*(1-t)*t*ctl[0]+t*t*C[0],(1-t)*(1-t)*A[1]+2*(1-t)*t*ctl[1]+t*t*C[1]];
   const N=80,tb=[];let L=0,prev=pt(0);tb.push([0,prev[0],prev[1]]);
   for(let i=1;i<=N;i++){const q=pt(i/N);L+=Math.hypot(q[0]-prev[0],q[1]-prev[1]);tb.push([L,q[0],q[1]]);prev=q}
-  const at=d=>{d=Math.max(0,Math.min(L,d));let i=1;while(i<N&&tb[i][0]<d)i++;const a=tb[i-1],b=tb[i],k=(d-a[0])/Math.max(b[0]-a[0],1e-6);return[a[1]+(b[1]-a[1])*k,a[2]+(b[2]-a[2])*k,Math.atan2(b[2]-a[2],b[1]-a[1])]};
+  const at=d=>{let ex=0;if(d<0){ex=d;d=0}else if(d>L){ex=d-L;d=L}let i=1;while(i<N&&tb[i][0]<d)i++;const a=tb[i-1],b=tb[i],k=(d-a[0])/Math.max(b[0]-a[0],1e-6);{const an=Math.atan2(b[2]-a[2],b[1]-a[1]);return[a[1]+(b[1]-a[1])*k+Math.cos(an)*ex,a[2]+(b[2]-a[2])*k+Math.sin(an)*ex,an]}};
   let fs=o.fs*s*sc;ctx.save();ctx.font=mf(fs);let lines=(o.txt||'').split('\n').map(t=>t.trim()).filter(Boolean);if(!lines.length)lines=[''];
-  {const mw0=Math.max(...lines.map(t=>ctx.measureText(t).width));if(mw0>L*.94&&o.type==='arc'){fs*=L*.94/mw0;ctx.font=mf(fs)}}
+  {const mw0=Math.max(...lines.map(t=>ctx.measureText(t).width));}
   const mixc=k=>{if(o.type==='txt')return o.col2;const a=parseInt(o.col.slice(1),16),b=parseInt(o.col2.slice(1),16),f=(sh)=>Math.round(((a>>sh)&255)*(1-k)+((b>>sh)&255)*k);return `rgb(${f(16)},${f(8)},${f(0)})`};
   ctx.globalAlpha=clamp(fp*1.5);
   // parlayan yay çizgisi

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081246-->
+<html lang="tr"><!--pp-build:202611081300-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1024,7 +1024,7 @@ function drawInner(now){
     if($('lmode')&&$('lmode').value==='3d'&&window.draw3DLine){try{window.draw3DLine({poly,lens,left,p,now,s,col,th,gm})}catch(e){}}
     try{window.drawMeasures&&window.drawMeasures({P:pts,s,col,p})}catch(e){}
     // corner dots
-    if($('ls').value!=='card'&&$('sab').checked)pts.forEach(a=>{ctx.beginPath();ctx.arc(a[0],a[1],th*1.1,0,7);ctx.fillStyle='#fff';ctx.shadowColor=col;ctx.shadowBlur=14*s;ctx.fill();ctx.shadowBlur=0});
+    if($('ls').value!=='card'&&$('sab').checked){let cum=0;pts.forEach((a,i)=>{if(i>0)cum+=lens[i-1];const da=clamp((left-cum)/(th*4));if(da<=0)return;ctx.save();ctx.globalAlpha*=da;ctx.beginPath();ctx.arc(a[0],a[1],th*1.1,0,7);ctx.fillStyle='#fff';ctx.shadowColor=col;ctx.shadowBlur=14*s;ctx.fill();ctx.restore()})}
     ctx.restore();
     // label
     if(closed&&n>=3){

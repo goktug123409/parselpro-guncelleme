@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081023-->
+<html lang="tr"><!--pp-build:202611081032-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3840,12 +3840,13 @@ window.ppHelp=function(){
   const seqInfo=()=>{try{return buildSeq()}catch(e){return null}};
   function seqOff(sc){let o=0;if(!sc)return 0;for(const it of sc.items){if(it.k==='main')break;o+=it.dur}return o}
   // ---- nesneler ----
+  const N=(v,d)=>{if(typeof v==='string'&&v.trim()!=='')v=+v;return(typeof v==='number'&&isFinite(v))?v:d};
   function items(){
     const out=[],gs=G(),gts=+(g('gts')&&g('gts').value)||0,gte=+(g('gte')&&g('gte').value)||0,dur=+(g('dur')&&g('dur').value)||3;
     fxs.forEach(o=>{const grp=gs&&o.grp!==false,dn=(typeof FXN!=='undefined'&&FXN[o.type]||o.type)+(o.txt&&o.type!=='road'?': '+String(o.txt).split('\n')[0].slice(0,14):'');
-      out.push({o,k:'fx',name:o.tlName||dn,ts:grp?gts:(o.ts||0),te:grp?gte:(o.te||0),grp,lk:!!o.tlLock,lock:grp||!!o.tlLock,hide:!!o.tlHide,col:o.tlCol||(o.type==='ptxt'||o.type==='txt'||o.type==='arc'?'#b79bff':'#4fb8ff'),din:o.dd>0?o.dd:dur,dout:.5,ho:false})});
+      out.push({o,k:'fx',name:o.tlName||dn,ts:grp?gts:N(o.ts,0),te:grp?gte:N(o.te,0),grp,lk:!!o.tlLock,lock:grp||!!o.tlLock,hide:!!o.tlHide,col:o.tlCol||(o.type==='ptxt'||o.type==='txt'||o.type==='arc'?'#b79bff':'#4fb8ff'),din:o.dd>0?o.dd:dur,dout:.5,ho:false})});
     labels.forEach((L,i)=>{const grp=gs&&L.grp!==false,ad=.8*(L.adx||100)/100;
-      out.push({o:L,k:'lb',name:L.tlName||('🏷 '+String(L.txt||'Etiket').split('\n')[0].slice(0,18)),ts:grp?gts:(L.ts===undefined?.8+.45*i:L.ts),te:grp?gte:(L.te||0),grp,lk:!!L.tlLock,lock:grp||!!L.tlLock,hide:!!L.tlHide,col:L.tlCol||'#ffc83d',din:ad,dout:ad,ho:true})});
+      out.push({o:L,k:'lb',name:L.tlName||('🏷 '+String(L.txt||'Etiket').split('\n')[0].slice(0,18)),ts:grp?gts:N(L.ts,.8+.45*i),te:grp?gte:N(L.te,0),grp,lk:!!L.tlLock,lock:grp||!!L.tlLock,hide:!!L.tlHide,col:L.tlCol||'#ffc83d',din:ad,dout:ad,ho:true})});
     return out;
   }
   const isSel=o=>msel.includes(o)||o===fxSel||o===labSel;
@@ -4725,15 +4726,12 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
   function build(){
     const row=g('ptl-tools');if(!row)return false;if(g('pt-lab'))return true;
     const i=document.createElement('i');row.appendChild(i);
-    const b=document.createElement('button');b.type='button';b.id='pt-lab';b.title='Şu ana etiket ekle';b.innerHTML='🏷<span>Etiket</span>';
-    b.onclick=e=>{e.stopPropagation();const s=g('blab');if(s)s.click()};row.appendChild(b);
     const sel=document.createElement('select');sel.id='pt-spd';sel.title='Önizleme hızı';
     sel.innerHTML=[['0.25','0.25x'],['0.5','0.5x'],['1','1x'],['2','2x']].map(a=>'<option value="'+a[0]+'">'+a[1]+'</option>').join('');
     sel.value='1';
     sel.onchange=()=>{const s=g('bsp');if(s){s.value=sel.value;s.dispatchEvent(new Event('change',{bubbles:true}))}};
     row.appendChild(sel);
-    setInterval(()=>{const s=g('bsp');if(s&&document.activeElement!==sel&&sel.value!==s.value)sel.value=s.value;
-      const bl=g('blab');b.disabled=!!(bl&&bl.disabled)},500);
+    setInterval(()=>{const s=g('bsp');if(s&&document.activeElement!==sel&&sel.value!==s.value)sel.value=s.value},500);
     return true;
   }
   const iv=setInterval(()=>{if(build())clearInterval(iv)},400);

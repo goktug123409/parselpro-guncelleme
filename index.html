@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081015-->
+<html lang="tr"><!--pp-build:202611081023-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4712,6 +4712,31 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
     if(tag==='TEXTAREA'||tag==='SELECT'||(tag==='INPUT'&&!['range','checkbox','radio','button','color','file'].includes((t.type||'').toLowerCase())))return;
     e.preventDefault();split();
   },true);
+})();
+</script>
+<script id="bar-js">
+(function(){
+  if(window.__barx)return;window.__barx=1;
+  const g=id=>document.getElementById(id);
+  const css=document.createElement('style');css.textContent=`
+#bar,#bar[hidden]{display:none!important}
+#ptl .pt select{height:30px;border-radius:7px;border:1px solid #27324a;background:#121923;color:#cdd6ea;font:600 12.5px system-ui,sans-serif;padding:0 6px;cursor:pointer}
+`;document.head.appendChild(css);
+  function build(){
+    const row=g('ptl-tools');if(!row)return false;if(g('pt-lab'))return true;
+    const i=document.createElement('i');row.appendChild(i);
+    const b=document.createElement('button');b.type='button';b.id='pt-lab';b.title='Şu ana etiket ekle';b.innerHTML='🏷<span>Etiket</span>';
+    b.onclick=e=>{e.stopPropagation();const s=g('blab');if(s)s.click()};row.appendChild(b);
+    const sel=document.createElement('select');sel.id='pt-spd';sel.title='Önizleme hızı';
+    sel.innerHTML=[['0.25','0.25x'],['0.5','0.5x'],['1','1x'],['2','2x']].map(a=>'<option value="'+a[0]+'">'+a[1]+'</option>').join('');
+    sel.value='1';
+    sel.onchange=()=>{const s=g('bsp');if(s){s.value=sel.value;s.dispatchEvent(new Event('change',{bubbles:true}))}};
+    row.appendChild(sel);
+    setInterval(()=>{const s=g('bsp');if(s&&document.activeElement!==sel&&sel.value!==s.value)sel.value=s.value;
+      const bl=g('blab');b.disabled=!!(bl&&bl.disabled)},500);
+    return true;
+  }
+  const iv=setInterval(()=>{if(build())clearInterval(iv)},400);
 })();
 </script>
 </body>

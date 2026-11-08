@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081300-->
+<html lang="tr"><!--pp-build:202611081332-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -152,6 +152,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;margin:6px 0;text-align:left"><input type="checkbox" id="fadeon" style="width:auto;flex:none"> Çizgiler bir süre sonra kaybolsun</label>
     <label>Çizgi kaybolma şekli<select id="fadem"><option value="reverse">Çizginin tersi (geri çekilerek)</option><option value="fade">Yumuşak solma</option><option value="shrink">Merkeze küçülerek</option></select></label>
     <label>Çizgiler kaç saniyede kaybolmaya başlasın: <span style="display:inline-flex;align-items:center;gap:6px;margin-left:6px"><input id="fadetv" type="number" min="0" max="600" step="0.1" value="4" style="width:64px;display:inline-block" oninput="$('fadet').value=this.value"> sn</span><input id="fadet" type="range" min="1" max="30" step="0.5" value="4" oninput="$('fadetv').value=this.value"></label>
+    <label style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;margin:6px 0;text-align:left"><input type="checkbox" id="txsync" checked style="width:auto;flex:none"> Yazı, çizgiyle aynı anda kaybolsun (çizgiler kaybolsun açıksa)</label>
     <label>Yazı kaybolma şekli<select id="txm"><option value="none">Yazı kalsın</option><option value="down">Aşağı doğru kaybolsun</option><option value="up">Yukarı doğru kaybolsun</option><option value="fade">Yumuşak solma</option><option value="shrink">Küçülerek kaybolsun</option><option value="erase">Sağdan sola silinsin</option></select></label>
     <label>Yazı kaç saniyede kaybolmaya başlasın: <span style="display:inline-flex;align-items:center;gap:6px;margin-left:6px"><input id="txfv" type="number" min="0" max="600" step="0.1" value="8" style="width:64px;display:inline-block" oninput="$('txfadet').value=this.value"> sn</span><input id="txfadet" type="range" min="1" max="40" step="0.5" value="8" oninput="$('txfv').value=this.value"></label>
     <p style="margin:0 0 6px;font-size:12px;opacity:.75;color:var(--mut)">Videoda süre, çizginin işaretlendiği andan sayılır. Sürüklerken hiçbir şey kaybolmaz.</p>
@@ -337,7 +338,8 @@ const cv=$('cv'),ctx=cv.getContext('2d');
 let W=1280,H=720,bg=null,isVid=false,pts=[[405,330],[735,290],[875,430],[495,500]],closed=true,t0=performance.now(),recording=false,kfs=[],drag=null,curCam={z:1,rx:0,ry:0,r:0},camStart=null,trk=null,trkDbg=null;
 const HOLD=2000;
 function tLoop(now){const e=now-t0,L=loopMs();return($('loopon')&&$('loopon').checked)?e%L:Math.min(e,L-1)}
-function loopMs(){const d=+$('dur').value*1000;let m=d+HOLD;if($('fadeon')&&$('fadeon').checked)m=Math.max(m,(+$('fadetv').value+1.6)*1000+1500);if($('txm')&&$('txm').value!=='none')m=Math.max(m,(+$('txfv').value+1.4)*1000+1500);if($('gson')&&$('gson').checked&&+$('gte').value)m=Math.max(m,(+$('gte').value+1.4)*1000+1500);if(typeof fxs!=='undefined')fxs.forEach(o=>{m=Math.max(m,((o.ts||0)+(o.te?o.te-(o.ts||0):d/1000)+.6)*1000+800)});return m}
+function txFadeAt(){return($('txsync')&&$('txsync').checked&&$('fadeon')&&$('fadeon').checked)?+$('fadetv').value:+$('txfv').value}
+function loopMs(){const d=+$('dur').value*1000;let m=d+HOLD;if($('fadeon')&&$('fadeon').checked)m=Math.max(m,(+$('fadetv').value+1.6)*1000+1500);if($('txm')&&$('txm').value!=='none')m=Math.max(m,(txFadeAt()+1.4)*1000+1500);if($('gson')&&$('gson').checked&&+$('gte').value)m=Math.max(m,(+$('gte').value+1.4)*1000+1500);if(typeof fxs!=='undefined')fxs.forEach(o=>{m=Math.max(m,((o.ts||0)+(o.te?o.te-(o.ts||0):d/1000)+.6)*1000+800)});return m}
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const easeOut=x=>1-Math.pow(1-x,3);
 const back=x=>{const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
@@ -974,7 +976,7 @@ function drawInner(now){
    if(!editing&&tt>=0&&!stillMode){
      const GG=$('gson').checked&&+$('gte').value>0;
      if(GG)qL=clamp((tt-(+$('gte').value))/.6);else if($('fadeon').checked)qL=clamp((tt-(+$('fadetv').value))/1.4);
-     if(GG)qT=clamp((tt-(+$('gte').value))/.6);else if($('txm').value!=='none')qT=clamp((tt-(+$('txfv').value))/1.3);
+     if(GG)qT=clamp((tt-(+$('gte').value))/.6);else if($('txm').value!=='none')qT=clamp((tt-txFadeAt())/1.3);
    }
    const fm=$('fadem').value;lineA=fm==='reverse'?1-clamp((qL-.75)/.25):1-easeOut(qL);
   }

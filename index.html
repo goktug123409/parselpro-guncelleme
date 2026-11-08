@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081142-->
+<html lang="tr"><!--pp-build:202611081146-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3806,8 +3806,13 @@ window.ppHelp=function(){
   function seekTo(t){try{if(isVid){window.__scrubSticky=true;hookT(bg);bg.pause();sk.last=t;sk.pend=t;const f=nearF(bg,t);window.__scrubF=(drag&&drag.kind==='seek')?f:null;if(!sk.busy)doSeek()}else{window.__tHold=t;window.__tHoldT0=t0}}catch(x){}}
   const NAMEW=176,ROWH=28,FPS=30;
   const nm=n=>{n=String(n||'').replace(/\s+/g,' ').trim();return n.length>24?n.slice(0,23)+'…':n};
+  const showTip=(bar,text,above)=>{try{let t=document.getElementById('ptl-dtip');if(!t){t=document.createElement('div');t.id='ptl-dtip';t.style.cssText='position:fixed;z-index:99999;pointer-events:none;background:#0b1220;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:4px 9px;font:700 12px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.5);white-space:nowrap';document.body.appendChild(t)}const r=bar.getBoundingClientRect();t.textContent=text;t.style.display='block';t.style.left=Math.max(4,r.left)+'px';t.style.top=Math.max(4,r.top-34)+'px';clearTimeout(t.__h);t.__h=setTimeout(()=>{t.style.display='none'},above?1400:700)}catch(e){}};
   const dragTip=(bar,ts,te,name)=>{try{let t=document.getElementById('ptl-dtip');if(!t){t=document.createElement('div');t.id='ptl-dtip';t.style.cssText='position:fixed;z-index:99999;pointer-events:none;background:#0b1220;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:4px 9px;font:700 12px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.5);white-space:nowrap';document.body.appendChild(t)}
     const r=bar.getBoundingClientRect();t.textContent=(name?nm(name)+':  ':'')+ts.toFixed(1)+'s → '+(te>0?te.toFixed(1)+'s  •  '+(te-ts).toFixed(1)+' sn':'∞');t.style.display='block';t.style.left=Math.max(4,r.left)+'px';t.style.top=Math.max(4,r.top-34)+'px';clearTimeout(t.__h);t.__h=setTimeout(()=>{t.style.display='none'},700)}catch(e){}};
+  document.addEventListener('mouseover',e=>{try{const T=e.target;if(!T||!T.classList||!T.closest||!T.closest('#ptl .bar'))return;const bar=T.closest('.bar');let txt=null;
+    if(T.classList.contains('ah')){const l=parseFloat(T.style.left)||0;const inn=T.dataset.a==='in';const sec=(inn?l:(bar.offsetWidth-l))/pps;txt=(inn?'Giriş':'Çıkış')+' animasyonu süresi: '+sec.toFixed(2)+' sn  (beyaz noktayı sürükle)'}
+    else if(T.classList.contains('eh')){txt=T.classList.contains('l')?'Başlangıç: bu saniyede ekrana girer (sürükle)':'Bitiş: bu saniyede kaybolmaya başlar (sürükle)'}
+    if(txt)showTip(bar,txt,true)}catch(x){}});
   const barTxt=(ts,te,w,name)=>{const pre=(name&&w>=250)?nm(name)+'  ':'';if(!(te>0))return pre+ts.toFixed(1)+'s → ∞';const d=(te-ts).toFixed(1);return w>=135?pre+ts.toFixed(1)+'s → '+te.toFixed(1)+'s  •  '+d+' sn':w>=62?d+' sn':w>=34?d:''};
   let box,scroll,content,phead,tinfo,zoom=1,collapsed=false,sig='',drag=null,pps=60,Tt=5,off=0,snapOn=true,msel=[],lastPrim=null,editing=false;
   window.tlMarkers=window.tlMarkers||[];
@@ -3877,7 +3882,7 @@ window.ppHelp=function(){
   function mount(){
     const m=document.querySelector('.cv-main');if(!m)return false;
     box=document.createElement('div');box.id='ptl';
-    box.innerHTML='<div class="ph"><b>⏱ Zaman çizelgesi</b><span id="ptl-t" class="tm"></span><span class="sp"></span><span class="hnt">Sürükle = kaydır • kenar = süre • M = işaretçi • I / O = başlangıç / bitiş</span><button id="ptl-sn" class="on" title="Yapışma (mıknatıs): çubuklar diğer çubuklara, işaretçilere ve oynatma çizgisine yapışır. Alt tuşu geçici olarak kapatır">🧲</button><button id="ptl-mk" title="Şu ana işaretçi ekle (M)">⚑</button><button id="ptl-pl2" title="Oynat / durdur (Boşluk)" style="width:34px">▶</button><button id="ptl-zo" title="Uzaklaş (Ctrl + tekerlek)">−</button><button id="ptl-zi" title="Yakınlaş">+</button><button id="ptl-cl" title="Küçült / büyüt">▾</button></div><div class="sc" id="ptl-sc"><div class="ct" id="ptl-ct"></div></div>';
+    box.innerHTML='<div class="ph"><b>⏱ Zaman çizelgesi</b><span id="ptl-t" class="tm"></span><span class="sp"></span><span class="hnt">Sürükle = kaydır • kenar = giriş/çıkış anı • beyaz nokta = animasyon süresi • M = işaretçi • I / O = başlangıç / bitiş</span><button id="ptl-sn" class="on" title="Yapışma (mıknatıs): çubuklar diğer çubuklara, işaretçilere ve oynatma çizgisine yapışır. Alt tuşu geçici olarak kapatır">🧲</button><button id="ptl-mk" title="Şu ana işaretçi ekle (M)">⚑</button><button id="ptl-pl2" title="Oynat / durdur (Boşluk)" style="width:34px">▶</button><button id="ptl-zo" title="Uzaklaş (Ctrl + tekerlek)">−</button><button id="ptl-zi" title="Yakınlaş">+</button><button id="ptl-cl" title="Küçült / büyüt">▾</button></div><div class="sc" id="ptl-sc"><div class="ct" id="ptl-ct"></div></div>';
     m.appendChild(box);scroll=g('ptl-sc');content=g('ptl-ct');tinfo=g('ptl-t');
     g('ptl-pl2').onclick=()=>{try{if(isVid){if(bg.paused)bg.play();else bg.pause()}else{if(window.__tHold!=null){t0=performance.now()-window.__tHold*1000;window.__tHold=null}else{window.__tHold=tLoop(performance.now())/1000;window.__tHoldT0=t0}}}catch(e){}};
     g('ptl-sn').onclick=()=>{snapOn=!snapOn;g('ptl-sn').classList.toggle('on',snapOn)};
@@ -4020,7 +4025,7 @@ window.ppHelp=function(){
         const it=drag.it,o=it.o,len=(it.te>0?it.te-it.ts:span-it.ts),dx=d/pps*(drag.kind==='ain'?1:-1);
         let v=Math.max(.1,Math.min(drag.kind==='ain'?len*.9:len*.5,drag.v0+dx));v=Math.round(v*20)/20;
         if(it.k==='fx')o.dd=v;else o.adx=Math.max(25,Math.min(500,Math.round(v/.8*100)));
-        const w=v*pps,bar=drag.bar;
+        const w=v*pps,bar=drag.bar;showTip(bar,(drag.kind==='ain'?'Giriş':'Çıkış')+' animasyonu süresi: '+v.toFixed(2)+' sn');
         if(drag.kind==='ain'){bar.querySelector('.ain').style.width=w+'px';bar.querySelector('.ah[data-a="in"]').style.left=w+'px'}
         else{const a=bar.querySelector('.aout');if(a)a.style.width=w+'px';const h2=bar.querySelector('.ah[data-a="out"]');if(h2)h2.style.left=(bar.offsetWidth-w)+'px'}
         return}

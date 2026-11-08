@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081155-->
+<html lang="tr"><!--pp-build:202611081201-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -3813,6 +3813,7 @@ window.ppHelp=function(){
     if(T.classList.contains('ah')){const l=parseFloat(T.style.left)||0;const inn=T.dataset.a==='in';const sec=(inn?l:(bar.offsetWidth-l))/pps;txt=(inn?'Giriş':'Çıkış')+' animasyonu süresi: '+sec.toFixed(2)+' sn  (beyaz noktayı sürükle)'}
     else if(T.classList.contains('eh')){txt=T.classList.contains('l')?'Başlangıç: bu saniyede ekrana girer (sürükle)':'Bitiş: bu saniyede kaybolmaya başlar (sürükle)'}
     if(txt)showTip(bar,txt,true)}catch(x){}});
+  const vlen=()=>{try{const te=window.__trimEnd?window.__trimEnd():0;return(isVid&&te>0)?Math.min(Tt,te):Tt}catch(e){return Tt}};
   const tc=t=>{const f=Math.round(t*FPS),s=Math.floor(f/FPS),p=n=>String(n).padStart(2,'0');return p(Math.floor(s/3600))+':'+p(Math.floor(s/60)%60)+':'+p(s%60)+':'+p(f%FPS)};
   function paintStrip(){try{const c=content&&content.querySelector('.bar.vid canvas');if(!c||!bg)return;const w=Math.max(10,Math.min(8000,Math.round(Tt*pps))),h=40;c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#1d2a3b';x.fillRect(0,0,w,h);
     const vw=(isVid?bg.videoWidth:bg.naturalWidth||bg.width)||16,vh=(isVid?bg.videoHeight:bg.naturalHeight||bg.height)||9,tw=Math.max(20,Math.round(h*vw/vh)),n=Math.ceil(w/tw);
@@ -3820,6 +3821,11 @@ window.ppHelp=function(){
       if(!src&&isVid&&bg.readyState>1&&!bg.seeking)src=bg;if(src){try{x.drawImage(src,i*tw,0,tw,h)}catch(e){}}}
     c.parentNode.__fk=isVid&&bg.__fc?bg.__fc.size:-1}catch(e){}}
   setInterval(()=>{try{const b=content&&content.querySelector('.bar.vid');if(b&&isVid&&bg&&bg.__fc&&b.__fk!==bg.__fc.size&&!(drag&&drag.kind==='seek')&&(bg.__pfDone||bg.__fc.size%10===0))paintStrip()}catch(e){}},1200);
+  let vtr=null;
+  document.addEventListener('pointerdown',e=>{const T=e.target;if(!T||!T.dataset||!T.dataset.vz||!isVid||!bg)return;const bar=T.closest('.bar.vid');if(!bar)return;const t0k=kfs.length?kfs[0].t:0,D=(bg.duration||0)-t0k;if(!(D>0.5))return;
+    vtr={x0:e.clientX,bar,D,w0:bar.getBoundingClientRect().width,pps0:pps,nt:Tt};e.preventDefault();e.stopPropagation()},true);
+  document.addEventListener('pointermove',e=>{if(!vtr)return;const nt=Math.max(.5,Math.min(vtr.D,(vtr.w0+(e.clientX-vtr.x0))/vtr.pps0));vtr.nt=nt;vtr.bar.style.width=(nt*vtr.pps0)+'px';showTip(vtr.bar,'Video süresi: '+nt.toFixed(1)+' sn'+(nt>=vtr.D-.05?'  (tamamı)':'  (sonu kırpıldı)'))});
+  document.addEventListener('pointerup',e=>{if(!vtr)return;const v=vtr;vtr=null;const el=g('trim-end');if(!el){sig='';return}const full=v.nt>=v.D-.05;el.value=full?0:Math.round(v.nt*10)/10;['input','change'].forEach(n=>el.dispatchEvent(new Event(n,{bubbles:true})));try{act('Video sonu kırpıldı: '+(full?'tamamı':el.value+' sn'))}catch(x){}sig=''});
   let marq=null;
   function startMarq(e){let d=document.getElementById('ptl-mq');if(!d){d=document.createElement('div');d.id='ptl-mq';document.body.appendChild(d)}marq={x0:e.clientX,y0:e.clientY,d,moved:false,add:e.shiftKey||e.ctrlKey||e.metaKey}}
   document.addEventListener('pointermove',e=>{if(!marq)return;const dx=e.clientX-marq.x0,dy=e.clientY-marq.y0;if(!marq.moved&&Math.abs(dx)+Math.abs(dy)<5)return;marq.moved=true;const d=marq.d;d.style.display='block';d.style.left=Math.min(e.clientX,marq.x0)+'px';d.style.top=Math.min(e.clientY,marq.y0)+'px';d.style.width=Math.abs(dx)+'px';d.style.height=Math.abs(dy)+'px'});
@@ -3867,10 +3873,13 @@ window.ppHelp=function(){
 #ptl .bar .ah{position:absolute;top:3px;bottom:3px;width:7px;margin-left:-3px;border-radius:4px;background:rgba(0,0,0,.45);cursor:col-resize;z-index:3}
 #ptl .bar .bl{position:relative;z-index:1;pointer-events:none}
 #ptl .rw.vr{height:48px}
+#ptl .vghost{position:absolute;left:0;top:4px;height:40px;border-radius:6px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 6px,rgba(255,255,255,.02) 6px 12px);border:1px dashed rgba(255,255,255,.18);box-sizing:border-box}
 #ptl .bar.vid{top:4px;height:40px;border-radius:6px;padding:0;background:#1d2a3b;color:#fff;cursor:pointer;overflow:hidden}
 #ptl .bar.vid canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
 #ptl .bar.vid .bl{position:absolute;left:4px;top:3px;line-height:13px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:0 6px;border-radius:4px;max-width:calc(100% - 8px);overflow:hidden;text-overflow:ellipsis}
 #ptl .bar.vid.sel{box-shadow:0 0 0 2px #fff}
+#ptl .bar.vid .vz{position:absolute;right:0;top:0;bottom:0;width:12px;cursor:ew-resize;z-index:3;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55))}
+#ptl .bar.vid .vz::after{content:'';position:absolute;right:4px;top:12px;bottom:12px;width:3px;border-radius:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
 #ptl-mq{position:fixed;z-index:99998;pointer-events:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.55);border-radius:3px;display:none}
 #ptl .bar .ah{top:auto;bottom:1px;width:8px;height:8px;margin:0 0 0 -4px;border-radius:50%;background:#fff;border:1.5px solid rgba(0,0,0,.6);box-sizing:border-box;opacity:0;transition:opacity .12s}
 #ptl .bar.sel .ah{opacity:1}
@@ -3955,7 +3964,7 @@ window.ppHelp=function(){
     let tk='';for(let t=0;t<=Tt+1e-6;t+=step)tk+='<div class="tick" style="left:'+(t*pps)+'px"><i>'+(step<1?t.toFixed(1)+'s':fmt(t))+'</i></div>';
     mk.forEach((t,i)=>{tk+='<div class="mk" data-mi="'+i+'" style="left:'+(t*pps)+'px" title="İşaretçi '+fmt(t)+' ('+t.toFixed(1)+' sn) — tıkla: git • sağ tık: sil">⚑</div>'});
     h+='<div class="rw rl" id="ptl-ruler"><div class="nm nd" style="cursor:default;color:#8793aa">Zaman</div><div class="tk" style="width:'+W+'px">'+tk+'</div></div>';
-    h+='<div class="rw vr"><div class="nm nd" style="cursor:default">🎞 Ana video / foto</div><div class="tk" style="width:'+W+'px"><div class="bar vid'+(window.__mainSel?' sel':'')+'" style="left:0;width:'+(Tt*pps)+'px" title="Ana video: tıkla = seç"><canvas></canvas><span class="bl">'+esc(String((clips&&clips[clipCur]&&clips[clipCur].name)||(isVid?'Video':'Fotoğraf')))+'  '+tc(Tt)+'</span></div></div></div>';
+    h+='<div class="rw vr"><div class="nm nd" style="cursor:default">🎞 Ana video / foto</div><div class="tk" style="width:'+W+'px"><div class="vghost" style="width:'+(Tt*pps)+'px"></div><div class="bar vid'+(window.__mainSel?' sel':'')+'" style="left:0;width:'+(vlen()*pps)+'px" title="Ana video: tıkla = seç"><canvas></canvas><span class="bl">'+esc(String((clips&&clips[clipCur]&&clips[clipCur].name)||(isVid?'Video':'Fotoğraf')))+'  '+tc(vlen())+'</span>'+(isVid?'<span class="vz" data-vz="1" title="Videonun sonunu kırp: kenardan tut, sürükle"></span>':'')+'</div></div></div>';
     // sahne şeridi (kendi ölçeği: giriş + ana + kapanış)
     if(false&&sc&&sc.items.length>1){
       const ppsS=(avail/sc.total)*zoom;let x=0,sb='';
@@ -4172,7 +4181,7 @@ window.ppHelp=function(){
   }
   function signature(){
     try{const n=window.__nar&&window.__nar(),sc=seqInfo();
-      return JSON.stringify([Tt.toFixed(1),zoom,G(),g('gts')&&g('gts').value,g('gte')&&g('gte').value,scroll.clientWidth,isVid,(kfs&&kfs[0]&&kfs[0].t)||0,
+      return JSON.stringify([Tt.toFixed(1),(g('trim-end')&&g('trim-end').value)||0,zoom,G(),g('gts')&&g('gts').value,g('gte')&&g('gte').value,scroll.clientWidth,isVid,(kfs&&kfs[0]&&kfs[0].t)||0,
       fxs.map(o=>[o.type,o.txt&&String(o.txt).slice(0,14),o.ts,o.te,o.grp,o.tlName,o.tlCol,o.tlLock,o.tlHide,o.dd]),labels.map(L=>[L.txt,L.ts,L.te,L.grp,L.tlName,L.tlCol,L.tlLock,L.tlHide,L.adx]),
       fxs.indexOf(fxSel),labels.indexOf(labSel),msel.map(o=>fxs.indexOf(o)<0?'L'+labels.indexOf(o):fxs.indexOf(o)),(window.tlMarkers||[]),n&&[n.d,n.L],!!(window.musicOn&&window.musicOn()),sc&&sc.items.map(i=>[i.k,i.dur,i.txt]),g('dur')&&g('dur').value])}catch(e){return ''}
   }

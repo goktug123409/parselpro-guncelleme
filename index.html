@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611091510-->
+<html lang="tr"><!--pp-build:202611091557-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -341,7 +341,7 @@ let W=1280,H=720,bg=null,isVid=false,pts=[[405,330],[735,290],[875,430],[495,500
 const HOLD=2000;
 function tLoop(now){const e=now-t0,L=loopMs();return($('loopon')&&$('loopon').checked)?e%L:Math.min(e,L-1)}
 function txFadeAt(){return($('txsync')&&$('txsync').checked&&$('fadeon')&&$('fadeon').checked)?+$('fadetv').value:+$('txfv').value}
-function loopMs(){const d=+$('dur').value*1000;let m=d+HOLD;if($('fadeon')&&$('fadeon').checked)m=Math.max(m,(+$('fadetv').value+1.6)*1000+1500);if($('txm')&&$('txm').value!=='none')m=Math.max(m,(txFadeAt()+1.4)*1000+1500);if($('gson')&&$('gson').checked&&+$('gte').value)m=Math.max(m,(+$('gte').value+1.4)*1000+1500);if(typeof fxs!=='undefined')fxs.forEach(o=>{m=Math.max(m,((o.ts||0)+(o.te?o.te-(o.ts||0):d/1000)+.6)*1000+800)});return m}
+function loopMs(){const d=+$('dur').value*1000;let m=d+HOLD;if($('fadeon')&&$('fadeon').checked)m=Math.max(m,(+$('fadetv').value+1.6)*1000+1500);if($('txm')&&$('txm').value!=='none')m=Math.max(m,(txFadeAt()+1.4)*1000+1500);if($('gson')&&$('gson').checked&&+$('gte').value)m=Math.max(m,(+$('gte').value+1.4)*1000+1500);if(typeof fxs!=='undefined')fxs.forEach(o=>{m=Math.max(m,((o.ts||0)+(o.te?o.te-(o.ts||0):d/1000)+.6)*1000+800)});if(typeof labels!=='undefined')labels.forEach(L=>{m=Math.max(m,((L.ts||0)+(L.te?L.te-(L.ts||0):d/1000)+.6)*1000+800)});return m}
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const easeOut=x=>1-Math.pow(1-x,3);
 const back=x=>{const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
@@ -2463,7 +2463,7 @@ $('rec').onclick=()=>{
     recording=false;$('rec').textContent=REC_LBL;
   };
   recording=true;$('rec').textContent='Kaydediliyor…';$('st').textContent='Kayıt sürüyor, bekleyin.';
-  if(isVid){bg.playbackRate=1;$('bsp').value='1'}recT0=performance.now();recD=dur;if(sq)startSeq(sq);else{restart();if(!isVid)camStart=performance.now()}try{mr.start();if(aud)aud.start();setTimeout(()=>mr.stop(),dur+100)}catch(e){recording=false;$('rec').textContent=REC_LBL;$('st').textContent='Kayıt başlatılamadı: '+((e&&e.message)||e)}
+  if(isVid){bg.playbackRate=1;$('bsp').value='1'}recT0=performance.now();recD=dur;if(sq)startSeq(sq);else{restart();if(!isVid)camStart=performance.now()}try{mr.start();if(aud)aud.start();{let fin=false;const stp=()=>{if(fin)return;fin=true;clearInterval(iv);clearTimeout(tm);setTimeout(()=>{try{mr.stop()}catch(e){}},isVid&&!sq?350:0)};const tm=setTimeout(stp,isVid&&!sq?dur+6000:dur+100);let iv=0;if(isVid&&!sq)iv=setInterval(()=>{if(bg.ended||bg.currentTime*1000>=dur-40)stp()},40)}}catch(e){recording=false;$('rec').textContent=REC_LBL;$('st').textContent='Kayıt başlatılamadı: '+((e&&e.message)||e)}
 };
 const recOnly=$('rec').onclick;
 $('rec').onclick=async()=>{

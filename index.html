@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611091243-->
+<html lang="tr"><!--pp-build:202611091456-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1486,10 +1486,11 @@ function renderFx(){
     if(o.type==='road'&&(o.mode==='single'||o.mode==='double')){const w8=document.createElement('div');w8.className='fxs';const s8=document.createElement('span');s8.textContent='Çizgi kalınlığı';s8.style.minWidth='62px';
       const r8=document.createElement('input');r8.type='range';r8.min=2;r8.max=30;r8.step=1;r8.value=o.lw||8;const v8=document.createElement('span');v8.textContent=o.lw||8;v8.style.minWidth='28px';
       r8.oninput=()=>{o.lw=+r8.value;v8.textContent=r8.value};w8.append(s8,r8,v8);row.appendChild(w8)}
-    if(o.type==='arc'||o.type==='txt'){const w4=document.createElement('div');w4.className='fxs';const s4=document.createElement('span');s4.textContent='Harf aralığı';s4.style.minWidth='62px';
+    if(o.type==='arc'||o.type==='txt'||o.type==='loc'){const w4=document.createElement('div');w4.className='fxs';const s4=document.createElement('span');s4.textContent='Harf aralığı';s4.style.minWidth='62px';
       const r4=document.createElement('input');r4.type='range';r4.min=-5;r4.max=40;r4.step=1;const d0=o.ls===undefined?(o.type==='txt'?5:0):Math.round(o.ls*100);r4.value=d0;const v4=document.createElement('span');v4.textContent=d0;v4.style.minWidth='28px';
       r4.oninput=()=>{o.ls=+r4.value/100;v4.textContent=r4.value};w4.append(s4,r4,v4);row.appendChild(w4)}
-    if(o.type==='arc'||o.type==='txt'){const w3=document.createElement('div');w3.className='fxs';const s3=document.createElement('span');s3.textContent='Kontur';s3.style.minWidth='62px';
+    if(o.type==='loc'){const wg=document.createElement('div');wg.className='fxs';const sg=document.createElement('span');sg.textContent='Parlama';sg.style.minWidth='62px';const rg0=document.createElement('input');rg0.type='range';rg0.min=0;rg0.max=80;rg0.step=1;rg0.value=o.gl||0;const vg=document.createElement('span');vg.textContent=o.gl||0;vg.style.minWidth='28px';rg0.oninput=()=>{o.gl=+rg0.value;vg.textContent=rg0.value};wg.append(sg,rg0,vg);row.appendChild(wg)}
+    if(o.type==='arc'||o.type==='txt'||o.type==='loc'){const w3=document.createElement('div');w3.className='fxs';const s3=document.createElement('span');s3.textContent='Kontur';s3.style.minWidth='62px';
       const r3=document.createElement('input');r3.type='range';r3.min=0;r3.max=30;r3.step=1;r3.value=o.ow||0;const v3=document.createElement('span');v3.textContent=o.ow||0;v3.style.minWidth='28px';
       r3.oninput=()=>{o.ow=+r3.value;v3.textContent=r3.value};w3.append(s3,r3,v3);row.appendChild(w3)}
     if(o.type==='bld'){const w2=document.createElement('div');w2.className='fxs';const s2=document.createElement('span');s2.textContent='Kat sayısı';s2.style.minWidth='62px';
@@ -1587,12 +1588,14 @@ function fxList(o,P,fp,now,s,sc){
 }
 function fxLoc(o,P,fp,s,sc){
   const fv=o.font||$('ff').value,fs=34*s*(o.fs/100),x1=P[0][0],y1=P[0][1],parts=(o.txt||'').split('|').map(t=>t.trim()),a=parts[0]||'',b=parts[1]||'';
-  ctx.save();ctx.globalAlpha=clamp(fp*2);ctx.font=fontV(fv,fs);ctx.textBaseline='middle';ctx.textAlign='left';
+  ctx.save();ctx.globalAlpha=clamp(fp*2);ctx.font=fontV(fv,fs);ctx.textBaseline='middle';ctx.textAlign='left';try{ctx.letterSpacing=((o.ls||0)*fs)+'px'}catch(e){}
   const sep=b?'  |  ':'',aw=ctx.measureText(a).width,sw=ctx.measureText(sep).width,bw=ctx.measureText(b).width,ic=fs*1.1,total=ic+fs*.4+aw+sw+bw,x=Math.max(total/2+10*s,Math.min(W-total/2-10*s,x1)),y=Math.max(fs*1.2,Math.min(H-fs*1.2,y1)),x0=x-total/2;
   ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=fs*.3;
   // pin simgesi
   const px=x0+ic*.45,py=y-fs*.1,r=ic*.36;ctx.fillStyle=o.col;ctx.beginPath();ctx.arc(px,py-r*.3,r,Math.PI*.8,Math.PI*.2);ctx.lineTo(px,py+r*1.5);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#333';ctx.beginPath();ctx.arc(px,py-r*.3,r*.4,0,7);ctx.fill();
-  ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=fs*.3;const tx=x0+ic+fs*.4;ctx.fillStyle=o.col;ctx.fillText(a,tx,y);ctx.fillStyle=o.col2;ctx.fillText(sep+b,tx+aw,y);ctx.restore();
+  ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=fs*.3;const tx=x0+ic+fs*.4;const ow=(o.ow||0)*fs/120,gl=o.gl||0;if(gl>0){ctx.shadowColor=o.col;ctx.shadowBlur=gl*s}
+  if(ow>0){ctx.save();ctx.shadowBlur=0;ctx.lineJoin='round';ctx.strokeStyle='rgba(10,10,20,.9)';ctx.lineWidth=ow*2;ctx.strokeText(a,tx,y);ctx.strokeText(sep+b,tx+aw,y);ctx.restore()}
+  ctx.fillStyle=o.col;ctx.fillText(a,tx,y);if(gl>0)ctx.shadowColor=o.col2;ctx.fillStyle=o.col2;ctx.fillText(sep+b,tx+aw,y);ctx.restore();
   o._bb=[x0-6*s,y-fs,total+12*s,fs*2];
 }
 function fxSpot(o,P,fp,s,sc){

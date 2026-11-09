@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611091456-->
+<html lang="tr"><!--pp-build:202611091510-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1496,6 +1496,7 @@ function renderFx(){
     if(o.type==='bld'){const w2=document.createElement('div');w2.className='fxs';const s2=document.createElement('span');s2.textContent='Kat sayısı';s2.style.minWidth='62px';
       const r2=document.createElement('input');r2.type='range';r2.min=1;r2.max=12;r2.step=1;r2.value=o.floors;const v2=document.createElement('span');v2.textContent=o.floors;v2.style.minWidth='28px';
       r2.oninput=()=>{o.floors=+r2.value;v2.textContent=r2.value};w2.append(s2,r2,v2);row.appendChild(w2)}
+    if(o.type==='loc'||o.type==='lines'){[['an','Giriş animasyonu',[['none',o.type==='lines'?'Satır satır yükselsin (varsayılan)':'Yumuşak belirsin (varsayılan)'],['rise','Yükselerek belirsin'],['wipe','Soldan sağa açılsın'],['type','Harf harf yazılsın'],['drop','Yukarıdan düşüp zıplasın'],['zoom','Uzaktan yaklaşsın'],['pop','Büyüyerek pat diye çıksın'],['slide','Soldan kayarak gelsin'],['fade','Sadece solarak belirsin']]],['loop','Sürekli efekt',[['none','Yok'],['breathe','Nefes alsın (büyü-küçül)'],['float','Havada süzülsün'],['swing','Hafif sallansın'],['glow','Işıl ışıl (parlayıp sönsün)']]]].forEach(([k,lab,opts])=>{const w=document.createElement('label');w.style.cssText='flex:1 1 100%;font-size:12px;display:flex;align-items:center;gap:8px';w.append(lab+' ');const se=document.createElement('select');se.style.flex='1';se.innerHTML=opts.map(([v,n])=>`<option value="${v}">${n}</option>`).join('');se.value=o[k]||'none';se.onchange=()=>{o[k]=se.value;logAct(FXN[o.type]+' '+lab+': '+se.options[se.selectedIndex].text);try{restart()}catch(e){}};w.appendChild(se);row.appendChild(w)})}
     [['ts','Ne zaman çıksın (sn)',0,60],['te','Ne zaman kaybolsun (0 = hiç)',0,60]].forEach(([k,l,mn,mx])=>{const w7=document.createElement('div');w7.className='fxs';const s7=document.createElement('span');s7.textContent=l;s7.style.minWidth='62px';
       const r7=document.createElement('input');r7.type='range';r7.min=mn;r7.max=mx;r7.step=.5;r7.value=o[k]||0;const v7=document.createElement('input');v7.type='number';v7.min=0;v7.max=600;v7.step=.1;v7.value=o[k]||0;v7.style.cssText='width:64px;font:inherit;padding:4px;border-radius:6px;background:transparent;color:inherit;border:1px solid var(--bd)';
       r7.oninput=()=>{o[k]=+r7.value;v7.value=r7.value};v7.oninput=()=>{const n=Math.max(0,+v7.value||0);o[k]=n;r7.value=n};w7.append(s7,r7,v7);row.appendChild(w7)});
@@ -1586,9 +1587,29 @@ function fxList(o,P,fp,now,s,sc){
   });
   ctx.restore();o._bb=[x0-8*s,y0-lh*.6,maxw+16*s,lh*lines.length+4*s];
 }
+function fxAn(o,fp,s,now,fn){
+  const an=o.an||'none',lp=o.loop||'none';if(an==='none'&&lp==='none'){fn();return}
+  const bb=o._bb,c=bb?[bb[0]+bb[2]/2,bb[1]+bb[3]/2]:(o._c||[W/2,H/2]),e=clamp(fp),inv=1-e;
+  const sc=k=>{ctx.translate(c[0],c[1]);ctx.scale(k,k);ctx.translate(-c[0],-c[1])};
+  ctx.save();
+  if(e<.999){
+    if(an==='rise'){ctx.translate(0,inv*50*s);ctx.globalAlpha*=e}
+    else if(an==='drop'){ctx.translate(0,-(1-bounceOut(e))*150*s);ctx.globalAlpha*=clamp(e*4)}
+    else if(an==='zoom'){sc(.4+.6*e);ctx.globalAlpha*=e}
+    else if(an==='pop'){sc(Math.max(.01,backOutF(e)));ctx.globalAlpha*=clamp(e*4)}
+    else if(an==='slide'){ctx.translate(-inv*280*s,0);ctx.globalAlpha*=e}
+    else if(an==='fade'){ctx.globalAlpha*=e}
+    else if((an==='wipe'||an==='type')&&bb){let f=e;if(an==='type'){const n=Math.max(1,(o.txt||'').length);f=Math.ceil(e*n)/n}ctx.beginPath();ctx.rect(bb[0]-6*s,bb[1]-6*s,(bb[2]+12*s)*f,bb[3]+12*s);ctx.clip()}
+  }
+  if(lp==='breathe')sc(1+.035*Math.sin(now/450));
+  else if(lp==='float')ctx.translate(0,Math.sin(now/600)*8*s);
+  else if(lp==='swing'){ctx.translate(c[0],c[1]);ctx.rotate(.035*Math.sin(now/700));ctx.translate(-c[0],-c[1])}
+  else if(lp==='glow')ctx.globalAlpha*=.72+.28*Math.sin(now/280);
+  try{fn()}finally{ctx.restore()}
+}
 function fxLoc(o,P,fp,s,sc){
   const fv=o.font||$('ff').value,fs=34*s*(o.fs/100),x1=P[0][0],y1=P[0][1],parts=(o.txt||'').split('|').map(t=>t.trim()),a=parts[0]||'',b=parts[1]||'';
-  ctx.save();ctx.globalAlpha=clamp(fp*2);ctx.font=fontV(fv,fs);ctx.textBaseline='middle';ctx.textAlign='left';try{ctx.letterSpacing=((o.ls||0)*fs)+'px'}catch(e){}
+  ctx.save();ctx.globalAlpha*=clamp(fp*2);ctx.font=fontV(fv,fs);ctx.textBaseline='middle';ctx.textAlign='left';try{ctx.letterSpacing=((o.ls||0)*fs)+'px'}catch(e){}
   const sep=b?'  |  ':'',aw=ctx.measureText(a).width,sw=ctx.measureText(sep).width,bw=ctx.measureText(b).width,ic=fs*1.1,total=ic+fs*.4+aw+sw+bw,x=Math.max(total/2+10*s,Math.min(W-total/2-10*s,x1)),y=Math.max(fs*1.2,Math.min(H-fs*1.2,y1)),x0=x-total/2;
   ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=fs*.3;
   // pin simgesi
@@ -1730,7 +1751,7 @@ function fxLines(o,P,fp,s,sc){
   ctx.translate(ax,ay);ctx.rotate(tb);ctx.transform(1,Math.tan((o.sk||0)*Math.PI/180),0,1-(o.fl||0)/100,0,0);
   const y0=-(n-1)*lh/2;
   ctx.lineJoin='round';
-  pr.forEach((q,i)=>{const ri=clamp(fp*(n+1.2)-i);if(ri<=0)return;const e=easeOut(ri);ctx.save();ctx.globalAlpha=e;const y=y0+i*lh+(1-e)*fs*.7,x=-q.w/2;
+  pr.forEach((q,i)=>{const ri=clamp(fp*(n+1.2)-i);if(ri<=0)return;const e=easeOut(ri);ctx.save();ctx.globalAlpha*=e;const y=y0+i*lh+(1-e)*fs*.7,x=-q.w/2;
     ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=fs*.3;ctx.shadowOffsetY=fs*.06;ctx.lineWidth=fs*.14;ctx.strokeStyle='rgba(0,0,0,.45)';
     const put=(tx,xx,col)=>{ctx.strokeText(tx,xx,y);ctx.fillStyle=col;ctx.fillText(tx,xx,y)};
     if(q.segs){let xx=x;q.segs.forEach(g=>{put(g.s,xx,g.a?o.col2:'#fff');xx+=g.w})}
@@ -1961,11 +1982,11 @@ function drawFx(now,s,p){
     if(o.type==='road')fxRoad(o,P,fp,now,s,sc);
     else if(o.type==='bld')fxBld(o,P,fp,now,s,sc);
     else if(o.type==='list')fxList(o,P,fp,now,s,sc);
-    else if(o.type==='loc')fxLoc(o,P,fp,s,sc);
+    else if(o.type==='loc')fxAn(o,fp,s,now,()=>fxLoc(o,P,fp,s,sc));
     else if(o.type==='billb')fxBillb(o,P,fp,s,sc);
     else if(o.type==='spot')fxSpot(o,P,fp,s,sc);
     else if(o.type==='ptxt')fxPtxt(o,P,fp,s,sc,now);
-    else if(o.type==='lines')fxLines(o,P,fp,s,sc);
+    else if(o.type==='lines')fxAn(o,fp,s,now,()=>fxLines(o,P,fp,s,sc));
     else if(o.type==='grid')fxGrid(o,P,fp,s,sc);
     else if(o.type==='pin')fxPin(o,P,fp,now,s,sc);
     else if(o.type==='arrow')fxArrow(o,P,fp,now,s,sc);

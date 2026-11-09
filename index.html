@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611091557-->
+<html lang="tr"><!--pp-build:202611091607-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4980,6 +4980,10 @@ drawLabels=function(now){oDL2.apply(this,arguments);
     ctx.globalAlpha=1;P.forEach(a=>{ctx.fillStyle='#ffd21a';ctx.strokeStyle='#fff';ctx.beginPath();ctx.arc(a[0],a[1],r*.75,0,7);ctx.fill();ctx.stroke()});ctx.restore()}catch(er){}
 };
 })();
+</script>
+<script id="endauto">
+(function(){const c=document.getElementById('endc');if(!c)return;['endn','ph','ends'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('input',()=>{if(e.value.trim()&&!c.checked){c.checked=true;c.dispatchEvent(new Event('change',{bubbles:true}));try{logAct('Kapanış kartı otomatik açıldı')}catch(x){}}})});
+const lg=document.getElementById('logo');if(lg)lg.addEventListener('change',()=>{if(!c.checked){c.checked=true;c.dispatchEvent(new Event('change',{bubbles:true}))}})})();
 </script>
 </body>
 </html>

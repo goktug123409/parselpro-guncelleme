@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611081458-->
+<html lang="tr"><!--pp-build:202611091243-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2428,8 +2428,8 @@ $('rec').onclick=()=>{
   const types=hasA?['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm']:['video/mp4;codecs=avc1.640028','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'];
   const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
   const sq=buildSeq(),dur=sq?sq.total*1000:((isVid&&bg.duration)?(window.__trimEnd&&window.__trimEnd()?Math.min(bg.duration,window.__trimEnd()+(kfs.length?kfs[0].t:0)):bg.duration)*1000:loopMs());
-  const vstream=(window.outStream&&window.outStream())||cv.captureStream(30),aud=hasA?window.narrAudio(vstream):null;
-  const mr=new MediaRecorder(vstream,mime?{mimeType:mime,videoBitsPerSecond:12e6}:{});
+  const vstream=(window.outStream&&window.outStream())||cv.captureStream(60),aud=hasA?window.narrAudio(vstream):null;
+  const mr=new MediaRecorder(vstream,mime?{mimeType:mime,videoBitsPerSecond:(()=>{let w=W,h=H;try{const st=vstream.getVideoTracks()[0].getSettings();w=st.width||W;h=st.height||H}catch(e){}return Math.round(Math.max(30e6,Math.min(100e6,w*h*60*.3)))})()}:{});
   const ch=[];mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
   mr.onstop=()=>{
     if(aud)aud.stop();
@@ -3512,7 +3512,7 @@ body.cvs .cv-top button{white-space:nowrap}
       requestAnimationFrame(loop);
     };
     loop();
-    return oc.captureStream(30);
+    return oc.captureStream(60);
   };
   window.outStillCanvas=function(){
     const g=geo();if(!g)return cv;

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611091607-->
+<html lang="tr"><!--pp-build:202611091621-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4984,6 +4984,23 @@ drawLabels=function(now){oDL2.apply(this,arguments);
 <script id="endauto">
 (function(){const c=document.getElementById('endc');if(!c)return;['endn','ph','ends'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('input',()=>{if(e.value.trim()&&!c.checked){c.checked=true;c.dispatchEvent(new Event('change',{bubbles:true}));try{logAct('Kapanış kartı otomatik açıldı')}catch(x){}}})});
 const lg=document.getElementById('logo');if(lg)lg.addEventListener('change',()=>{if(!c.checked){c.checked=true;c.dispatchEvent(new Event('change',{bubbles:true}))}})})();
+</script>
+<script id="scfade">
+(function(){
+const sd=document.getElementById('ssd');
+if(sd){const lb=sd.parentNode;const sp=document.createElement('span');sp.id='ssdv';const upd=()=>{sp.textContent=' '+(sd.value/10).toFixed(1)+' sn'};upd();sd.addEventListener('input',upd);lb.firstChild.textContent='Her yazı sahnesinin süresi:';lb.insertBefore(sp,sd)}
+let snap=null,snapAt=0,snapDur=.5;
+const oE=enterItem;
+enterItem=function(it){
+  try{if(seq&&seq.i>0&&$('strn')&&($('strn').value==='fade'||$('strn').value==='slide')){if(!snap||snap.width!==cv.width||snap.height!==cv.height){snap=document.createElement('canvas');snap.width=cv.width;snap.height=cv.height}
+    const g=snap.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,snap.width,snap.height);g.drawImage(cv,0,0);snapAt=performance.now();snapDur=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.48))*1000}else snap=null}catch(e){snap=null}
+  return oE.apply(this,arguments)};
+const oD=draw;
+draw=function(now){oD.apply(this,arguments);
+  try{if(!snap||!seq)return;const a=1-(now-snapAt)/snapDur;if(a<=0){snap=null;return}
+    ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=Math.min(1,a);ctx.drawImage(snap,0,0);ctx.restore()}catch(e){}
+};
+})();
 </script>
 </body>
 </html>

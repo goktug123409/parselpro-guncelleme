@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611102035-->
+<html lang="tr"><!--pp-build:202611102106-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -142,7 +142,9 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label class="chk"><input id="hidemain" type="checkbox" checked> Ana yazı (255 m² / Saros’a 300 m) hiç çıkmasın</label>
     <label class="chk"><input id="nostem" type="checkbox"> Yazı çizgiden ayrı dursun (bağlantı çizgisi olmasın)</label>
     <div class="row"><label>Dolgu rengi<input id="fc" type="color" value="#2bc4ff"></label><label>Saber rengi<input id="col" type="color" value="#2bc4ff"></label></div>
-    <label>Dolgu opaklığı<input id="fo" type="range" min="0" max="70" value="20"></label>
+    <label>Dolgu opaklığı<input id="fo" type="range" min="0" max="100" value="20"></label>
+    <label>Dışını karart (arsa dışı)<input id="odim" type="range" min="0" max="90" value="0"></label>
+    <label>İçini karart (arsa içi)<input id="idim" type="range" min="0" max="90" value="0"></label>
 
     <h2>Efektler &amp; Animasyon</h2>
     <label>Çizim animasyonu (saniye)<input id="dur" type="range" min="1" max="60" step="0.5" value="3"></label>
@@ -1009,6 +1011,9 @@ function drawInner(now){
       const fp=clamp((p-.55)/.4);
       ctx.beginPath();pts.forEach((a,i)=>i?ctx.lineTo(a[0],a[1]):ctx.moveTo(a[0],a[1]));ctx.closePath();
       ctx.fillStyle=hexA($('fc').value,$('fo').value/100*fp*($('sab').checked?1:0));ctx.fill();
+      {const od=(+($('odim')&&$('odim').value)||0)/100,id=(+($('idim')&&$('idim').value)||0)/100;
+       if(od>0){ctx.save();ctx.beginPath();ctx.rect(-W*3,-H*3,W*7,H*7);pts.forEach((a,i)=>i?ctx.lineTo(a[0],a[1]):ctx.moveTo(a[0],a[1]));ctx.closePath();ctx.fillStyle='rgba(0,0,0,'+(od*fp)+')';ctx.fill('evenodd');ctx.restore()}
+       if(id>0){ctx.save();ctx.beginPath();pts.forEach((a,i)=>i?ctx.lineTo(a[0],a[1]):ctx.moveTo(a[0],a[1]));ctx.closePath();ctx.fillStyle='rgba(0,0,0,'+(id*fp)+')';ctx.fill();ctx.restore()}}
     }
     // outline drawn progressively
     let left=$('sab').checked?tot*prog:0;

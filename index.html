@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611101150-->
+<html lang="tr"><!--pp-build:202611101314-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -5000,6 +5000,26 @@ draw=function(now){oD.apply(this,arguments);
   try{if(!snap||!seq)return;const a=1-(now-snapAt)/snapDur;if(a<=0){snap=null;return}
     ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=Math.min(1,a);ctx.drawImage(snap,0,0);ctx.restore()}catch(e){}
 };
+})();
+</script>
+<script id="viewzoom">
+(function(){
+let z=1,tx=0,ty=0;const st=cv.parentNode;
+const bt=document.createElement('button');bt.id='vzreset';bt.hidden=true;bt.style.cssText='position:absolute;left:10px;top:10px;z-index:7;background:rgba(20,24,34,.88);color:#fff;border:1px solid #4b5568;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer';
+bt.title='Yakınlaştırmayı sıfırla (Ctrl+0)';st.appendChild(bt);
+const apply=()=>{if(z<=1.001){z=1;tx=ty=0;cv.style.transform='';cv.style.transformOrigin='';cv.style.position='';st.style.overflow='';bt.hidden=true;return}
+  cv.style.transformOrigin='0 0';cv.style.transform='translate('+tx+'px,'+ty+'px) scale('+z+')';st.style.overflow='hidden';bt.hidden=false;bt.textContent='🔍 %'+Math.round(z*100)+' · sıfırla'};
+const limit=()=>{const w=cv.offsetWidth*z,h=cv.offsetHeight*z;tx=Math.min(0,Math.max(cv.offsetWidth-w,tx));ty=Math.min(0,Math.max(cv.offsetHeight-h,ty))};
+bt.onclick=e=>{e.stopPropagation();z=1;apply()};
+const zoomAt=(cx,cy,z2)=>{z2=Math.max(1,Math.min(8,z2));const r=cv.getBoundingClientRect();const u=[(cx-r.left)/z,(cy-r.top)/z];tx-=u[0]*(z2-z);ty-=u[1]*(z2-z);z=z2;limit();apply()};
+cv.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();e.stopImmediatePropagation();zoomAt(e.clientX,e.clientY,z*(e.deltaY<0?1.15:1/1.15))},{passive:false,capture:true});
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='0')&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){e.preventDefault();z=1;apply()}
+  if((e.ctrlKey||e.metaKey)&&(e.key==='+'||e.key==='='||e.key==='-')&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,z*(e.key==='-'?1/1.25:1.25))}});
+let pan=null;
+cv.addEventListener('pointerdown',e=>{if(z<=1)return;if(e.button===1||(e.button===0&&(e.ctrlKey||e.metaKey))){e.preventDefault();e.stopImmediatePropagation();pan={x:e.clientX,y:e.clientY,tx,ty};try{cv.setPointerCapture(e.pointerId)}catch(x){}cv.style.cursor='grabbing'}},true);
+cv.addEventListener('pointermove',e=>{if(!pan)return;e.stopImmediatePropagation();tx=pan.tx+(e.clientX-pan.x);ty=pan.ty+(e.clientY-pan.y);limit();apply()},true);
+const end=e=>{if(!pan)return;pan=null;cv.style.cursor='';try{cv.releasePointerCapture(e.pointerId)}catch(x){}};
+cv.addEventListener('pointerup',end,true);cv.addEventListener('pointercancel',end,true);
 })();
 </script>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611102121-->
+<html lang="tr"><!--pp-build:202611102131-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -205,7 +205,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Kapanış yazıları<textarea id="sout" rows="3" placeholder="DOĞRU KAZANÇ"></textarea></label>
     <p class="s" style="margin:0 0 8px">İpucu: satıra “BAŞLIK | alt yazı” yazarsanız alt yazı küçük ve renkli çıkar.</p>
     <label>Yazı animasyonu<select id="sanim"><option value="mix">Karışık (sırayla değişir)</option><option value="pop">Büyüyerek çıksın</option><option value="rise">Aşağıdan yükselsin</option><option value="wave">Harfler dalgalansın</option><option value="type">Daktilo gibi yazılsın</option><option value="right">Sağdan kayarak gelsin</option><option value="zoom">Yakından uzaklaşarak</option></select></label>
-    <label>Sahneler arası geçiş<select id="strn"><option value="fade">Yumuşak solma</option><option value="slide">Kayarak solma</option><option value="cut">Sert kesme</option><option value="flash">Parlama + turkuaz (örnek video)</option><option value="corner">Köşeden turuncu geçiş</option></select></label>
+    <label>Sahneler arası geçiş<select id="strn"><option value="fade">Yumuşak solma</option><option value="slide">Kayarak solma</option><option value="cut">Sert kesme</option><option value="flash">Parlama + turkuaz (örnek video)</option><option value="corner">Köşeden turuncu geçiş</option><option value="whip">Hızlı yana kaydırma (bulanık + parlama)</option><option value="whipv">Hızlı yukarı kaydırma (bulanık + parlama)</option><option value="zoomb">Zoom patlaması (bulanık + parlama)</option><option value="spinb">Dönerek bulanık (bulanık + parlama)</option></select></label>
     <label>Geçiş süresi <span id="trvv">1.2</span> sn<input id="trv" type="range" min="2" max="40" value="12" oninput="$('trvv').textContent=(this.value/10).toFixed(1)"></label>
     <label style="display:none">Geçiş sesi<select id="strs"><option value="mix">Karışık (her seferinde farklı)</option><option value="auto">Geçişe uygun (otomatik)</option><option value="whoosh">Whoosh (hava sesi)</option><option value="boom">Whoosh + vuruş</option><option value="flash">Parlama sesi</option><option value="tick">Kısa tık</option><option value="none">Ses yok</option></select></label>
     <div class="row" style="display:none"><label>Geçiş sesi seviyesi <span id="strvv">70</span>%<input id="strv" type="range" min="0" max="100" value="70" oninput="$('strvv').textContent=this.value"></label><div style="display:flex;flex-direction:column;gap:6px"><button type="button" id="strtest">▶ Dinle</button><button type="button" id="strmute" aria-pressed="false">🔊 Ses açık</button></div></div>
@@ -2377,7 +2377,7 @@ function drawScene(now){
   ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;
   if($('sgrad').checked){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,bgc);g.addColorStop(1,shadeC(bgc,lumOf(bgc)>.55?.82:1.9));ctx.fillStyle=g}else ctx.fillStyle=bgc;
   ctx.fillRect(0,0,W,H);
-  const tm=$('strn').value,trD=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.98)),tin=clamp(ts/trD),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/trD),tr=(tm==='cut'||tm==='flash'||tm==='corner')?1:Math.min(tin,tout);
+  const tm=$('strn').value,trD=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.98)),tin=clamp(ts/trD),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/trD),tr=(tm==='cut'||tm==='flash'||tm==='corner'||tm==='whip'||tm==='whipv'||tm==='zoomb'||tm==='spinb')?1:Math.min(tin,tout);
   ctx.save();ctx.globalAlpha=tr;
   if(tm==='slide'){ctx.translate(0,(1-tin)*H*.07-(1-tout)*H*.07)}
   ctx.textAlign='center';ctx.textBaseline='middle';
@@ -5063,6 +5063,25 @@ const g=id=>document.getElementById(id);
 const oD=draw;
 draw=function(now){oD.apply(this,arguments);
   try{
+    // bulanık kaydırma / zoom / dönme geçişleri
+    {const md=g('strn').value;
+     if(window.__cornerSnap&&(md==='whip'||md==='whipv'||md==='zoomb'||md==='spinb')){
+      const p=Math.min(1,(now-window.__cornerAt)/window.__cornerDur);
+      if(p>=1){window.__cornerSnap=null}else{
+        const tmp=window.__wtmp=(window.__wtmp&&window.__wtmp.width===cv.width&&window.__wtmp.height===cv.height)?window.__wtmp:Object.assign(document.createElement('canvas'),{width:cv.width,height:cv.height});
+        const tg=tmp.getContext('2d');tg.setTransform(1,0,0,1,0,0);tg.clearRect(0,0,W,H);tg.drawImage(cv,0,0);
+        const out=p<.5,q=out?p/.5:(p-.5)/.5,amt=out?q*q:Math.pow(1-q,3),img=out?window.__cornerSnap:tmp,N=12;
+        ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+        const dir=out?1:-1;
+        for(let k=0;k<N;k++){const t=N>1?k/(N-1)-.5:0;ctx.globalAlpha=1/(k+1);ctx.save();
+          if(md==='whip'){ctx.drawImage(img,dir*amt*W*.55+t*amt*W*.5,0)}
+          else if(md==='whipv'){ctx.drawImage(img,0,dir*amt*H*.55+t*amt*H*.5)}
+          else if(md==='zoomb'){const sc=1+amt*.9+t*amt*.5;ctx.translate(W/2,H/2);ctx.scale(sc,sc);ctx.translate(-W/2,-H/2);ctx.drawImage(img,0,0)}
+          else{const rot=dir*amt*.5+t*amt*.35,sc=1+amt*.35;ctx.translate(W/2,H/2);ctx.rotate(rot);ctx.scale(sc,sc);ctx.translate(-W/2,-H/2);ctx.drawImage(img,0,0)}
+          ctx.restore()}
+        ctx.globalAlpha=1;
+        const fa=Math.max(0,1-Math.abs(p-.5)/.14)*.85;if(fa>0){ctx.fillStyle='rgba(255,247,235,'+fa+')';ctx.fillRect(0,0,W,H)}
+        ctx.restore()}}}
     // köşeden turuncu geçiş
     if(window.__cornerSnap&&g('strn').value==='corner'){
       const p=Math.min(1,(now-window.__cornerAt)/window.__cornerDur);
@@ -5115,7 +5134,7 @@ draw=function(now){oD.apply(this,arguments);
 };
 const oE=enterItem;
 enterItem=function(it){
-  try{if(seq&&seq.i>0&&g('strn')&&g('strn').value==='corner'){const sn=document.createElement('canvas');sn.width=cv.width;sn.height=cv.height;sn.getContext('2d').drawImage(cv,0,0);window.__cornerSnap=sn;window.__cornerAt=performance.now();window.__cornerDur=Math.max(.2,Math.min(g('trv')?g('trv').value/10:.6,it.dur*.98))*1000}else window.__cornerSnap=null}catch(e){window.__cornerSnap=null}
+  try{if(seq&&seq.i>0&&g('strn')&&['corner','whip','whipv','zoomb','spinb'].includes(g('strn').value)){const sn=document.createElement('canvas');sn.width=cv.width;sn.height=cv.height;sn.getContext('2d').drawImage(cv,0,0);window.__cornerSnap=sn;window.__cornerAt=performance.now();window.__cornerDur=Math.max(.2,Math.min(g('trv')?g('trv').value/10:.6,it.dur*.98))*1000}else window.__cornerSnap=null}catch(e){window.__cornerSnap=null}
   return oE.apply(this,arguments)};
 })();
 </script>

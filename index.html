@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611101420-->
+<html lang="tr"><!--pp-build:202611101455-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4285,7 +4285,7 @@ window.ppHelp=function(){
       const c=document.getElementById('cv'),st=document.querySelector('.stage');if(!c||!st||!c.width||!c.height)return;
       const ptl=document.getElementById('ptl'),ph=(ptl&&ptl.style.display!=='none')?ptl.offsetHeight+14:0;
       const tp=st.getBoundingClientRect().top,bar=document.getElementById('bar'),bh=(bar&&!bar.hidden)?bar.offsetHeight+8:0;
-      const fsm=document.fullscreenElement&&document.fullscreenElement.contains(c);const aw=fsm?window.innerWidth-16:st.clientWidth-16,ah=fsm?window.innerHeight-bh-24:window.innerHeight-tp-ph-bh-14;
+      const fsm=false;const aw=fsm?window.innerWidth-16:st.clientWidth-16,ah=fsm?window.innerHeight-bh-24:window.innerHeight-tp-ph-bh-14;
       if(aw<100||ah<100)return;
       const k=Math.min(aw/c.width,ah/c.height),w=Math.floor(c.width*k),h=Math.floor(c.height*k),key=w+'x'+h;
       if(key===last&&c.style.width===w+'px')return;last=key;
@@ -5025,13 +5025,18 @@ cv.addEventListener('pointerup',end,true);cv.addEventListener('pointercancel',en
 <script id="stagefs">
 (function(){
 const st=cv.parentNode;st.classList.add('vzst');
-const css=document.createElement('style');css.textContent='.vzst:fullscreen{background:#000!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;width:100vw!important;height:100vh!important;border:0!important;border-radius:0!important;overflow:hidden!important}.vzst:fullscreen canvas{margin:0 auto!important;width:auto!important;height:auto!important;max-width:100vw!important;max-height:calc(100vh - 60px)!important}.stage:-webkit-full-screen{background:#000}#vzfs{position:absolute;left:10px;top:10px;z-index:7;background:rgba(20,24,34,.88);color:#fff;border:1px solid #4b5568;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}#vzreset{left:118px!important}';
+const css=document.createElement('style');css.textContent='html body.big.cvs .app{grid-template-columns:400px minmax(0,1fr) 0!important}html body.big.bigp.cvs .app{grid-template-columns:0 minmax(0,1fr) 0!important}body.big #ptl{max-height:210px!important}body.big #ptl-sc{overflow:auto}body.big.bigp .cv-rail,body.big.bigp .panel{display:none!important}#vzfs,#vzpan{position:absolute;top:10px;z-index:7;background:rgba(20,24,34,.88);color:#fff;border:1px solid #4b5568;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}#vzfs{left:10px}#vzpan{left:140px;display:none}body.big #vzpan{display:block}#vzreset{left:250px!important}';
 document.head.appendChild(css);
-const bt=document.createElement('button');bt.id='vzfs';bt.type='button';bt.textContent='⛶ Büyük ekran';bt.title='Önizlemeyi tam ekran yap (F tuşu, çıkmak için Esc)';st.appendChild(bt);
-const isFs=()=>document.fullscreenElement===st;
-const tog=()=>{try{if(isFs())document.exitFullscreen();else (st.requestFullscreen||st.webkitRequestFullscreen).call(st)}catch(e){}};
+const bt=document.createElement('button');bt.id='vzfs';bt.type='button';bt.textContent='⛶ Büyük ekran';bt.title='Önizlemeyi büyüt (F tuşu) — ayarlar ve zaman çizelgesi kullanılabilir kalır';st.appendChild(bt);
+const bp=document.createElement('button');bp.id='vzpan';bp.type='button';bp.textContent='☰ Ayarlar';bp.title='Ayar panelini göster / gizle';st.appendChild(bp);
+const B=document.body,isBig=()=>B.classList.contains('big');
+const railH=()=>{const r=document.querySelector('.cv-rail');if(r)B.style.setProperty('--railh',(r.offsetHeight||120)+'px')};
+const tog=()=>{const on=!isBig();B.classList.toggle('big',on);if(!on)B.classList.remove('bigp');bt.textContent=on?'✕ Küçült (F)':'⛶ Büyük ekran';railH();
+ try{if(on&&!document.fullscreenElement&&document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});if(!on&&document.fullscreenElement)document.exitFullscreen()}catch(e){}
+ setTimeout(()=>window.dispatchEvent(new Event('resize')),60)};
 bt.onclick=e=>{e.stopPropagation();tog()};
-document.addEventListener('fullscreenchange',()=>{bt.textContent=isFs()?'✕ Küçült (Esc)':'⛶ Büyük ekran'});
+bp.onclick=e=>{e.stopPropagation();B.classList.toggle('bigp');railH();setTimeout(()=>window.dispatchEvent(new Event('resize')),60)};
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&isBig())tog()});
 document.addEventListener('keydown',e=>{if((e.key==='f'||e.key==='F')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')&&!(document.activeElement&&document.activeElement.isContentEditable)){e.preventDefault();tog()}});
 })();
 </script>

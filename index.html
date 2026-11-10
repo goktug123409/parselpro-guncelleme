@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611102032-->
+<html lang="tr"><!--pp-build:202611102035-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -478,7 +478,7 @@ $('file').onchange=e=>{addFiles(e.target.files,true)};
       clips:clips.map(c=>({name:c.name,size:c.file.size,type:c.file.type,vid:c.vid,pdur:c.pdur||0,st:c.st}))};
     const emb=$('projemb').checked;P.embedded=emb;
     let blob=new Blob([JSON.stringify(P,rep)],{type:'application/json'});
-    const nm=(clips[0].name.replace(/\.[^.]+$/,'')||'proje')+(emb?'.parselpro.zip':'.parselpro.json');
+    const nm=outName(clips[0].name.replace(/\.[^.]+$/,'')||'proje')+(emb?'.parselpro.zip':'.parselpro.json');
     if(emb){ps('Dosya paketleniyor…');try{blob=await zipBuild([{name:'project.json',blob},...clips.map((c,i)=>({name:'media/'+i,blob:c.file}))])}catch(x){ps('Paketlenemedi: '+x.message);return}}
     logAct('Proje dosyaya kaydedildi: '+nm);
     ps('Kaydetme onayı bekleniyor ('+nm+')… Onay penceresinde Kaydet’e basın; çıkmazsa alttaki durum satırındaki bağlantıya tıklayın.');

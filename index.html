@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611101330-->
+<html lang="tr"><!--pp-build:202611101420-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -145,7 +145,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Dolgu opaklığı<input id="fo" type="range" min="0" max="70" value="20"></label>
 
     <h2>Efektler &amp; Animasyon</h2>
-    <label>Çizim animasyonu (saniye)<input id="dur" type="range" min="1" max="10" step="0.5" value="3"></label>
+    <label>Çizim animasyonu (saniye)<input id="dur" type="range" min="1" max="60" step="0.5" value="3"></label>
     <label>Saber gücü (glow)<input id="gw" type="range" min="0" max="200" value="100"></label>
     <label>Çizgi kalınlığı (core)<input id="th" type="range" min="2" max="14" value="6"></label>
     <label style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;margin:6px 0;text-align:left"><input type="checkbox" id="loopon" style="width:auto;flex:none"> Animasyon bitince başa sarıp tekrar çizsin (döngü)</label>
@@ -214,13 +214,13 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label class="chk"><input id="sgrad" type="checkbox"> Arka plana hafif gradyan ekle</label>
     <div class="row"><label>Vurgu rengi<input id="sacc" type="color" value="#2bc4ff"></label><label>Yazı boyutu <span id="ssv">100</span>%<input id="ssz" type="range" min="50" max="140" value="100" oninput="$('ssv').textContent=this.value"></label></div>
     <label class="chk"><input id="saccl" type="checkbox" checked> Yazının altında vurgu çizgisi çizilsin</label>
-    <label>Sahne süresi (sn)<input id="ssd" type="range" min="4" max="80" value="8"></label>
+    <label>Sahne süresi (sn)<input id="ssd" type="range" min="4" max="300" value="8"></label>
     <h3 style="margin:10px 0 4px;font-size:14px">Kapanış kartı</h3>
     <label class="chk"><input id="endc" type="checkbox"> Kapanış kartı (logo + bilgiler)</label>
     <label>Firma / isim<input id="endn" type="text" placeholder="Göktuğ Filat"></label>
     <label>Slogan / açıklama<input id="ends" type="text" placeholder="Güvenilir gayrimenkul danışmanı"></label>
     <label>Telefon<input id="ph" type="text" placeholder="0(5xx) xxx xx xx"></label>
-    <label>Kapanış kartı süresi: <span id="esv">3.5</span> sn<input id="esd" type="range" min="2" max="10" step="0.5" value="3.5" oninput="$('esv').textContent=this.value"></label>
+    <label>Kapanış kartı süresi: <span id="esv">3.5</span> sn<input id="esd" type="range" min="2" max="30" step="0.5" value="3.5" oninput="$('esv').textContent=this.value"></label>
     <div class="row"><button id="prev-sc">Sadece sahneleri önizle</button><button id="prev-all">Tüm videoyu önizle</button></div>
 
     <h2>Yazı Ayarları</h2>
@@ -3191,7 +3191,7 @@ body.cvs .cv-top button{white-space:nowrap}
     }else{
       h+='<label>Yazı <small style="font-weight:400">(BAŞLIK | alt yazı)</small><input type="text" data-t="1" value="'+it.txt.replace(/"/g,'&quot;')+'"></label>'+sel('sanim','Yazı animasyonu');
     }
-    h+=sel('sfont','Yazı tipi')+'<div class="r2">'+col('sbg1','Arka plan 1')+col('sbg2','Arka plan 2')+'</div><div class="r2">'+col('sacc','Vurgu rengi')+'<label>Yazı boyutu <span data-v="ssz">'+$('ssz').value+'</span>%<input type="range" min="50" max="140" data-b="ssz" value="'+$('ssz').value+'"></label></div>'+sel('strn','Geçiş')+'<label>Geçiş süresi <span data-v="trv">'+($('trv').value/10).toFixed(1)+'</span> sn<input type="range" min="2" max="40" data-b="trv" value="'+$('trv').value+'"></label><label>Sahne süresi <span data-v="ssd">'+($('ssd').value/10).toFixed(1)+'</span> sn<input type="range" min="4" max="80" data-b="ssd" value="'+$('ssd').value+'"></label><div class="bt"><button class="pr" data-act="ok">Tamam, devam et</button><button data-act="stop">Sahneyi kapat</button></div>';
+    h+=sel('sfont','Yazı tipi')+'<div class="r2">'+col('sbg1','Arka plan 1')+col('sbg2','Arka plan 2')+'</div><div class="r2">'+col('sacc','Vurgu rengi')+'<label>Yazı boyutu <span data-v="ssz">'+$('ssz').value+'</span>%<input type="range" min="50" max="140" data-b="ssz" value="'+$('ssz').value+'"></label></div>'+sel('strn','Geçiş')+'<label>Geçiş süresi <span data-v="trv">'+($('trv').value/10).toFixed(1)+'</span> sn<input type="range" min="2" max="40" data-b="trv" value="'+$('trv').value+'"></label><label>Sahne süresi <span data-v="ssd">'+($('ssd').value/10).toFixed(1)+'</span> sn<input type="range" min="4" max="300" data-b="ssd" value="'+$('ssd').value+'"></label><div class="bt"><button class="pr" data-act="ok">Tamam, devam et</button><button data-act="stop">Sahneyi kapat</button></div>';
     box.innerHTML=h;box.style.display='block';
     const bw=box.offsetWidth,bh=box.offsetHeight;
     box.style.left=Math.max(8,Math.min(innerWidth-bw-8,x+14))+'px';box.style.top=Math.max(8,Math.min(innerHeight-bh-8,y-20))+'px';
@@ -4092,8 +4092,8 @@ window.ppHelp=function(){
       const span=Math.max(.2,Tt-off);
       if(drag.kind==='scn'){
         const nd=Math.max(.5,drag.d0+d/drag.ppsS);
-        if(drag.k==='text'){const el=g('ssd');if(el){el.value=Math.max(+el.min||4,Math.min(+el.max||20,Math.round(nd*10)));el.dispatchEvent(new Event('input',{bubbles:true}))}}
-        else if(drag.k==='end'){const el=g('esd');if(el){el.value=Math.max(+el.min||2,Math.min(+el.max||10,Math.round(nd*2)/2));el.dispatchEvent(new Event('input',{bubbles:true}))}}
+        if(drag.k==='text'){const el=g('ssd');if(el){el.value=Math.max(+el.min||4,Math.min(+el.max||300,Math.round(nd*10)));el.dispatchEvent(new Event('input',{bubbles:true}))}}
+        else if(drag.k==='end'){const el=g('esd');if(el){el.value=Math.max(+el.min||2,Math.min(+el.max||30,Math.round(nd*2)/2));el.dispatchEvent(new Event('input',{bubbles:true}))}}
         return}
       if(drag.kind==='nar'){const nd=Math.max(0,Math.round((drag.d0+d/pps)*10)/10),el=g('ndelay');if(el){el.value=nd;el.dispatchEvent(new Event('input',{bubbles:true}))}drag.bar.style.opacity='.85';sig='';drag.rebuild=true;return}
       if(drag.kind==='ain'||drag.kind==='aout'){

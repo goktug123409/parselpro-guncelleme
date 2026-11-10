@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611102106-->
+<html lang="tr"><!--pp-build:202611102121-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -205,7 +205,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Kapanış yazıları<textarea id="sout" rows="3" placeholder="DOĞRU KAZANÇ"></textarea></label>
     <p class="s" style="margin:0 0 8px">İpucu: satıra “BAŞLIK | alt yazı” yazarsanız alt yazı küçük ve renkli çıkar.</p>
     <label>Yazı animasyonu<select id="sanim"><option value="mix">Karışık (sırayla değişir)</option><option value="pop">Büyüyerek çıksın</option><option value="rise">Aşağıdan yükselsin</option><option value="wave">Harfler dalgalansın</option><option value="type">Daktilo gibi yazılsın</option><option value="right">Sağdan kayarak gelsin</option><option value="zoom">Yakından uzaklaşarak</option></select></label>
-    <label>Sahneler arası geçiş<select id="strn"><option value="fade">Yumuşak solma</option><option value="slide">Kayarak solma</option><option value="cut">Sert kesme</option><option value="flash">Parlama + turkuaz (örnek video)</option></select></label>
+    <label>Sahneler arası geçiş<select id="strn"><option value="fade">Yumuşak solma</option><option value="slide">Kayarak solma</option><option value="cut">Sert kesme</option><option value="flash">Parlama + turkuaz (örnek video)</option><option value="corner">Köşeden turuncu geçiş</option></select></label>
     <label>Geçiş süresi <span id="trvv">1.2</span> sn<input id="trv" type="range" min="2" max="40" value="12" oninput="$('trvv').textContent=(this.value/10).toFixed(1)"></label>
     <label style="display:none">Geçiş sesi<select id="strs"><option value="mix">Karışık (her seferinde farklı)</option><option value="auto">Geçişe uygun (otomatik)</option><option value="whoosh">Whoosh (hava sesi)</option><option value="boom">Whoosh + vuruş</option><option value="flash">Parlama sesi</option><option value="tick">Kısa tık</option><option value="none">Ses yok</option></select></label>
     <div class="row" style="display:none"><label>Geçiş sesi seviyesi <span id="strvv">70</span>%<input id="strv" type="range" min="0" max="100" value="70" oninput="$('strvv').textContent=this.value"></label><div style="display:flex;flex-direction:column;gap:6px"><button type="button" id="strtest">▶ Dinle</button><button type="button" id="strmute" aria-pressed="false">🔊 Ses açık</button></div></div>
@@ -224,6 +224,16 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Telefon<input id="ph" type="text" placeholder="0(5xx) xxx xx xx"></label>
     <label>Kapanış kartı süresi: <span id="esv">3.5</span> sn<input id="esd" type="range" min="2" max="30" step="0.5" value="3.5" oninput="$('esv').textContent=this.value"></label>
     <div class="row"><button id="prev-sc">Sadece sahneleri önizle</button><button id="prev-all">Tüm videoyu önizle</button></div>
+
+    <h2>Rozetler &amp; İletişim şeridi</h2>
+    <label class="chk"><input id="bdgon" type="checkbox"> Üstte turuncu rozetler göster</label>
+    <label>Rozet yazıları (her satır bir rozet)<textarea id="bdg" rows="3" placeholder="Çanakkale'nin Eşsiz Denizi&#10;500m2 Hobi Bahçeleri&#10;Huzurlu Yaşam"></textarea></label>
+    <div class="row"><label>Gösterim<select id="bdgm"><option value="seq">Sırayla (biri gider, biri gelir)</option><option value="stack">Üst üste kalsın</option></select></label><label>Her rozet <span id="bdgsv">3.0</span> sn<input id="bdgs" type="range" min="10" max="100" value="30" oninput="$('bdgsv').textContent=(this.value/10).toFixed(1)"></label></div>
+    <div class="row"><label>Rozet rengi<input id="bdgc" type="color" value="#ff9f1a"></label><label>Rozet yazı rengi<input id="bdgt" type="color" value="#ffffff"></label></div>
+    <label>Rozet boyutu<input id="bdgz" type="range" min="60" max="160" value="100"></label>
+    <label class="chk"><input id="cston" type="checkbox"> Altta telefon + isim şeridi göster</label>
+    <div class="row"><label>İsim<input id="cstn" type="text" placeholder="Rıza Tanay"></label><label>Telefon (boşsa kapanış kartındaki)<input id="cstp" type="text" placeholder="0(5xx) xxx xx xx"></label></div>
+    <label>Şerit boyutu<input id="cstz" type="range" min="60" max="160" value="100"></label>
 
     <h2>Yazı Ayarları</h2>
     <label>Ana yazı<input id="t1" type="text" value="255 m²"></label>
@@ -2367,7 +2377,7 @@ function drawScene(now){
   ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;
   if($('sgrad').checked){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,bgc);g.addColorStop(1,shadeC(bgc,lumOf(bgc)>.55?.82:1.9));ctx.fillStyle=g}else ctx.fillStyle=bgc;
   ctx.fillRect(0,0,W,H);
-  const tm=$('strn').value,trD=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.98)),tin=clamp(ts/trD),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/trD),tr=(tm==='cut'||tm==='flash')?1:Math.min(tin,tout);
+  const tm=$('strn').value,trD=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.98)),tin=clamp(ts/trD),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/trD),tr=(tm==='cut'||tm==='flash'||tm==='corner')?1:Math.min(tin,tout);
   ctx.save();ctx.globalAlpha=tr;
   if(tm==='slide'){ctx.translate(0,(1-tin)*H*.07-(1-tout)*H*.07)}
   ctx.textAlign='center';ctx.textBaseline='middle';
@@ -5045,6 +5055,68 @@ bt.onclick=e=>{e.stopPropagation();tog()};
 bp.onclick=e=>{e.stopPropagation();B.classList.toggle('bigp');railH();setTimeout(()=>window.dispatchEvent(new Event('resize')),60)};
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&isBig())tog()});
 document.addEventListener('keydown',e=>{if((e.key==='f'||e.key==='F')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')&&!(document.activeElement&&document.activeElement.isContentEditable)){e.preventDefault();tog()}});
+})();
+</script>
+<script id="refstyle">
+(function(){
+const g=id=>document.getElementById(id);
+const oD=draw;
+draw=function(now){oD.apply(this,arguments);
+  try{
+    // köşeden turuncu geçiş
+    if(window.__cornerSnap&&g('strn').value==='corner'){
+      const p=Math.min(1,(now-window.__cornerAt)/window.__cornerDur);
+      if(p>=1){window.__cornerSnap=null}else{
+        const e=p*p*(3-2*p),c=e*2.5-.25,band=.16;ctx.save();ctx.setTransform(1,0,0,1,0,0);
+        const poly=cc=>{ctx.beginPath();ctx.moveTo(-3*W,H*(cc+3));ctx.lineTo(3*W,H*(cc-3));ctx.lineTo(13*W,H*(cc-3)+10*H);ctx.lineTo(-3*W+10*W,H*(cc+3)+10*H);ctx.closePath()};
+        // eski sahne: çizginin ilerisinde kalan kısım
+        ctx.save();poly(c);ctx.clip();ctx.drawImage(window.__cornerSnap,0,0);ctx.restore();
+        // turuncu bant
+        ctx.save();poly(c);ctx.clip();ctx.beginPath();ctx.moveTo(-3*W,H*(c-band+3));ctx.lineTo(3*W,H*(c-band-3));ctx.lineTo(13*W,H*(c-band-3)+10*H);ctx.lineTo(7*W,H*(c-band+3)+10*H);ctx.closePath();
+        ctx.restore();
+        ctx.save();ctx.beginPath();ctx.rect(0,0,W,H);ctx.clip();
+        const gr=ctx.createLinearGradient(0,0,W,H);gr.addColorStop(0,'#ffb347');gr.addColorStop(1,'#ff7a00');
+        ctx.fillStyle=gr;ctx.beginPath();
+        ctx.moveTo(-3*W,H*(c+3));ctx.lineTo(3*W,H*(c-3));ctx.lineTo(3*W,H*(c-band-3));ctx.lineTo(-3*W,H*(c-band+3));ctx.closePath();ctx.fill();ctx.restore();
+        ctx.restore()}}
+    if(seq&&seq.items&&seq.items[seq.i]&&seq.items[seq.i].k!=='main')return;
+    const s=Math.min(W,H)/720;
+    const font=px=>(typeof fontV==='function'?fontV((g('sfont')&&g('sfont').value)||'Montserrat',px):'800 '+px+'px system-ui');
+    // üst rozetler
+    if(g('bdgon')&&g('bdgon').checked){
+      const L=(g('bdg').value||'').split('\n').map(x=>x.trim()).filter(Boolean);
+      if(L.length){
+        let t=0;try{t=(isVid&&bg)?bg.currentTime-(kfs.length?kfs[0].t:0):tLoop(performance.now())/1000}catch(e){}
+        const sec=Math.max(.8,(+g('bdgs').value||30)/10),stack=g('bdgm').value==='stack',fs=Math.round(26*s*(+g('bdgz').value||100)/100);
+        const ys=[];let shown=[];
+        L.forEach((x,i)=>{const t0=i*sec,t1=stack?1e9:(i+1)*sec;if(t>=t0&&t<t1)shown.push([x,t-t0,i])});
+        ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.textAlign='center';ctx.textBaseline='middle';
+        shown.forEach(([x,u,i],k)=>{
+          const e=Math.min(1,u/.35),pop=e<1?(1-Math.pow(1-e,3)):1,sc=.6+.4*pop,y=H*.085+k*fs*2.0;
+          ctx.save();ctx.globalAlpha=Math.min(1,e*1.4);ctx.translate(W/2,y);ctx.scale(sc,sc);
+          ctx.font=font(fs);const w=ctx.measureText(x).width+fs*1.6,h=fs*1.9;
+          ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=12*s;ctx.shadowOffsetY=3*s;
+          ctx.fillStyle=g('bdgc').value;rr(-w/2,-h/2,w,h,h/2);ctx.fill();
+          ctx.shadowColor='transparent';ctx.lineWidth=2*s;ctx.strokeStyle='rgba(255,255,255,.55)';ctx.stroke();
+          ctx.fillStyle=g('bdgt').value;ctx.fillText(x,0,1*s);ctx.restore()});
+        ctx.restore()}}
+    // alt iletişim şeridi
+    if(g('cston')&&g('cston').checked){
+      const ph=(g('cstp').value||g('ph').value||'').trim(),nm=(g('cstn').value||'').trim();
+      if(ph||nm){
+        const fs=Math.round(22*s*(+g('cstz').value||100)/100),h=fs*2.1,y=H-h*.9-8*s;
+        ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.textBaseline='middle';ctx.textAlign='center';ctx.font=font(fs);
+        const w1=ph?ctx.measureText(ph).width+fs*1.8:0,w2=nm?ctx.measureText(nm).width+fs*2.2:0,gap=ph&&nm?fs*.8:0,tot=w1+w2+gap;let x=W/2-tot/2;
+        ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowBlur=10*s;ctx.shadowOffsetY=3*s;
+        if(ph){ctx.fillStyle='rgba(235,235,235,.88)';rr(x,y-h/2,w1,h,h/2);ctx.fill();ctx.shadowColor='transparent';ctx.fillStyle='#222';ctx.fillText(ph,x+w1/2,y+1*s);x+=w1+gap;ctx.shadowColor='rgba(0,0,0,.4)'}
+        if(nm){ctx.fillStyle=g('bdgc').value;rr(x,y-h/2,w2,h,h/2);ctx.fill();ctx.shadowColor='transparent';ctx.fillStyle=g('bdgt').value;ctx.fillText(nm,x+w2/2,y+1*s)}
+        ctx.restore()}}
+  }catch(e){}
+};
+const oE=enterItem;
+enterItem=function(it){
+  try{if(seq&&seq.i>0&&g('strn')&&g('strn').value==='corner'){const sn=document.createElement('canvas');sn.width=cv.width;sn.height=cv.height;sn.getContext('2d').drawImage(cv,0,0);window.__cornerSnap=sn;window.__cornerAt=performance.now();window.__cornerDur=Math.max(.2,Math.min(g('trv')?g('trv').value/10:.6,it.dur*.98))*1000}else window.__cornerSnap=null}catch(e){window.__cornerSnap=null}
+  return oE.apply(this,arguments)};
 })();
 </script>
 </body>

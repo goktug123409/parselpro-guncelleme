@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611101141-->
+<html lang="tr"><!--pp-build:202611101150-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -214,7 +214,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label class="chk"><input id="sgrad" type="checkbox"> Arka plana hafif gradyan ekle</label>
     <div class="row"><label>Vurgu rengi<input id="sacc" type="color" value="#2bc4ff"></label><label>Yazı boyutu <span id="ssv">100</span>%<input id="ssz" type="range" min="50" max="140" value="100" oninput="$('ssv').textContent=this.value"></label></div>
     <label class="chk"><input id="saccl" type="checkbox" checked> Yazının altında vurgu çizgisi çizilsin</label>
-    <label>Sahne süresi (sn)<input id="ssd" type="range" min="4" max="20" value="8"></label>
+    <label>Sahne süresi (sn)<input id="ssd" type="range" min="4" max="80" value="8"></label>
     <h3 style="margin:10px 0 4px;font-size:14px">Kapanış kartı</h3>
     <label class="chk"><input id="endc" type="checkbox"> Kapanış kartı (logo + bilgiler)</label>
     <label>Firma / isim<input id="endn" type="text" placeholder="Göktuğ Filat"></label>
@@ -2296,7 +2296,7 @@ function loadScene(){
 (function(){const f=$('sfont'),src=$('ff');f.innerHTML=src.innerHTML;f.value='Montserrat'})();
 $('prev-sc').onclick=()=>{const sc=buildSeq();if(!sc){$('st').textContent='Giriş/kapanış yazısı veya kapanış kartı ekleyin.';return}const items=sc.items.filter(x=>x.k!=='main');startSeq({items,total:items.reduce((a,x)=>a+x.dur,0)})};
 function buildSeq(){
-  const lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean),sd=Math.max($('ssd').value/10,($('trv')?$('trv').value/10:.8)*1.7);
+  const lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean),sd=$('ssd').value/10;
   const intro=lines($('sin').value),outro=lines($('sout').value),end=$('endc').checked&&(logoImg||$('ph').value.trim()||$('endn').value.trim()||$('ends').value.trim());
   if(!intro.length&&!outro.length&&!end&&clips.length<2)return null;
   const items=[];let k=0;
@@ -2360,7 +2360,7 @@ function drawScene(now){
   ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;
   if($('sgrad').checked){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,bgc);g.addColorStop(1,shadeC(bgc,lumOf(bgc)>.55?.82:1.9));ctx.fillStyle=g}else ctx.fillStyle=bgc;
   ctx.fillRect(0,0,W,H);
-  const tm=$('strn').value,trD=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.6)),tin=clamp(ts/trD),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/trD),tr=(tm==='cut'||tm==='flash')?1:Math.min(tin,tout);
+  const tm=$('strn').value,trD=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.98)),tin=clamp(ts/trD),tout=window.__seqHold!=null?1:clamp((it.dur-ts)/trD),tr=(tm==='cut'||tm==='flash')?1:Math.min(tin,tout);
   ctx.save();ctx.globalAlpha=tr;
   if(tm==='slide'){ctx.translate(0,(1-tin)*H*.07-(1-tout)*H*.07)}
   ctx.textAlign='center';ctx.textBaseline='middle';
@@ -3191,7 +3191,7 @@ body.cvs .cv-top button{white-space:nowrap}
     }else{
       h+='<label>Yazı <small style="font-weight:400">(BAŞLIK | alt yazı)</small><input type="text" data-t="1" value="'+it.txt.replace(/"/g,'&quot;')+'"></label>'+sel('sanim','Yazı animasyonu');
     }
-    h+=sel('sfont','Yazı tipi')+'<div class="r2">'+col('sbg1','Arka plan 1')+col('sbg2','Arka plan 2')+'</div><div class="r2">'+col('sacc','Vurgu rengi')+'<label>Yazı boyutu <span data-v="ssz">'+$('ssz').value+'</span>%<input type="range" min="50" max="140" data-b="ssz" value="'+$('ssz').value+'"></label></div>'+sel('strn','Geçiş')+'<label>Geçiş süresi <span data-v="trv">'+($('trv').value/10).toFixed(1)+'</span> sn<input type="range" min="2" max="40" data-b="trv" value="'+$('trv').value+'"></label><label>Sahne süresi <span data-v="ssd">'+($('ssd').value/10).toFixed(1)+'</span> sn<input type="range" min="4" max="20" data-b="ssd" value="'+$('ssd').value+'"></label><div class="bt"><button class="pr" data-act="ok">Tamam, devam et</button><button data-act="stop">Sahneyi kapat</button></div>';
+    h+=sel('sfont','Yazı tipi')+'<div class="r2">'+col('sbg1','Arka plan 1')+col('sbg2','Arka plan 2')+'</div><div class="r2">'+col('sacc','Vurgu rengi')+'<label>Yazı boyutu <span data-v="ssz">'+$('ssz').value+'</span>%<input type="range" min="50" max="140" data-b="ssz" value="'+$('ssz').value+'"></label></div>'+sel('strn','Geçiş')+'<label>Geçiş süresi <span data-v="trv">'+($('trv').value/10).toFixed(1)+'</span> sn<input type="range" min="2" max="40" data-b="trv" value="'+$('trv').value+'"></label><label>Sahne süresi <span data-v="ssd">'+($('ssd').value/10).toFixed(1)+'</span> sn<input type="range" min="4" max="80" data-b="ssd" value="'+$('ssd').value+'"></label><div class="bt"><button class="pr" data-act="ok">Tamam, devam et</button><button data-act="stop">Sahneyi kapat</button></div>';
     box.innerHTML=h;box.style.display='block';
     const bw=box.offsetWidth,bh=box.offsetHeight;
     box.style.left=Math.max(8,Math.min(innerWidth-bw-8,x+14))+'px';box.style.top=Math.max(8,Math.min(innerHeight-bh-8,y-20))+'px';
@@ -4993,7 +4993,7 @@ let snap=null,snapAt=0,snapDur=.5;
 const oE=enterItem;
 enterItem=function(it){
   try{if(seq&&seq.i>0&&$('strn')&&($('strn').value==='fade'||$('strn').value==='slide')){if(!snap||snap.width!==cv.width||snap.height!==cv.height){snap=document.createElement('canvas');snap.width=cv.width;snap.height=cv.height}
-    const g=snap.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,snap.width,snap.height);g.drawImage(cv,0,0);snapAt=performance.now();snapDur=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.6))*1000}else snap=null}catch(e){snap=null}
+    const g=snap.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,snap.width,snap.height);g.drawImage(cv,0,0);snapAt=performance.now();snapDur=Math.max(.05,Math.min($('trv')?$('trv').value/10:.4,it.dur*.98))*1000}else snap=null}catch(e){snap=null}
   return oE.apply(this,arguments)};
 const oD=draw;
 draw=function(now){oD.apply(this,arguments);

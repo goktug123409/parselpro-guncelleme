@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611101314-->
+<html lang="tr"><!--pp-build:202611101330-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4285,7 +4285,7 @@ window.ppHelp=function(){
       const c=document.getElementById('cv'),st=document.querySelector('.stage');if(!c||!st||!c.width||!c.height)return;
       const ptl=document.getElementById('ptl'),ph=(ptl&&ptl.style.display!=='none')?ptl.offsetHeight+14:0;
       const tp=st.getBoundingClientRect().top,bar=document.getElementById('bar'),bh=(bar&&!bar.hidden)?bar.offsetHeight+8:0;
-      const aw=st.clientWidth-16,ah=window.innerHeight-tp-ph-bh-14;
+      const fsm=document.fullscreenElement&&document.fullscreenElement.contains(c);const aw=fsm?window.innerWidth-16:st.clientWidth-16,ah=fsm?window.innerHeight-bh-24:window.innerHeight-tp-ph-bh-14;
       if(aw<100||ah<100)return;
       const k=Math.min(aw/c.width,ah/c.height),w=Math.floor(c.width*k),h=Math.floor(c.height*k),key=w+'x'+h;
       if(key===last&&c.style.width===w+'px')return;last=key;
@@ -4293,7 +4293,7 @@ window.ppHelp=function(){
       c.style.setProperty('width',w+'px','important');c.style.setProperty('height',h+'px','important');
     }catch(e){}
   }
-  window.addEventListener('resize',fit);setInterval(fit,250);fit();
+  window.addEventListener('resize',fit);document.addEventListener('fullscreenchange',()=>{last='';setTimeout(fit,50)});setInterval(fit,250);fit();
 })();
 </script>
 <script id="pause-js">
@@ -5020,6 +5020,19 @@ cv.addEventListener('pointerdown',e=>{if(z<=1)return;if(e.button===1||(e.button=
 cv.addEventListener('pointermove',e=>{if(!pan)return;e.stopImmediatePropagation();tx=pan.tx+(e.clientX-pan.x);ty=pan.ty+(e.clientY-pan.y);limit();apply()},true);
 const end=e=>{if(!pan)return;pan=null;cv.style.cursor='';try{cv.releasePointerCapture(e.pointerId)}catch(x){}};
 cv.addEventListener('pointerup',end,true);cv.addEventListener('pointercancel',end,true);
+})();
+</script>
+<script id="stagefs">
+(function(){
+const st=cv.parentNode;st.classList.add('vzst');
+const css=document.createElement('style');css.textContent='.vzst:fullscreen{background:#000!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;width:100vw!important;height:100vh!important;border:0!important;border-radius:0!important;overflow:hidden!important}.vzst:fullscreen canvas{margin:0 auto!important;width:auto!important;height:auto!important;max-width:100vw!important;max-height:calc(100vh - 60px)!important}.stage:-webkit-full-screen{background:#000}#vzfs{position:absolute;left:10px;top:10px;z-index:7;background:rgba(20,24,34,.88);color:#fff;border:1px solid #4b5568;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}#vzreset{left:118px!important}';
+document.head.appendChild(css);
+const bt=document.createElement('button');bt.id='vzfs';bt.type='button';bt.textContent='⛶ Büyük ekran';bt.title='Önizlemeyi tam ekran yap (F tuşu, çıkmak için Esc)';st.appendChild(bt);
+const isFs=()=>document.fullscreenElement===st;
+const tog=()=>{try{if(isFs())document.exitFullscreen();else (st.requestFullscreen||st.webkitRequestFullscreen).call(st)}catch(e){}};
+bt.onclick=e=>{e.stopPropagation();tog()};
+document.addEventListener('fullscreenchange',()=>{bt.textContent=isFs()?'✕ Küçült (Esc)':'⛶ Büyük ekran'});
+document.addEventListener('keydown',e=>{if((e.key==='f'||e.key==='F')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')&&!(document.activeElement&&document.activeElement.isContentEditable)){e.preventDefault();tog()}});
 })();
 </script>
 </body>

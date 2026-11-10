@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611102150-->
+<html lang="tr"><!--pp-build:202611102157-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4601,6 +4601,8 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
  html body.cvs .cv-rail button.on{background:#17233a;color:#5aa0ff;box-shadow:inset 0 -2px 0 #3d86ff}
  html body.cvs .panel{grid-area:panel;order:0;display:grid!important;grid-template-columns:118px minmax(0,1fr);column-gap:14px;align-content:start;padding:14px 14px 22px}
  html body.cvs .panel>.cv-grp{grid-column:2;grid-row:1;min-width:0}
+ html body.cvs .panel{grid-template-rows:auto minmax(0,1fr)}
+ html body.cvs .panel>div:not(.cv-grp):not(#capsub){grid-row:2;align-self:end;position:sticky;bottom:0;z-index:5;background:#0d121a;margin-bottom:0!important;padding-bottom:6px!important;border-bottom:0!important;border-top:1px solid var(--bd)}
  html body.cvs .panel>:not(.cv-grp):not(#capsub){grid-column:1/-1}
  html body.cvs .panel>#capsub{grid-column:1;grid-row:1;position:sticky;top:0;align-self:start;display:flex;flex-direction:column;gap:6px;z-index:3}
  html body.cvs .panel>#capsub.one{display:none}

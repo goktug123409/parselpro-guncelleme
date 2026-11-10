@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611102203-->
+<html lang="tr"><!--pp-build:202611102211-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4547,7 +4547,31 @@ document.addEventListener('keyup',function(e){if(e.key===' '||e.code==='Space'){
       d.querySelector('b').textContent=r.name;d.querySelector('small').textContent=fmtS(r.size)+' | '+fmtT(r.dur);
       d.onclick=e=>{if(e.target.closest('.x'))return;openRec(r)};
       d.querySelector('.x').onclick=async e=>{e.stopPropagation();await tx('readwrite',s=>s.delete(r.id));render()};
+      d.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();ctxMenu(e.clientX,e.clientY,r,d)});
       g.appendChild(d)})
+  }
+  function ctxMenu(x,y,r,card){
+    const old=document.getElementById('pj-ctx');if(old)old.remove();
+    const m=document.createElement('div');m.id='pj-ctx';
+    m.style.cssText='position:fixed;z-index:99999;min-width:190px;background:#141c2b;border:1px solid #2a3550;border-radius:10px;padding:5px;box-shadow:0 14px 40px rgba(0,0,0,.6);font:600 13px system-ui,sans-serif;color:#e6ecf6';
+    const it=(t,fn,red)=>{const b=document.createElement('div');b.textContent=t;b.style.cssText='padding:8px 12px;border-radius:7px;cursor:pointer;'+(red?'color:#ff8a8a':'');b.onmouseenter=()=>b.style.background='#1f2c46';b.onmouseleave=()=>b.style.background='';b.onclick=ev=>{ev.stopPropagation();m.remove();fn()};m.appendChild(b)};
+    it('📂 Aç',()=>openRec(r));
+    it('✏️ Yeniden adlandır',()=>{
+      const bEl=card.querySelector('b'),inp=document.createElement('input');inp.value=r.name;
+      inp.style.cssText='width:100%;box-sizing:border-box;background:#0a0f17;color:#fff;border:1px solid #3d86ff;border-radius:6px;padding:3px 6px;font:700 13px system-ui';
+      bEl.replaceWith(inp);inp.focus();inp.select();
+      let done=false;const fin=async ok=>{if(done)return;done=true;const v=inp.value.replace(/[\\/:*?"<>|]+/g,'-').trim();
+        if(ok&&v&&v!==r.name){const rec=Object.assign({},r,{name:v,file:v+'.parselpro.zip'});await tx('readwrite',s=>s.put(rec))}render()};
+      inp.onkeydown=ev=>{ev.stopPropagation();if(ev.key==='Enter')fin(true);else if(ev.key==='Escape')fin(false)};
+      inp.onblur=()=>fin(true);inp.onclick=ev=>ev.stopPropagation()});
+    it('💾 Bilgisayara kaydet',async()=>{try{await _sf(r.blob,r.file||r.name+'.parselpro.zip','zip')}catch(e){}});
+    it('🗑 Listeden kaldır',async()=>{await tx('readwrite',s=>s.delete(r.id));render()},true);
+    document.body.appendChild(m);
+    const w=m.offsetWidth,h=m.offsetHeight;m.style.left=Math.max(4,Math.min(x,innerWidth-w-6))+'px';m.style.top=Math.max(4,Math.min(y,innerHeight-h-6))+'px';
+    const close=ev=>{if(m.contains(ev.target))return;m.remove();document.removeEventListener('mousedown',close,true);document.removeEventListener('keydown',esc,true);window.removeEventListener('blur',cl2)};
+    const esc=ev=>{if(ev.key==='Escape'){m.remove();document.removeEventListener('mousedown',close,true);document.removeEventListener('keydown',esc,true)}};
+    const cl2=()=>{m.remove()};
+    setTimeout(()=>{document.addEventListener('mousedown',close,true);document.addEventListener('keydown',esc,true);window.addEventListener('blur',cl2,{once:true})},0);
   }
   function openRec(r){
     const f=new File([r.blob],r.file||r.name+'.parselpro.zip',{type:'application/zip'});

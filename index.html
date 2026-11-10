@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611101455-->
+<html lang="tr"><!--pp-build:202611102032-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -302,6 +302,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label class="chk"><input type="checkbox" id="ogd" checked> Önizlemede kadraj çerçevesini göster (sadece ekranda, videoya girmez)</label>
     <div class="s" id="oarinfo"></div>
     </div>
+    <label>Dosya adı (boş bırakırsan otomatik)<input id="outname" type="text" placeholder="örn. bolayir-arsa" maxlength="80"></label>
     <button id="rec" class="bigr">TAKİP ET VE RENDER AL</button>
     <button id="recpng" class="bigr" style="margin-top:8px;background:#1f6feb;border-color:#1f6feb">FOTOĞRAF RENDER AL (PNG)</button>
     <div class="s c" id="recnote" style="margin:4px 0 8px"></div>
@@ -1078,6 +1079,7 @@ function drawTxHandle(s){
   if(txH&&closed){ctx.beginPath();ctx.arc(txH[0],txH[1],11*s,0,7);ctx.fillStyle='#ffd23d';ctx.fill();ctx.lineWidth=3*s;ctx.strokeStyle='#000';ctx.stroke();ctx.fillStyle='#000';ctx.font=`700 ${13*s}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('✥',txH[0],txH[1]+1*s)}
   ctx.restore();
 }
+function outName(d){let v=(($('outname')&&$('outname').value)||'').trim().replace(/\.(png|mp4|webm|json|zip)$/i,'').replace(/[\\/:*?"<>|]+/g,'-').trim();return v||d}
 async function saveFile(blob,name,ext){
   const st=$('st'),ok=ext==='png'?'Fotoğraf PNG olarak kaydedildi.':ext==='mp4'?'Video MP4 olarak kaydedildi.':(ext==='json'||ext==='zip')?'Proje dosyası kaydedildi.':'Bu tarayıcı MP4 kaydını desteklemiyor, WebM kaydedildi. Chrome’un güncel sürümünde MP4 olur.';
   const fallback=why=>{try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;st.textContent=why+' ';const l=document.createElement('a');l.href=u;l.download=name;l.textContent='▶ Dosyayı indirmek için buraya tıklayın ('+name+')';l.style.cssText='color:#2bc4ff;font-weight:700;cursor:pointer';st.appendChild(l);try{a.click()}catch(e){}}catch(e){st.textContent=why}};
@@ -2459,7 +2461,7 @@ $('rec').onclick=()=>{
     if(aud)aud.stop();
     const type=mr.mimeType||'video/webm';
     const blob=new Blob(ch,{type}),ext=type.includes('mp4')?'mp4':'webm';
-    saveFile(blob,'arsa-isaretleme.'+ext,ext);
+    saveFile(blob,outName('arsa-isaretleme')+'.'+ext,ext);
     recording=false;$('rec').textContent=REC_LBL;
   };
   recording=true;$('rec').textContent='Kaydediliyor…';$('st').textContent='Kayıt sürüyor, bekleyin.';
@@ -2719,7 +2721,7 @@ lgInfo();
       const blob=await new Promise(r=>((window.outStillCanvas&&window.outStillCanvas())||cv).toBlob(r,'image/png'));
       if(!blob)throw new Error('Görüntü oluşturulamadı');
       logAct('Fotoğraf render alındı (PNG, '+W+'×'+H+')');
-      saveFile(blob,'parselpro-'+(isVid?'kare':'foto')+'.png','png');
+      saveFile(blob,outName('parselpro-'+(isVid?'kare':'foto'))+'.png','png');
     }catch(e){$('st').textContent='Fotoğraf alınamadı: '+(e&&e.message||e)}
     finally{recording=false;stillMode=false;fxSel=keepSel[0];labSel=keepSel[1];if(!isVid){camStart=keepCam;restart()}}
   };

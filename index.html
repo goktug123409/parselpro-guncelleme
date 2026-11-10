@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611102131-->
+<html lang="tr"><!--pp-build:202611102147-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -209,7 +209,7 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Geçiş süresi <span id="trvv">1.2</span> sn<input id="trv" type="range" min="2" max="40" value="12" oninput="$('trvv').textContent=(this.value/10).toFixed(1)"></label>
     <label style="display:none">Geçiş sesi<select id="strs"><option value="mix">Karışık (her seferinde farklı)</option><option value="auto">Geçişe uygun (otomatik)</option><option value="whoosh">Whoosh (hava sesi)</option><option value="boom">Whoosh + vuruş</option><option value="flash">Parlama sesi</option><option value="tick">Kısa tık</option><option value="none">Ses yok</option></select></label>
     <div class="row" style="display:none"><label>Geçiş sesi seviyesi <span id="strvv">70</span>%<input id="strv" type="range" min="0" max="100" value="70" oninput="$('strvv').textContent=this.value"></label><div style="display:flex;flex-direction:column;gap:6px"><button type="button" id="strtest">▶ Dinle</button><button type="button" id="strmute" aria-pressed="false">🔊 Ses açık</button></div></div>
-    <div class="row" style="display:none"><button type="button" id="flnow">⚡ Parlama geçişi ekle (şimdiki an)</button><button type="button" id="flclr">Temizle</button></div><div class="s" id="flinfo" style="display:none"></div>
+    <div class="row"><button type="button" id="flnow">⚡ Bu ana geçiş ekle (videonun şimdiki anı)</button><button type="button" id="flclr">Temizle</button></div><div class="s" id="flinfo"></div>
     <label>Yazı tipi<select id="sfont"></select></label>
     <div class="row"><label>Arka plan 1<input id="sbg1" type="color" value="#ffffff"></label><label>Arka plan 2<input id="sbg2" type="color" value="#000000"></label></div>
     <label>Arka plan düzeni<select id="sbgm"><option value="alt">Sırayla zıt renkli (1, 2, 1, 2…)</option><option value="one">Hep arka plan 1</option></select></label>
@@ -2363,10 +2363,10 @@ function drawFlashes(now){
   const fl=$('strn').value==='flash';
   if(seq){const it=seq.items[seq.i],ts=(now-seq.t0)/1000;
     if(fl){if(seq.i>0)flashAt(ts);if(seq.i<seq.items.length-1)flashAt(ts-it.dur)}
-    if(it.k==='main'){const mt=mainT(now);flashTs.forEach(T=>flashAt(mt-T))}}
-  else{const mt=mainT(now);flashTs.forEach(T=>flashAt(mt-T))}
+    if(it.k==='main'){const mt=mainT(now);if(!['corner','whip','whipv','zoomb','spinb'].includes($('strn').value))flashTs.forEach(T=>flashAt(mt-T))}}
+  else{const mt=mainT(now);if(!['corner','whip','whipv','zoomb','spinb'].includes($('strn').value))flashTs.forEach(T=>flashAt(mt-T))}
 }
-function flInfo(){$('flinfo').textContent=flashTs.length?('Parlama geçişleri: '+flashTs.map(t=>t.toFixed(1)+' sn').join(', ')):'Videonun istediğiniz anında parlama geçişi ekleyebilirsiniz.'}
+function flInfo(){$('flinfo').textContent=flashTs.length?('Ara geçişler: '+flashTs.map(t=>t.toFixed(1)+' sn').join(', ')):'Videoyu istediğiniz ana getirip düğmeye basın; seçili geçiş o anda çalışır.'}
 $('flnow').onclick=()=>{const t=Math.max(0,Math.round(mainT(performance.now())*10)/10);flashTs.push(t);flashTs.sort((a,b)=>a-b);flInfo();logAct('Parlama geçişi: '+t+' sn')};
 $('flclr').onclick=()=>{flashTs=[];flInfo()};flInfo();
 function drawScene(now){
@@ -5136,6 +5136,30 @@ const oE=enterItem;
 enterItem=function(it){
   try{if(seq&&seq.i>0&&g('strn')&&['corner','whip','whipv','zoomb','spinb'].includes(g('strn').value)){const sn=document.createElement('canvas');sn.width=cv.width;sn.height=cv.height;sn.getContext('2d').drawImage(cv,0,0);window.__cornerSnap=sn;window.__cornerAt=performance.now();window.__cornerDur=Math.max(.2,Math.min(g('trv')?g('trv').value/10:.6,it.dur*.98))*1000}else window.__cornerSnap=null}catch(e){window.__cornerSnap=null}
   return oE.apply(this,arguments)};
+})();
+
+// klip ortasında seçilen ana geçiş (işaretli saniyeler)
+(function(){
+const g=id=>document.getElementById(id);const M=['corner','whip','whipv','zoomb','spinb'];
+let prevC=null,prevT=null,last=null;
+const od=draw;
+draw=function(now){
+  let doSnap=false,mt=null;
+  try{const md=g('strn').value;
+    if(M.includes(md)&&typeof flashTs!=='undefined'&&flashTs.length&&!(seq&&seq.items[seq.i].k!=='main')){
+      mt=mainT(now);
+      if(prevT!=null&&mt>prevT&&mt-prevT<.5&&flashTs.some(T=>prevT<T&&mt>=T)&&prevC)doSnap=true;
+    }}catch(e){}
+  if(doSnap){try{const sn=document.createElement('canvas');sn.width=prevC.width;sn.height=prevC.height;sn.getContext('2d').drawImage(prevC,0,0);window.__cornerSnap=sn;window.__cornerAt=now;window.__cornerDur=Math.max(.2,(g('trv')?g('trv').value/10:.6))*1000}catch(e){}}
+  od.apply(this,arguments);
+  try{const md=g('strn').value;
+    if(M.includes(md)&&typeof flashTs!=='undefined'&&flashTs.length&&!(seq&&seq.items[seq.i].k!=='main')){
+      if(!window.__cornerSnap||doSnap===false){ // geçiş sırasında önceki kareyi bozma
+        if(!prevC||prevC.width!==cv.width||prevC.height!==cv.height){prevC=document.createElement('canvas');prevC.width=cv.width;prevC.height=cv.height}
+        if(!window.__cornerSnap){const pg=prevC.getContext('2d');pg.setTransform(1,0,0,1,0,0);pg.drawImage(cv,0,0)}}
+      prevT=mt==null?mainT(now):mt}else{prevT=null}
+  }catch(e){}
+};
 })();
 </script>
 </body>

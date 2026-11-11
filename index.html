@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611111837-->
+<html lang="tr"><!--pp-build:202611111851-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -159,8 +159,8 @@ body #ctxm .cr.ck input{accent-color:var(--ac);width:17px;height:17px}
     <label>Yazı kaç saniyede kaybolmaya başlasın: <span style="display:inline-flex;align-items:center;gap:6px;margin-left:6px"><input id="txfv" type="number" min="0" max="600" step="0.1" value="8" style="width:64px;display:inline-block" oninput="$('txfadet').value=this.value"> sn</span><input id="txfadet" type="range" min="1" max="40" step="0.5" value="8" oninput="$('txfv').value=this.value"></label>
     <p style="margin:0 0 6px;font-size:12px;opacity:.75;color:var(--mut)">Videoda süre, çizginin işaretlendiği andan sayılır. Sürüklerken hiçbir şey kaybolmaz.</p>
     <label>Çizgi efekti<select id="ln"><option value="draw">Sade neon</option><option value="pulse">Nabız gibi parlama</option><option value="flow">Akan ışık</option></select></label>
-    <label>Ana çizgi şekli<select id="lmode"><option value="2d">2 boyutlu (düz neon çizgi)</option><option value="3d">3 boyutlu (yükselen neon duvar)</option></select></label>
-    <label>3 boyutlu duvar yüksekliği <span id="lh3v">14</span>%<input id="lh3" type="range" min="4" max="40" value="14" oninput="$('lh3v').textContent=this.value"></label>
+    <label style="display:none">Ana çizgi şekli<select id="lmode"><option value="2d">2 boyutlu (düz neon çizgi)</option></select></label>
+    <label style="display:none">3 boyutlu duvar yüksekliği <span id="lh3v">14</span>%<input id="lh3" type="range" min="4" max="40" value="14" oninput="$('lh3v').textContent=this.value"></label>
     <div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--bd)">
     <label class="chk"><input type="checkbox" id="msron"> 📏 Ölçüleri göster (kenar uzunlukları ve alan)</label>
     <div class="row"><label>Tapu alanı (m²)<input id="msrarea" type="number" min="0" step="1" placeholder="örn. 273"></label><label>Referans kenar uzunluğu (m)<input id="msrlen" type="number" min="0" step="0.1" placeholder="örn. 18.4"></label></div>

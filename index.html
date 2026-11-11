@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611111821-->
+<html lang="tr"><!--pp-build:202611111831-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -5188,6 +5188,11 @@ draw=function(now){
   }catch(e){}
 };
 })();
+</script>
+<script id="delline">
+(function(){const hb=document.getElementById('hbar');if(!hb)return;const b=document.createElement('button');b.type='button';b.id='hdel';b.title='Ana çizgiyi sil (geri alınabilir: Ctrl+Z)';b.textContent='🗑 Ana çizgiyi sil';
+b.onclick=()=>{try{if(recording)return;logAct('Arsa çizgisi silindi (düğme)');$('clr').click();$('st').textContent='Ana çizgi silindi. Geri almak için ↶ Geri al (Ctrl+Z).'}catch(e){}};
+hb.appendChild(b);const u=()=>{try{b.style.display=(pts.length>0&&!recording)?'':'none'}catch(e){}};setInterval(u,300);u()})();
 </script>
 </body>
 </html>

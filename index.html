@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611111755-->
+<html lang="tr"><!--pp-build:202611111807-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2674,7 +2674,7 @@ lgInfo();
   document.querySelector('.stage').appendChild(hb);
   const hs=document.createElement('style');hs.textContent='#hbar{position:absolute;right:12px;top:12px;z-index:5;display:flex;gap:6px;padding:5px;border-radius:14px;background:rgba(10,14,22,.62);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14)}#hbar button{padding:7px 12px;border-radius:10px;font-size:13px;color:#fff;background:rgba(255,255,255,.1);border:0;cursor:pointer;font:inherit;font-size:13px}#hbar button:hover:not(:disabled){background:rgba(255,255,255,.22)}#hbar button:disabled{opacity:.35;cursor:default}body:has(#fxov[style*="display: flex"]) #hbar{display:none}';document.head.appendChild(hs);
   const upd=()=>{$('hundo').disabled=!hist.length;$('hredo').disabled=!redoS.length;$('hundo').textContent='↶ Geri al'+(hist.length?' ('+hist.length+')':'')};
-  function undo(){if(!hist.length||recording||trk||fxDraw)return;redoS.push(hcur);hcur=hist.pop();applySnap(hcur);hcur=hsnap();logAct('Geri alındı');upd();$('st').textContent='Geri alındı. Kalan geri alma: '+hist.length}
+  function undo(){if(fxDraw&&!recording&&!trk){$('undo').onclick();return}if(!hist.length||recording||trk||fxDraw)return;redoS.push(hcur);hcur=hist.pop();applySnap(hcur);hcur=hsnap();logAct('Geri alındı');upd();$('st').textContent='Geri alındı. Kalan geri alma: '+hist.length}
   function redo(){if(!redoS.length||recording||trk||fxDraw)return;hist.push(hcur);hcur=redoS.pop();applySnap(hcur);hcur=hsnap();logAct('İleri alındı');upd();$('st').textContent='İleri alındı.'}
   $('hundo').onclick=undo;$('hredo').onclick=redo;upd();
   document.addEventListener('pp-clipswitch',()=>{hist.length=0;redoS.length=0;hcur=null;upd()});

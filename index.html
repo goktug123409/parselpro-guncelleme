@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611111807-->
+<html lang="tr"><!--pp-build:202611111813-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2680,7 +2680,7 @@ lgInfo();
   document.addEventListener('pp-clipswitch',()=>{hist.length=0;redoS.length=0;hcur=null;upd()});
   document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const t=e.target,tg=t&&t.tagName;if(tg==='INPUT'&&t.type!=='range'&&t.type!=='checkbox'&&t.type!=='color'||tg==='TEXTAREA')return;const k=e.key.toLowerCase();if(k==='z'&&!e.shiftKey){e.preventDefault();undo()}else if(k==='y'||(k==='z'&&e.shiftKey)){e.preventDefault();redo()}});
   setInterval(()=>{
-    if(!key||!bg||pending||recording||trk||fxDraw||drag!==null||fxDrag||fxSz||labSz||txDrag||ldrag)return;
+    if(!key||(bg&&pending)||recording||trk||fxDraw||drag!==null||fxDrag||fxSz||labSz||txDrag||ldrag)return;
     const s=hsnap();if(hcur===null){hcur=s;return}
     if(s!==hcur){hist.push(hcur);if(hist.length>60)hist.shift();hcur=s;redoS.length=0;upd()}
   },350);

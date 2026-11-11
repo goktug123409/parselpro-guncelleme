@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr"><!--pp-build:202611102211-->
+<html lang="tr"><!--pp-build:202611111755-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -571,7 +571,7 @@ cv.addEventListener('pointerdown',e=>{
     return;
   }
   if(pts.length>=3&&Math.hypot(x-pts[0][0],y-pts[0][1])<28*W/1280){closed=true;logAct('Alan kapatıldı ('+pts.length+' nokta)');if(isVid)setKF()}
-  else pts.push([x,y]);
+  else{const rb=document.querySelector('.cv-rail button.on'),tg=rb&&rb.dataset.g;if(tg&&!['media','track','draw'].includes(tg)&&document.body.classList.contains('cvs'))return;pts.push([x,y])}
   hint();if(!isVid)restart();
 });
 cv.addEventListener('pointermove',e=>{
